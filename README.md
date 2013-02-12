@@ -1,4 +1,4 @@
 clan
 ====
 
-"Clojure, Libgdx, Android, Neko" development starter kit
+"Clojure, LibGDX, Android, Neko" development starter kit
