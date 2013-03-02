@@ -4,7 +4,7 @@ dnl ----------------------------------------------------------------
 dnl Defines
 
 dnl 基礎プロジェクト設定(要変更)
-AC_INIT(drop, 1.0.0-SNAPSHOT)
+AC_INIT(drop, 1.0.1-SNAPSHOT)
 dnl ↑プロジェクト名(兼artifactId)およびプロジェクトのバージョン値を指定。
 PROJECT_GROUPID="jp.ne.tir.drop"
 AC_SUBST(PROJECT_GROUPID)
