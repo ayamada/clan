@@ -708,9 +708,10 @@ What is CLAN logo? / CLANのロゴは何？
    eps-file that distributed by
    http://eps.crest-japan.net/index\_en.php .
 
-   うちの家の家紋です。あとでもっとちゃんとしたロゴを作る。
-   (あまりにも手抜きなので。) 家紋部分は http://eps.crest-japan.net/
-   からepsファイルを 貰ってきて加工して作った。
+   うちの家の家紋です。
+   あとでもっとちゃんとしたロゴを作る(あまりにも手抜きなので)。
+   家紋部分は http://eps.crest-japan.net/ からepsファイルを
+   貰ってきて加工して作った。
 
 
 What is assets of sample game? / サンプルゲームの画像や音は何？
