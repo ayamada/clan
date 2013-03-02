@@ -1,4 +1,4 @@
-<div style="text-align:center; width:100%"><img
+<div style="text-align:center; width:100%"><img style="margin:0 auto"
 src="https://github.com/ayamada/clan/raw/master/doc/img/logo_b.png"
 /></div>
 
