@@ -90,7 +90,7 @@ see http://doc.tir.ne.jp/devel/env .
 On 2013/02/28, CLAN is required to ...
 
 - jre 1.6 or 1.7
-- jdk 1.6 (not support jdk-1.7)
+- jdk 1.6 (not support jdk 1.7)
 - clojure 1.4.0
 - libgdx 0.9.7
 - android-2.3 (API LEVEL 9) or greater
@@ -109,7 +109,7 @@ windows以外なら手順は違いますが、もっと簡単に構築できる�
 CLANは、2013/02/28現在、以下の環境を要求します。
 
 - jre 1.6 もしくは 1.7
-- jdk 1.6 (jdk-1.7は未サポート)
+- jdk 1.6 (jdk 1.7は未サポート)
 - clojure 1.4.0
 - libgdx 0.9.7
 - android-2.3 (API LEVEL 9) 以上
