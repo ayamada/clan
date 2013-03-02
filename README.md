@@ -251,14 +251,14 @@ jp.ne.tir.drop.drop モジュールの各関数をメモリ上でのみ上書き
 デスクトップ向けos汎用の`*.jar`、windows向けの`*.exe`、
 android向けの署名付き`*.apk`を生成します。
 
- 0. リリースするので、 configure.ac を編集し、
-    バージョン番号等をリリース向けに変更します。
-    (具体的には「-SNAPSHOT」を取る、とかそういう作業)
-    またバージョンアップの場合は、忘れずに `PROJECT_ANDROID_VERSIONCODE`
-    の値を上げます。
-    ソースをgit等に保存している場合は、リリースタグ等も作っておきます。
+- リリースするので、 configure.ac を編集し、
+  バージョン番号等をリリース向けに変更します。
+  (具体的には「-SNAPSHOT」を取る、とかそういう作業)
+  またバージョンアップの場合は、忘れずに `PROJECT_ANDROID_VERSIONCODE`
+  の値を上げます。
+  ソースをgit等に保存している場合は、リリースタグ等も作っておきます。
 
- 1. まだapk署名用の鍵を作ってなければ、作成します。
+- まだapk署名用の鍵を作ってなければ、作成します。
     - コンソールから以下のコマンドを実行します。
       質問されるので適切に入力し、パスワード等も決めてください。
 
@@ -269,7 +269,7 @@ android向けの署名付き`*.apk`を生成します。
     - このファイルをなくすとgoogle playでのバージョンアップが
       できなくなるので、バックアップを取っておいた方がいいでしょう。
 
- 2. 上の署名用鍵の情報を、ローカルのmavenのsettings.xmlに設定する
+- 上の署名用鍵の情報を、ローカルのmavenのsettings.xmlに設定する
     - 以下の内容のsettings.xmlを、 `~/.m2/settings.xml` に設置します。
       既に設置されている場合はいい感じに混ぜてください。
       この辺りの詳細も必要であればぐぐってください。
@@ -298,18 +298,18 @@ android向けの署名付き`*.apk`を生成します。
         - msysではドライブ指定に注意が必要です。
           上記のような感じなら大丈夫でしょう。
 
- 3. 例によって `autoconf && ./configure` した後、
-    `make release` を実行します。
-    エラーにならずに最後まで完了すれば、
-    `target/` の中に以下の3ファイルが生成されます。
+- 例によって `autoconf && ./configure` した後、
+  `make release` を実行します。
+  エラーにならずに最後まで完了すれば、
+  `target/` の中に以下の3ファイルが生成されます。
     - `appname-android.apk  appname-desktop.exe  appname-desktop.jar`
 
- 4. 必要に応じて、これらのファイルを配布物としてパッケージングしたり、
-    google playに登録したりします。
+- 必要に応じて、これらのファイルを配布物としてパッケージングしたり、
+  google playに登録したりします。
 
- 5. リリースしたので、 configure.ac を編集し、
-    バージョン番号等を非リリース向けに変更します。
-    (「-SNAPSHOT」をつけなおす、とかそういう作業)
+- リリースしたので、 configure.ac を編集し、
+  バージョン番号等を非リリース向けに変更します。
+  (「-SNAPSHOT」をつけなおす、とかそういう作業)
 
 以上。
 
@@ -518,10 +518,12 @@ cp -a Makefile.in android assets cal configure.ac desktop l4j layout res clan/sa
  0. ChangeLog にリリースの記録
     - gitのコミットログを確認し、重要な変更点があるならきちんと記入する事
  1. script/settings.sh のバージョン番号から、 `-SNAPSHOT` を除去
+    - 必要なら、 sample/configure.in のサンプルアプリのバージョンも変更しておく
  2. git add ChangeLog script/settings.sh
  3. git commit -m 'version X.Y.Z releasing'
  4. git tag -a タグ名 -m 'メッセージ'
  5. script/settings.sh のバージョン番号を上げ、 `-SNAPSHOT` を付与
+    - サンプルアプリのバージョンを変更しているなら、それも元に戻す事
  6. git add script/settings.sh
  7. git commit -m 'version X.Y.Z released'
  8. git push
