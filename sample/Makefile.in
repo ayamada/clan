@@ -96,7 +96,7 @@ RELEASE_FLAG := 0
 .PHONY: help clean dep cal cbl jar apk force layout info clan assets res release
 
 help:
-	@echo "sorry, see clan/README.md."
+	@echo "sorry, see clan/README.rst"
 
 
 
@@ -256,7 +256,7 @@ apk-install: android/target/$(PROJECT_ANDROID_ARTIFACTID).apk
 
 android/target/$(PROJECT_ANDROID_ARTIFACTID)-signed-aligned.apk: .layout-done .cal-done .cbl-done
 	if [ x != x$(ADB) ]; then \
-		cd android && $(MVN) -Prelease package || (echo "you dont edit settings.xml yet? please see README.md and grep 'settings.xml'." && false); \
+		cd android && $(MVN) -Prelease package || (echo "you dont edit settings.xml yet? please see README.rst and grep 'settings.xml'." && false); \
 	fi
 
 apk-clean:
