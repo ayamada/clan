@@ -635,7 +635,7 @@ CLAN自身のリリース手順
 FAQ
 ---
 
-My app is too slow on android-real-machine / android実機で超遅い
+My app is too slow on android-real-machine. / android実機で超遅い
    enabling
    `*warn-on-reflection* <http://clojure.org/java_interop#Java%20Interop-Type%20Hints>`_,
    and insert type specifier. it was used by
@@ -646,86 +646,76 @@ My app is too slow on android-real-machine / android実機で超遅い
    `clojure-maven-plugin <https://github.com/talios/clojure-maven-plugin#configuring-your-clojure-session>`_\ からも使える。
 
 
-Why cannot I compile ``*.clj``, it was skipped.
+Why cannot I compile ``*.clj``, it was skipped. / なぜか ``*.clj`` がスキップされてコンパイルされない
    set to encoding = utf-8. This is spec of clojure-maven-plugin
    probably.
 
-なぜか ``*.clj`` がスキップされてコンパイルされない
    文字コードをutf-8にしてみる。clojure-maven-pluginの仕様のようです。
 
 
-How to upgrade CLAN
+How to upgrade CLAN / CLANバージョンアップのやりかた
    replace ``clan/`` directory, or ``git pull`` on ``clan/``
    directory. but, you must check to ChangeLog for incompatible
    changes at before.
 
-CLANバージョンアップのやりかた
    ``clan/`` ディレクトリを丸ごと新しいものに交換する。 もしくは
    ``clan/`` ディレクトリ内で ``git pull`` を実行。
    だが先にChangeLogを見て、非互換な変更がないか確認する事。
 
 
-Where is save data for desktop jar/exe
+Where is save data for desktop jar/exe / デスクトップ向けjar/exeのセーブデータの場所
    it saves ``C:\Users\{USERNAME}\.pref\`` (for windows), or ~/.pref/
    (other unix like OS). point is .prefs in home-directory by OS.
 
-デスクトップ向けjar/exeのセーブデータの場所
    windowsなら、 ``C:\ユーザー\{ユーザ名}\.pref\`` 、
    windows以外なら、 ~/.pref/ 。
    要はosの認識するホームディレクトリにある .prefs 。
 
 
-I want to change/erase background console output.
+I want to change/erase background console output. / 背景のコンソール出力を変更したい/表示させたくない
    You edit ``clan/cbl/src/main/java/jp/ne/tir/clan/BootLoader.java``
 
-背景のコンソール出力を変更したい/表示させたくない
    ``clan/cbl/src/main/java/jp/ne/tir/clan/BootLoader.java`` をいじる
 
 
-I want to change color in boot screen.
+I want to change color in boot screen. / ブート画面の色を変更したい
    You edit ``clan/cbl/src/main/java/jp/ne/tir/clan/BootLoader.java``
 
-ブート画面の色を変更したい
    ``clan/cbl/src/main/java/jp/ne/tir/clan/BootLoader.java`` をいじる
 
 
-I want to change boot screen more better.
+I want to change boot screen more better. / その他ブート画面をもっとよくしたい
    You edit ``clan/cbl/src/main/java/jp/ne/tir/clan/BootLoader.java``
 
-その他ブート画面をもっとよくしたい
    ``clan/cbl/src/main/java/jp/ne/tir/clan/BootLoader.java`` をいじる
 
 
-What is something wrong to collision-detection of sample-app ?
+What is something wrong to collision-detection of sample-app? / サンプルアプリの当たり判定おかしくない？
    it can catch items by mouth only.
 
-サンプルアプリの当たり判定おかしくない？
    口の部分にのみ当たり判定があります。
 
 
-I cannot press 'E' key on real-android-machine.
+I cannot press 'E' key on real-android-machine. / android実機でEキーなんて押せねーよ！
    you can edit code yourself, or use bluetooth keyboard.
 
-android実機でEキーなんて押せねーよ！
    自分でコードをいじれ。もしくはbluetoothキーボードを用意。
 
 
-What is CLAN logo?
+What is CLAN logo? / CLANのロゴは何？
    This is my family emblem. Change more better logo on later.
    (because it is too cutting corners.) logo's emblem part came from
    eps-file that distributed by
    http://eps.crest-japan.net/index\_en.php .
 
-CLANのロゴは何？
    うちの家の家紋です。あとでもっとちゃんとしたロゴを作る。
    (あまりにも手抜きなので。) 家紋部分は http://eps.crest-japan.net/
    からepsファイルを 貰ってきて加工して作った。
 
 
-What is assets of sample game?
+What is assets of sample game? / サンプルゲームの画像や音は何？
    all assets were made by me. license is EPL-1.0, similar clan.
 
-サンプルゲームの画像や音は何？
    自作した。全部俺。ライセンスはclanと同様、EPL-1.0とする。
 
 お願い
@@ -777,7 +767,7 @@ Copyright (c) atsuo yamada.
 
 Distributed under the Eclipse Public License, the same as Clojure.
 
-Which can be found in the file `epl-v10.html <>`_.
+Which can be found in the file `epl-v10.html <epl-v10.html>`_.
 
 TODO
 ----
@@ -807,8 +797,7 @@ TODO
       -  clean-up code
       -  implement to timeout on eval-file
       -  boot nREPL-server at debug-time
-      -  FPSが落ちた時にEキーを取りこぼす時がある。Gdx.input.justTouched()と同じような処理が必要(おそらくキーリスナを作らないと駄目)
-      -  プログラミングClojureのp.72みながら重いところにリフレクションをつけてまわる
+      -  FPSが低下した時にEキーを取りこぼす時がある。Gdx.input.justTouched()と同じような処理が必要(おそらくキーリスナを作らないと駄目)
 
    -  増やし忘れ対策 of PROJECT\_ANDROID\_VERSIONCODE in configure.in
    -  improve BootLoader
