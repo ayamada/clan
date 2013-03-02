@@ -6,9 +6,12 @@ dnl Defines
 dnl 基礎プロジェクト設定(要変更)
 AC_INIT(drop, 1.0.1-SNAPSHOT)
 dnl ↑プロジェクト名(兼artifactId)およびプロジェクトのバージョン値を指定。
+PROJECT_NAME="space drop"
+AC_SUBST(PROJECT_NAME)
+dnl ↑人間向けのアプリタイトル。
 PROJECT_GROUPID="jp.ne.tir.drop"
 AC_SUBST(PROJECT_GROUPID)
-dnl ↑プロジェクトのgroupId。
+dnl ↑プロジェクトのgroupId。重要。下の方のPROJECT_CAL_CLASSNAMEの解説を確認！
 dnl   android/desktopの各パッケージでは更に末尾に何かがくっつく。
 PROJECT_CLASSIFIER=""
 AC_SUBST(PROJECT_CLASSIFIER)
@@ -30,8 +33,8 @@ dnl PROJECT_GROUPID= 設定済
 dnl AC_SUBST(PROJECT_GROUPID)
 PROJECT_ARTIFACTID=$PACKAGE_NAME
 AC_SUBST(PROJECT_ARTIFACTID)
-PROJECT_NAME=$PROJECT_ARTIFACTID
-AC_SUBST(PROJECT_NAME)
+#PROJECT_NAME= 設定済
+#AC_SUBST(PROJECT_NAME)
 PROJECT_VERSION=$PACKAGE_VERSION
 AC_SUBST(PROJECT_VERSION)
 dnl PROJECT_CLASSIFIER= 設定済
