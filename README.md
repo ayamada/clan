@@ -1,4 +1,4 @@
-<div style="text-align:center"><img
+<div style="text-align:center !important"><img
 src="https://github.com/ayamada/clan/raw/master/doc/img/logo_b.png"
 /></div>
 
@@ -14,7 +14,7 @@ Please try to CLAN if you still OK.
 
 ----------------------------------------------------------------
 
-** CLAN : Clojure, LibGDX, Android, Neko 開発フレームワーク **
+**CLAN : Clojure, LibGDX, Android, Neko 開発フレームワーク**
 
 これは「clojureのコード書くだけでlibgdx使ったandroidアプリができた！」を
 実現する為の開発フレームワークです。
@@ -50,7 +50,7 @@ Disadvantages
 
 Miscellaneous
 
-- using autoconf, make, maven
+- using autoconf, make, maven (change to only lein in future)
 
 ----------------------------------------------------------------
 
@@ -74,12 +74,12 @@ Miscellaneous
 
 その他の特徴
 
-- autoconf + make + maven 使用
+- autoconf + make + maven 使用(将来はleinのみにしたい)
 
 
 ## Requirement
 
-see [http://doc.tir.ne.jp/devel/env]().
+see http://doc.tir.ne.jp/devel/env .
 
 (sorry, this document is written in japanese, please use translator.)
 
@@ -95,7 +95,7 @@ gentoo linux(x86-32bit) on 2013/02/28.
 
 ----------------------------------------------------------------
 
-[http://doc.tir.ne.jp/devel/env]() を見て、手元の環境を同様の状態に
+http://doc.tir.ne.jp/devel/env を見て、手元の環境を同様の状態に
 構築しておいてください。
 
 (windowsならそのままの手順でいけるでしょう。
@@ -161,9 +161,7 @@ make jar-exec
 ~~~
 
 このサンプルアプリの名前はdropです
-( [http://code.google.com/p/libgdx/wiki/SimpleApp]() をベースにしています)。
-サンプルをベースにいじる時に "drop" が出てきたら「アプリの名前部分なんだな」
-と解釈するといいでしょう。
+( http://code.google.com/p/libgdx/wiki/SimpleApp をベースにしています)。
 
 起動ロゴが出て消えるまでがclanが管理する部分です。
 ロゴ等はあとで好きに入れ替えましょう。
@@ -493,7 +491,7 @@ rm -rf clan/sample && mkdir -p clan/sample
 上記の外部ファイル読み込み機能がある為、サンプルアプリの展開後は
 **必ずal.cljの該当path部分を変更する**事。
 
-一通り開発ができたら、**上記で変更したal.cljの該当path部分を元に戻す**。
+一通り開発ができたら、上記で変更した**al.cljの該当path部分を元に戻す**。
 その後、以下を実行してsampleに反映し直す。
 
 ~~~
@@ -504,8 +502,8 @@ cp -a Makefile.in android assets cal configure.ac desktop l4j layout res clan/sa
 要は、 clan/ 以外の全ファイルを clan/sample/ へと戻している。
 
 その後、忘れずにgitに保存する。
-この際には**必ず変更ファイル一覧および差分を確認**し、
-前述の**path部分の変更がコミットされないよう注意**する。
+この際には必ず**変更ファイル一覧および差分を確認**し、
+前述の**path部分の変更がコミットされない**よう注意する。
 
 - この手順の問題点として、サンプルアプリ部分のこまめなコミットができない
   という問題がある。今のところは、dropbox等の中で展開し、
@@ -597,11 +595,11 @@ cp -a Makefile.in android assets cal configure.ac desktop l4j layout res clan/sa
     - This is my family emblem. Change more better logo on later.
       (because it is too cutting corners.)
       logo's emblem part came from eps-file that distributed by
-      [http://eps.crest-japan.net/index_en.php]() .
+      http://eps.crest-japan.net/index_en.php .
 - CLANのロゴは何？
     - うちの家の家紋です。あとでもっとちゃんとしたロゴを作る。
       (あまりにも手抜きなので。)
-      家紋部分は [http://eps.crest-japan.net/]() からepsファイルを
+      家紋部分は http://eps.crest-japan.net/ からepsファイルを
       貰ってきて加工して作った。
 
 - What is assets of sample game?
@@ -653,7 +651,7 @@ Which can be found in the file [epl-v10.html]().
 ## TODO
 
 - important
-    - [http://ch.nicovideo.jp/indies-game]() にプラットフォーム部門で応募して五万円を狙う為の動画を作成
+    - http://ch.nicovideo.jp/indies-game にプラットフォーム部門で応募して五万円を狙う為の動画を作成
     - 「autoconf+make+maven」はやめて、leinで統一する(しかし先にleinの使い方を学ぶ必要あり…)
     - cal内にて、「android限定のコード(と利用ライブラリ)」と
       「desktop限定のコード(と利用ライブラリ)」をうまく切り分けられるようにする
