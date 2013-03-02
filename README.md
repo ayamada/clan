@@ -1,4 +1,4 @@
-<div style="text-align:center !important"><img
+<div style="text-align:center; width:100%"><img
 src="https://github.com/ayamada/clan/raw/master/doc/img/logo_b.png"
 /></div>
 
@@ -489,9 +489,9 @@ rm -rf clan/sample && mkdir -p clan/sample
     - たまにandroid内で
 
 上記の外部ファイル読み込み機能がある為、サンプルアプリの展開後は
-**必ずal.cljの該当path部分を変更する**事。
+**必ずal.cljの該当path部分を変更する事** 。
 
-一通り開発ができたら、上記で変更した**al.cljの該当path部分を元に戻す**。
+一通り開発ができたら、上記で変更した **al.cljの該当path部分を元に戻す** 。
 その後、以下を実行してsampleに反映し直す。
 
 ~~~
@@ -502,8 +502,8 @@ cp -a Makefile.in android assets cal configure.ac desktop l4j layout res clan/sa
 要は、 clan/ 以外の全ファイルを clan/sample/ へと戻している。
 
 その後、忘れずにgitに保存する。
-この際には必ず**変更ファイル一覧および差分を確認**し、
-前述の**path部分の変更がコミットされない**よう注意する。
+この際には必ず、 **変更ファイル一覧および差分を確認** し、
+**前述のpath部分の変更がコミットされないよう注意** する。
 
 - この手順の問題点として、サンプルアプリ部分のこまめなコミットができない
   という問題がある。今のところは、dropbox等の中で展開し、
