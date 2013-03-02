@@ -6,7 +6,7 @@ CLAN : Clojure, LibGDX, Android, Neko development framework
 CLAN supply to an environment that develop android application using
 libgdx by only clojure code. You must understand to clojure and libgdx.
 
-WARNING: This package version is 0.0.0-EXPERIMENTAL. It cannot upgrade
+WARNING: This package version is 0.0.1-EXPERIMENTAL. It cannot upgrade
 to future version 1.0.0 . Please try to CLAN if you still OK.
 
 --------------
@@ -17,9 +17,9 @@ to future version 1.0.0 . Please try to CLAN if you still OK.
 実現する為の開発フレームワークです。
 別途、clojureとlibgdxの知識が必要です。
 
-注意：現在のバージョンは 0.0.0-EXPERIMENTAL です。
+注意：現在のバージョンは 0.0.1-EXPERIMENTAL です。
 TODOにある「lein化」と「platform別ライブラリ化」が完了した時点で
-バージョン 1.0.0 とします。 この 0.0.0 から 1.0.0
+バージョン 1.0.0 とします。 この 0.0.1 から 1.0.0
 へのアップデートは非常に困難ですが、
 それでもいい人は試してみてください。
 
