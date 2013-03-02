@@ -348,7 +348,7 @@ android向けの署名付き\ ``*.apk``\ を生成します。
    バージョン番号等を非リリース向けに変更します。
    (「-SNAPSHOT」をつけなおす、とかそういう作業)
 
-   AndroidManifest.xml.in 元に戻します。
+   AndroidManifest.xml.in も、元に戻します。
 
 以上。
 
