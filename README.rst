@@ -577,7 +577,8 @@ CLANはサンプルアプリとセットで開発を行う。
 
    -  本当はnREPLを使いたいが、デバッグ版とリリース版の切り分けがうまくいかず
       とりあえず簡易版としてこれを実装。
-   -  たまにandroid内で
+   -  たまにandroid内でスレッドプールからスレッドが確保できなくなる時がある。
+      原因不明。あとで調べなくてはならない。
 
 上記の外部ファイル読み込み機能がある為、サンプルアプリの展開後は
 **必ずal.cljの該当path部分を変更する事** 。
@@ -634,14 +635,12 @@ CLAN自身のリリース手順
 FAQ
 ---
 
-My app is too slow on android-real-machine.
+My app is too slow on android-real-machine / android実機で超遅い
    enabling
    `*warn-on-reflection* <http://clojure.org/java_interop#Java%20Interop-Type%20Hints>`_,
    and insert type specifier. it was used by
    `clojure-maven-plugin <https://github.com/talios/clojure-maven-plugin#configuring-your-clojure-session>`_.
 
-
-android実機で超遅い
    `*warn-on-reflection* <http://clojure.org/java_interop#Java%20Interop-Type%20Hints>`_
    を有効にして、型指定しまくる。
    `clojure-maven-plugin <https://github.com/talios/clojure-maven-plugin#configuring-your-clojure-session>`_\ からも使える。
