@@ -520,12 +520,13 @@ cp -a Makefile.in android assets cal configure.ac desktop l4j layout res clan/sa
  1. ChangeLog にリリースの記録
     - gitのコミットログを確認し、重要な変更点があるならきちんと記入する事
  2. script/settings.sh のバージョン番号から、 `-SNAPSHOT` を除去
- 3. git commit -m 'version X.Y.Z releasing'
- 4. git tag -a タグ名 -m 'メッセージ'
- 5. script/settings.sh のバージョン番号を上げ、 `-SNAPSHOT` を付与
- 6. git commit -m 'version X.Y.Z released'
- 7. git push
- 8. git push origin --tags
+ 3. git add ChangeLog script/settings.sh
+ 4. git commit -m 'version X.Y.Z releasing'
+ 5. git tag -a タグ名 -m 'メッセージ'
+ 6. script/settings.sh のバージョン番号を上げ、 `-SNAPSHOT` を付与
+ 7. git commit -m 'version X.Y.Z released'
+ 8. git push
+ 9. git push origin --tags
 
 時間があればもう少し今風に改善したいところだが…
 

@@ -1,4 +1,8 @@
+2013-03-02  ayamada
+	* release 0.0.0-EXPERIMENTAL:
+	  please read https://github.com/ayamada/clan .
+
 2000-01-01  ayamada
 	* このエントリはChangeLog書式サンプル行です:
-	vim: set ft=changelog noet ts=8 sts=8 sw=2:
+	  vim: set ft=changelog noet ts=8 sts=8 sw=2:
 
