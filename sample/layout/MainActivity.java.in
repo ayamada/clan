@@ -1,0 +1,66 @@
+package @PROJECT_ANDROID_GROUPID@;
+/*
+@AC_MSG_1@
+@AC_MSG_2@
+@AC_MSG_3@
+@AC_MSG_4@
+@AC_MSG_5@
+@AC_MSG_6@
+
+@AC_MSG_TMPL_1@
+@AC_MSG_TMPL_2@
+*/
+
+import java.util.concurrent.Callable;
+import @CLAN_CBL_GROUPID@.@CLAN_CBL_CLASSNAME@;
+
+import @PROJECT_CAL_GROUPID@.@PROJECT_CAL_CLASSNAME@;
+
+import android.os.Bundle;
+import android.content.Context;
+
+import com.badlogic.gdx.ApplicationListener;
+import com.badlogic.gdx.backends.android.AndroidApplication;
+import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
+
+import clojure.lang.RT;
+import clojure.lang.Symbol;
+
+public class MainActivity extends AndroidApplication {
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
+		config.useGL20 = false;
+		final Context context = this.getApplicationContext();
+		initialize(
+				new BootLoader(
+					new Runnable() {
+						@Override
+						public void run() {
+							try {
+								RT.var("clojure.core", "refer").invoke(Symbol.intern(null, "clojure.core"));
+							}
+							catch (Exception e) {
+								throw new RuntimeException("failed to initialize at clojure");
+							}
+						}
+					},
+					new Runnable() {
+						@Override
+						public void run() {
+							try {
+								RT.var("clojure.core", "require").invoke(Symbol.intern("neko.compilation"));
+								RT.var("neko.compilation", "init").invoke(context, "classes");
+							}
+							catch (Exception e) {
+								throw new RuntimeException("failed to initialize at neko");
+							}
+						}
+					},
+					new Callable<ApplicationListener>() {
+						@Override public ApplicationListener call() { return new @PROJECT_CAL_CLASSNAME@(); }
+					}),
+				config);
+	}
+}

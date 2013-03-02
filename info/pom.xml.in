@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+@AC_MSG_1@
+@AC_MSG_2@
+@AC_MSG_3@
+@AC_MSG_4@
+@AC_MSG_5@
+@AC_MSG_6@
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>@CLAN_INFO_GROUPID@</groupId>
+	<artifactId>@CLAN_INFO_ARTIFACTID@</artifactId>
+	<version>@CLAN_INFO_VERSION@</version>
+	<packaging>jar</packaging>
+	<name>@CLAN_INFO_NAME@</name>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+
+	<dependencies>
+		<!--
+		<dependency>
+			<groupId>com.badlogic.gdx</groupId>
+			<artifactId>gdx</artifactId>
+			<version>${gdx.version}</version>
+		</dependency>
+		-->
+	</dependencies>
+
+	<build>
+		<!--
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.2.1</version>
+			</plugin>
+		</plugins>
+
+		<resources>
+			<resource>
+				<directory>${project.build.sourceDirectory}</directory>
+			</resource>
+		</resources>
+		-->
+	</build>
+</project>
+<!-- vim:set noet: -->

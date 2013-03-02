@@ -1,0 +1,91 @@
+digraph "dependency-graph of CLAN" {
+  // beginning node
+  libgdx_download [shape=box,label="http://code.google.com/p/libgdx/downloads/list"];
+  org_clojure [shape=box,label="http://mvnrepository.com/artifact/org.clojure/clojure"];
+  android_clojure [shape=box,label="http://clojars.org/android/clojure"];
+  android [shape=box,label="http://mvnrepository.com/artifact/com.google.android/android"];
+  neko [shape=box,label="http://clojars.org/neko/neko"];
+  configure_ac [shape=box,label="configure.ac"];
+  assets [shape=box];
+  res [shape=box];
+
+  // misc node
+  autoconf [label="autoconf && ./configure"];
+  pom_xml [label="pom.xml"];
+  clan_info [label="clan/info"];
+  clan_neko [label="clan/neko (compiled)"];
+  clan_cbl [label="clan/cbl"];
+  clan_desktop [label="desktop"];
+  libgdx_android_natives [label="android/libs"];
+  clan_android [label="android"];
+
+  /* ---------------------------------------------------------------- */
+
+  /* autoconf && ./configure */
+  configure_ac -> autoconf;
+
+  autoconf -> Makefile;
+  autoconf -> pom_xml;
+  autoconf -> clan_info;
+  autoconf -> layout;
+
+  /* make dep */
+  libgdx_download -> libgdx;
+  Makefile -> libgdx;
+
+  libgdx -> libgdx_android_natives;
+
+  Makefile -> clan_neko;
+  pom_xml -> clan_neko;
+  org_clojure -> clan_neko;
+  android -> clan_neko;
+  neko -> clan_neko;
+
+  /* make info */
+  Makefile -> clan_info;
+  pom_xml -> clan_info;
+
+  /* make layout */
+  clan_info -> layout;
+
+  /* make cbl */
+  Makefile -> clan_cbl;
+  pom_xml -> clan_cbl;
+  clan_info -> clan_cbl;
+  libgdx -> clan_cbl;
+
+  /* make cal */
+  Makefile -> cal;
+  pom_xml -> cal;
+  clan_info -> cal;
+  org_clojure -> cal;
+  libgdx -> cal;
+
+  /* make jar */
+  org_clojure -> clan_desktop;
+  assets -> clan_desktop;
+  Makefile -> clan_desktop;
+  pom_xml -> clan_desktop;
+  clan_info -> clan_desktop;
+  layout -> clan_desktop;
+  libgdx -> clan_desktop;
+  cal -> clan_desktop;
+  clan_cbl -> clan_desktop;
+
+  /* make apk */
+  android_clojure ->clan_android;
+  android ->clan_android;
+  neko ->clan_android;
+  assets ->clan_android;
+  res ->clan_android;
+  Makefile -> clan_android;
+  pom_xml -> clan_android;
+  clan_info -> clan_android;
+  layout -> clan_android;
+  libgdx -> clan_android;
+  clan_neko -> clan_android;
+  cal -> clan_android;
+  clan_cbl -> clan_android;
+  libgdx_android_natives -> clan_android;
+}
+

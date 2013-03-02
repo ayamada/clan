@@ -1,0 +1,44 @@
+package @PROJECT_DESKTOP_GROUPID@;
+/*
+@AC_MSG_1@
+@AC_MSG_2@
+@AC_MSG_3@
+@AC_MSG_4@
+@AC_MSG_5@
+@AC_MSG_6@
+
+@AC_MSG_TMPL_1@
+@AC_MSG_TMPL_2@
+*/
+
+import java.util.concurrent.Callable;
+import @CLAN_CBL_GROUPID@.@CLAN_CBL_CLASSNAME@;
+
+import @PROJECT_CAL_GROUPID@.@PROJECT_CAL_CLASSNAME@;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ApplicationListener;
+import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
+import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
+import com.badlogic.gdx.Files.FileType;
+
+public class Desktop {
+	public static void main(String[] args) {
+		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
+		config.title = "@PROJECT_CAL_NAME@";
+		config.useGL20 = false;
+		//config.width = 480;
+		//config.height = 320;
+		config.addIcon("icon/128x128.png", FileType.Internal);
+		config.addIcon("icon/32x32.png", FileType.Internal);
+		config.addIcon("icon/16x16.png", FileType.Internal);
+		new LwjglApplication(
+				new BootLoader(
+					null,
+					null,
+					new Callable<ApplicationListener>() {
+						@Override public ApplicationListener call() { return new @PROJECT_CAL_CLASSNAME@(); }
+					}),
+				config);
+	}
+}

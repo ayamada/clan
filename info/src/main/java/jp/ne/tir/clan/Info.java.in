@@ -1,0 +1,68 @@
+package jp.ne.tir.clan;
+/*
+@AC_MSG_1@
+@AC_MSG_2@
+@AC_MSG_3@
+@AC_MSG_4@
+@AC_MSG_5@
+@AC_MSG_6@
+*/
+
+public class Info {
+	/* dynamic-auto-generate-parameter begin */
+	public static volatile boolean debug = true;
+	public static volatile String buildNumber = "";
+	public static volatile String buildDate = "";
+	public static volatile String buildEnv = "";
+	public static volatile String buildCompilerVersion = "";
+	/* dynamic-auto-generate-parameter end */
+
+	public static final String projectGroupId = "@PROJECT_GROUPID@";
+	public static final String projectArtifactId = "@PROJECT_ARTIFACTID@";
+	public static final String projectName = "@PROJECT_NAME@";
+	public static final String projectVersion = "@PROJECT_VERSION@";
+	public static final String projectClassifier = "@PROJECT_CLASSIFIER@";
+
+	public static final String projectCalGroupId = "@PROJECT_CAL_GROUPID@";
+	public static final String projectCalArtifactId = "@PROJECT_CAL_ARTIFACTID@";
+	public static final String projectCalVersion = "@PROJECT_CAL_VERSION@";
+	public static final String projectCalName = "@PROJECT_CAL_NAME@";
+	public static final String projectCalClassName = "@PROJECT_CAL_CLASSNAME@";
+
+	public static final String projectAndroidGroupId = "@PROJECT_ANDROID_GROUPID@";
+	public static final String projectAndroidArtifactId = "@PROJECT_ANDROID_ARTIFACTID@";
+	public static final String projectAndroidVersion = "@PROJECT_ANDROID_VERSION@";
+	public static final String projectAndroidName = "@PROJECT_ANDROID_NAME@";
+	public static final String projectAndroidPackage = "@PROJECT_ANDROID_PACKAGE@";
+	public static final String projectAndroidActivity = "@PROJECT_ANDROID_ACTIVITY@";
+	public static final String projectAndroidVersionName = "@PROJECT_ANDROID_VERSIONNAME@";
+	public static final int projectAndroidVersionCode = @PROJECT_ANDROID_VERSIONCODE@;
+
+	public static final String projectDesktopGroupId = "@PROJECT_DESKTOP_GROUPID@";
+	public static final String projectDesktopArtifactId = "@PROJECT_DESKTOP_ARTIFACTID@";
+	public static final String projectDesktopVersion = "@PROJECT_DESKTOP_VERSION@";
+	public static final String projectDesktopName = "@PROJECT_DESKTOP_NAME@";
+	public static final String projectDesktopMainClass = "@PROJECT_DESKTOP_MAINCLASS@";
+
+	public static final String clanGroupId = "@CLAN_GROUPID@";
+	public static final String clanArtifactId = "@CLAN_ARTIFACTID@";
+	public static final String clanVersion = "@CLAN_VERSION@";
+	public static final String clanName = "@CLAN_NAME@";
+
+	public static final String clanClojureVersion = "@CLAN_CLOJURE_VERSION@";
+	public static final String clanLibgdxVersion = "@CLAN_LIBGDX_VERSION@";
+	public static final String clanAndroidVersion = "@CLAN_ANDROID_VERSION@";
+	public static final String clanNekoVersion = "@CLAN_NEKO_VERSION@";
+
+	public static final String clanCblGroupId = "@CLAN_CBL_GROUPID@";
+	public static final String clanCblArtifactId = "@CLAN_CBL_ARTIFACTID@";
+	public static final String clanCblVersion = "@CLAN_CBL_VERSION@";
+	public static final String clanCblName = "@CLAN_CBL_NAME@";
+	public static final String clanCblClassName = "@CLAN_CBL_CLASSNAME@";
+
+	public static final String clanInfoGroupId = "@CLAN_INFO_GROUPID@";
+	public static final String clanInfoArtifactId = "@CLAN_INFO_ARTIFACTID@";
+	public static final String clanInfoVersion = "@CLAN_INFO_VERSION@";
+	public static final String clanInfoName = "@CLAN_INFO_NAME@";
+}
+

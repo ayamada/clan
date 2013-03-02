@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+@AC_MSG_1@
+@AC_MSG_2@
+@AC_MSG_3@
+@AC_MSG_4@
+@AC_MSG_5@
+@AC_MSG_6@
+
+@AC_MSG_TMPL_1@
+@AC_MSG_TMPL_2@
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+      package="@PROJECT_ANDROID_PACKAGE@"
+      android:screenOrientation="landscape"
+      android:versionCode="@PROJECT_ANDROID_VERSIONCODE@"
+      android:versionName="@PROJECT_ANDROID_VERSIONNAME@"
+      android:installLocation="auto">
+    <uses-sdk android:minSdkVersion="9" android:targetSdkVersion="13" />
+    <!-- see http://developer.android.com/reference/android/Manifest.permission.html -->
+    <!--
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    -->
+    <application android:icon="@drawable/icon" android:label="@PROJECT_ANDROID_NAME@">
+        <activity android:name="@PROJECT_ANDROID_ACTIVITY@"
+                  android:label="@PROJECT_ANDROID_NAME@"
+                  android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+                  android:configChanges="keyboard|keyboardHidden|orientation">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>

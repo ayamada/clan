@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+@AC_MSG_1@
+@AC_MSG_2@
+@AC_MSG_3@
+@AC_MSG_4@
+@AC_MSG_5@
+@AC_MSG_6@
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>@PROJECT_ANDROID_GROUPID@</groupId>
+	<artifactId>@PROJECT_ANDROID_ARTIFACTID@</artifactId>
+	<version>@PROJECT_ANDROID_VERSION@</version>
+	<packaging>apk</packaging>
+	<name>@PROJECT_ANDROID_NAME@</name>
+
+	<dependencies>
+		<dependency>
+			<groupId>@CLAN_CBL_GROUPID@</groupId>
+			<artifactId>@CLAN_CBL_ARTIFACTID@</artifactId>
+			<version>@CLAN_CBL_VERSION@</version>
+		</dependency>
+
+		<dependency>
+			<groupId>@PROJECT_CAL_GROUPID@</groupId>
+			<artifactId>@PROJECT_CAL_ARTIFACTID@</artifactId>
+			<version>@PROJECT_CAL_VERSION@</version>
+		</dependency>
+
+		<dependency>
+			<groupId>@CLAN_INFO_GROUPID@</groupId>
+			<artifactId>@CLAN_INFO_ARTIFACTID@</artifactId>
+			<version>@CLAN_INFO_VERSION@</version>
+		</dependency>
+
+		<dependency>
+			<groupId>android</groupId>
+			<artifactId>clojure</artifactId>
+			<version>@CLAN_CLOJURE_VERSION@</version>
+		</dependency>
+
+		<!--
+		<dependency>
+			<groupId>neko</groupId>
+			<artifactId>neko</artifactId>
+			<version>@CLAN_NEKO_VERSION@</version>
+		</dependency>
+		-->
+		<dependency>
+			<groupId>neko</groupId>
+			<artifactId>neko</artifactId>
+			<version>@CLAN_NEKO_VERSION@</version>
+			<classifier>compiled</classifier>
+		</dependency>
+
+		<dependency>
+			<groupId>com.badlogic.gdx</groupId>
+			<artifactId>gdx-backend-android</artifactId>
+			<version>@CLAN_LIBGDX_VERSION@</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.android</groupId>
+			<artifactId>android</artifactId>
+			<version>@CLAN_ANDROID_VERSION@</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+	<!-- output APK doesn't contain version number, needed for Intellij Idea -->
+	<finalName>@PROJECT_ANDROID_ARTIFACTID@</finalName>
+	    
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.5.1</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+			<!-- Responsible for unpacking the shared libraries to the libs/ folder -->
+			<plugin>
+				<groupId>com.googlecode.mavennatives</groupId>
+				<artifactId>maven-nativedependencies-plugin</artifactId>
+				<version>0.0.7</version>
+				<configuration>
+					<nativesTargetDir>libs</nativesTargetDir>
+					<separateDirs>true</separateDirs>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- Responsible for being able to compile for Android -->
+			<plugin>
+				<groupId>com.jayway.maven.plugins.android.generation2</groupId>
+				<artifactId>android-maven-plugin</artifactId>
+				<version>3.5.0</version>
+				<configuration>
+					<androidManifestFile>./AndroidManifest.xml</androidManifestFile>
+					<assetsDirectory>../assets</assetsDirectory>
+					<resourceDirectory>../res</resourceDirectory>
+					<deleteConflictingFiles>true</deleteConflictingFiles>
+					<attachNativeArtifacts>true</attachNativeArtifacts>
+					<clearNativeArtifacts>false</clearNativeArtifacts>
+					<sdk>
+						<platform>17</platform>
+					</sdk>
+					<undeployBeforeDeploy>true</undeployBeforeDeploy>
+					<dex>
+						<jvmArguments>
+							<jvmArgument>-Xmx1024m</jvmArgument>
+						</jvmArguments>
+					</dex>
+				</configuration>
+				<extensions>true</extensions>
+				<executions>
+					<execution>
+						<id>deploy-on-install</id>
+						<phase>install</phase>
+						<goals>
+							<goal>deploy</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>manifestUpdate</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>manifest-update</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>alignApk</id>
+						<phase>package</phase>
+						<goals>
+							<goal>zipalign</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+	<repositories>
+		<repository>
+			<id>mvnrepository</id>
+			<url>http://www.mvnrepository.com/archive</url>
+		</repository>
+		<repository>
+			<id>clojars.org</id>
+			<url>http://clojars.org/repo</url>
+		</repository>
+	</repositories>
+	<profiles>
+		<profile>
+			<id>release</id>
+			<!-- via this activation the profile is automatically used when the release is done with the maven release plugin -->
+			<activation>
+				<property>
+					<name>performRelease</name>
+					<value>true</value>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-jarsigner-plugin</artifactId>
+						<version>1.2</version>
+						<executions>
+							<execution>
+								<id>signing</id>
+								<goals>
+									<goal>sign</goal>
+									<goal>verify</goal>
+								</goals>
+								<phase>package</phase>
+								<inherited>true</inherited>
+								<configuration>
+									<removeExistingSignatures>true</removeExistingSignatures>
+									<archiveDirectory />
+									<includes>
+										<include>${project.build.directory}${file.separator}${project.artifactId}.apk</include>
+									</includes>
+									<keystore>${sign.keystore}</keystore>
+									<storepass>${sign.storepass}</storepass>
+									<keypass>${sign.keypass}</keypass>
+									<alias>${sign.alias}</alias>
+									<verbose>true</verbose>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<!-- the signed apk then needs to be zipaligned and we activate proguard and we run the manifest update -->
+					<plugin>
+						<groupId>com.jayway.maven.plugins.android.generation2</groupId>
+						<artifactId>android-maven-plugin</artifactId>
+						<version>3.5.0</version>
+						<inherited>true</inherited>
+						<configuration>
+							<sign>
+								<debug>false</debug>
+							</sign>
+							<zipalign>
+								<skip>false</skip>
+								<verbose>true</verbose>
+								<inputApk>${project.build.directory}${file.separator}${project.artifactId}.apk</inputApk>
+								<outputApk>${project.build.directory}${file.separator}${project.artifactId}-signed-aligned.apk
+								</outputApk>
+							</zipalign>
+							<manifest>
+								<debuggable>false</debuggable>
+								<versionCodeAutoIncrement>true</versionCodeAutoIncrement>
+							</manifest>
+							<proguard>
+								<skip>false</skip>
+							</proguard>
+						</configuration>
+						<executions>
+							<execution>
+								<id>manifestUpdate</id>
+								<phase>process-resources</phase>
+								<goals>
+									<goal>manifest-update</goal>
+								</goals>
+							</execution>
+							<execution>
+								<id>alignApk</id>
+								<phase>package</phase>
+								<goals>
+									<goal>zipalign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>build-helper-maven-plugin</artifactId>
+						<version>1.7</version>
+						<configuration>
+							<artifacts>
+								<artifact>
+									<file>${project.build.directory}${file.separator}${project.artifactId}-signed-aligned.apk</file>
+									<type>apk</type>
+									<classifier>signed-aligned</classifier>
+								</artifact>
+								<artifact>
+									<file>${project.build.directory}${file.separator}proguard${file.separator}mapping.txt</file>
+									<type>map</type>
+									<classifier>release</classifier>
+								</artifact>
+							</artifacts>
+						</configuration>
+						<executions>
+							<execution>
+								<id>attach-signed-aligned</id>
+								<phase>package</phase>
+								<goals>
+									<goal>attach-artifact</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+</project>
+<!-- vim:set ts=2 sts=2 sw=2 noet: -->

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+@AC_MSG_1@
+@AC_MSG_2@
+@AC_MSG_3@
+@AC_MSG_4@
+@AC_MSG_5@
+@AC_MSG_6@
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>@CLAN_CBL_GROUPID@</groupId>
+	<artifactId>@CLAN_CBL_ARTIFACTID@</artifactId>
+	<version>@CLAN_CBL_VERSION@</version>
+	<packaging>jar</packaging>
+	<name>@CLAN_CBL_NAME@</name>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>@CLAN_INFO_GROUPID@</groupId>
+			<artifactId>@CLAN_INFO_ARTIFACTID@</artifactId>
+			<version>@CLAN_INFO_VERSION@</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.badlogic.gdx</groupId>
+			<artifactId>gdx</artifactId>
+			<version>@CLAN_LIBGDX_VERSION@</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.5.1</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+
+			<!--
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+			</plugin>
+			-->
+		</plugins>
+	</build>
+	<repositories>
+		<repository>
+			<id>mvnrepository</id>
+			<url>http://www.mvnrepository.com/archive</url>
+		</repository>
+		<repository>
+			<id>clojars.org</id>
+			<url>http://clojars.org/repo</url>
+		</repository>
+	</repositories>
+</project>
+<!-- vim:set noet: -->
