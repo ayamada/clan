@@ -175,8 +175,9 @@ sorry, currently only japanese.
     autoconf && ./configure
     make jar-exec
 
-このサンプルアプリの名前はdropです
-( http://code.google.com/p/libgdx/wiki/SimpleApp をベースにしています)。
+このサンプルアプリの名前はdrop(表示上の名前はspace drop)です。
+これは http://code.google.com/p/libgdx/wiki/SimpleApp を参考に
+clojureで書き直し、新要素を追加してあります。
 
 起動ロゴが出て消えるまでがclanが管理する部分です。
 ロゴ等はあとで好きに入れ替えましょう。
