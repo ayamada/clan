@@ -25,13 +25,15 @@ import com.badlogic.gdx.Files.FileType;
 public class Desktop {
 	public static void main(String[] args) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		config.title = "@PROJECT_CAL_NAME@";
+		config.title = "@PROJECT_DESKTOP_NAME@";
 		config.useGL20 = false;
 		//config.width = 480;
 		//config.height = 320;
 		config.addIcon("icon/128x128.png", FileType.Internal);
 		config.addIcon("icon/32x32.png", FileType.Internal);
 		config.addIcon("icon/16x16.png", FileType.Internal);
+		// it is for disable boot-screen.
+		//new LwjglApplication(new @PROJECT_CAL_CLASSNAME@(), config);
 		new LwjglApplication(
 				new BootLoader(
 					null,
