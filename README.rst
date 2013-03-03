@@ -708,6 +708,12 @@ I cannot press 'E' key on real-android-machine. / android実機でEキーなん�
    自分でコードをいじれ。もしくはbluetoothキーボードを用意。
 
 
+How do license? / ライセンスどうすればいい？
+   see http://doc.tir.ne.jp/devel/clan/license (sorry, use translator).
+
+   http://doc.tir.ne.jp/devel/clan/license を見てください。
+
+
 What is CLAN logo? / CLANのロゴは何？
    This is my family emblem. Change more better logo on later.
    (because it is too cutting corners.) logo's emblem part came from
@@ -721,9 +727,9 @@ What is CLAN logo? / CLANのロゴは何？
 
 
 What is assets of sample game? / サンプルゲームの画像や音は何？
-   all assets were made by me. license is EPL-1.0, similar clan.
+   all assets were made by me.
 
-   自作した。全部俺。ライセンスはclanと同様、EPL-1.0とする。
+   自作した。全部俺。
 
 お願い
 ------
@@ -770,11 +776,9 @@ Link
 License
 -------
 
-Copyright (c) atsuo yamada.
+CLAN have `Apache License 2.0 <http://www.apache.org/licenses/LICENSE-2.0>`_.
 
-Distributed under the Eclipse Public License, the same as Clojure.
-
-Which can be found in the file `epl-v10.html <epl-v10.html>`_.
+Which can be found in the file `LICENSE <LICENSE>`_.
 
 TODO
 ----
