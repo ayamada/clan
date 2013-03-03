@@ -698,6 +698,12 @@ I want to change boot screen more better. / その他ブート画面をもっと
    ``clan/cbl/src/main/java/jp/ne/tir/clan/BootLoader.java`` をいじる
 
 
+I dont want boot screen. / ブート画面を出したくない
+   You check to comment-outed area in ``clan/layout/*.in``.
+
+   ``clan/layout/*.in`` 内のコメントアウトされている部分を見てください。
+
+
 What is something wrong to collision-detection of sample-app? / サンプルアプリの当たり判定おかしくない？
    it can catch items by mouth only.
 
