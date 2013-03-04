@@ -723,9 +723,10 @@ What is something wrong to collision-detection of sample-app? / サンプルア�
 
 
 I cannot press 'E' key on real-android-machine. / android実機でEキーなんて押せねーよ！
-   you can edit code yourself, or use bluetooth keyboard.
+   you can edit code that add button on screen, or use bluetooth keyboard.
 
-   自分でコードをいじれ。もしくはbluetoothキーボードを用意。
+   自分でコードをいじって画面にボタンでも追加する。
+   もしくはbluetoothキーボードを用意。
 
 
 How do license? / ライセンスどうすればいい？
