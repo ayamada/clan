@@ -863,6 +863,7 @@ TODO
       -  boot nREPL-server at debug-time
       -  FPSが低下した時にEキーを取りこぼす時がある。Gdx.input.justTouched()と同じような処理が必要(おそらくキーリスナを作らないと駄目)
       -  一旦画面から指を離してから別のところをタッチした時に壺がワープする件に対策を入れる(justTouchedでチェックし、この時のみ徐々に移動させる？)
+      -  add more gimmick
 
    -  増やし忘れ対策 of PROJECT\_ANDROID\_VERSIONCODE in configure.in
    -  improve BootLoader
