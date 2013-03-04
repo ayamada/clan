@@ -725,6 +725,23 @@ I dont want boot screen. / ブート画面を出したくない
    ``clan/layout/*.in`` 内のコメントアウトされている部分を見てください。
 
 
+二回目起動時に、clojureの初期化がすごく早く終わる
+   androidの仕様で、apkからロードされたクラスは
+   (フラッシュ？)メモリ上にキャッシュされるようです。起動画面いらないじゃん…。
+   本当に起動画面いらない人は上記の「ブート画面を出したくない」をどうぞ。
+
+
+二回目起動時に、トップレベルのdefで定義した、以前に起動したプロセスの変数の内容が残っている。本体を起動するとなくなる
+   -  これはどうも、(android版)clojure固有の特性のようです。javaでは再現しない。
+   -  javaでは同じ問題が起こった時、単にstaticイニシャライザによって初期化されるだけなので、この現象は起こらないようだ。
+      -  http://mobileapplication.blog.fc2.com/blog-entry-3.html
+   -  (android版)clojureでは、プロセス終了時に値を書き込み、staticイニシャライザが二回目起動時に読み込み直している？少なくともそれと同じ結果が起こっているように見える。
+      -  しかし本当にそうなのかはもっと調査が必要
+   -  この挙動が保証されたものであるなら便利に使えるが、そうでないなら利用するのは危険である。
+      -  androidのドキュメントおよびandroid版clojureのソースを調べる必要あり。
+   -  もしこの現象が安全なもので、なおかつjava側からもこの現象を利用する方法があるなら、二回目起動時は起動画面をスキップするようにしたいところ(長いから)
+
+
 What is something wrong to collision-detection of sample-app? / サンプルアプリの当たり判定おかしくない？
    it can catch items by mouth only.
 
@@ -832,7 +849,11 @@ TODO
          (要は開発時のみINTERNETとWRITE\_EXTERNAL\_STORAGEを有効にしたい的な)
 
    -  provide jp.ne.tir.clan.util
+
       -  内容は、よく使うマクロ定義とか、ブートジングルのオンオフ関数とか
+
+   -  android実機では、二回目起動時はブート画面を出さずに素早く起動するようにする。またutilとして、次回起動時にあえてまたブート画面を出すようにする関数を提供する
+
    -  collecting and documentation to know-how in clojure(for android),
       libgdx, android, neko
    -  refactoring sample app
