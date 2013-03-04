@@ -675,7 +675,7 @@ How to upgrade CLAN / CLANバージョンアップのやりかた
 
 
 Where is save data of Preferences / Preferences の実データの保存先
-   -  on Android, there is in preferences of android.
+   -  on Android, there is in SharedPreferences.
       it delete by uninstall app.
    -  on Windows, there is in ``C:\Users\{USERNAME}\.prefs\{PREFNAME}\``.
       WARNING: ``.prefs`` is shared by other libgdx apps.
@@ -684,7 +684,7 @@ Where is save data of Preferences / Preferences の実データの保存先
       WARNING: ``.prefs`` is shared by other libgdx apps.
       PREFNAME must have unique name!
 
-   -  androidでは、androidのpreferences内。アプリアンインストールで削除される。
+   -  androidでは、SharedPreferences内。アプリアンインストールで削除される。
    -  windowsでは、 ``C:\Users\{USERNAME}\.prefs\{PREFNAME}\`` 内。
       androidとは違い、他のlibgdx利用アプリと共通なので、
       PREFNAMEはきちんとuniqueな名前にする必要がある！
