@@ -23,6 +23,11 @@
 (def ^:const macron-is-fn? false) ; for stacktrace
 
 (def ^:const pref-name "drop")
+ * prefs = Gdx.app.getPreferences(
+ *     "CBL-"+Info/projectGroupId
+ *     +"-"+Info/projectArtifactId
+ *     +"-"+Info/projectClassifier);
+
 
 (def ^:const assets-dir "drop")
 
@@ -136,7 +141,10 @@
     (reset! a-music bgm)))
 
 (defn change-volume! [on-off]
-  (let [cbl-pref (.. Gdx app (getPreferences "CBL"))]
+  (let [pref-name (str "CBL-" Info/projectGroupId "-" Info/projectArtifactId
+                       "-" Info/projectClassifier) ; see BootLoader.java
+        cbl-pref (.. Gdx app (getPreferences pref-name))]
+
     (.putBoolean cbl-pref "PLAY_JINGLE" on-off)
     (.flush cbl-pref))
   (pref! :volume-off? (not on-off))

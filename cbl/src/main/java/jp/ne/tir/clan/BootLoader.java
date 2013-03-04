@@ -7,7 +7,11 @@ package jp.ne.tir.clan;
  * メモ:
  * 外部より以下を実行する事で、ジングル音を無効にできる。
  * (これはアプリ本体の設定時に音声を無しにした時等に、同時に変更される想定)
- * prefs = Gdx.app.getPreferences("CBL");
+ * prefs = Gdx.app.getPreferences(
+ *     "CBL-"+Info/projectGroupId
+ *     +"-"+Info/projectArtifactId
+ *     +"-"+Info/projectClassifier);
+ * +Info/projectGroupId+"-"+Info/pr);
  * prefs.putBoolean("PLAY_JINGLE", bool);
  * prefs.flush();
  */
@@ -271,7 +275,10 @@ public class BootLoader implements ApplicationListener {
 		camera = new OrthographicCamera();
 		jingle = solveJingle();
 		console = new Console(font, batch);
-		prefs = Gdx.app.getPreferences("CBL");
+		prefs = Gdx.app.getPreferences(
+				"CBL-"+Info/projectGroupId
+				+"-"+Info/projectArtifactId
+				+"-"+Info/projectClassifier);
 	}
 
 	private void disposeTrue () {
