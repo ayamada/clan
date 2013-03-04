@@ -5,15 +5,14 @@ package jp.ne.tir.clan;
  * ごまかす為のブートエフェクト類を出すモジュールです。
  *
  * メモ:
- * 外部より以下を実行する事で、ジングル音を無効にできる。
- * (これはアプリ本体の設定時に音声を無しにした時等に、同時に変更される想定)
- * prefs = Gdx.app.getPreferences(
- *     "CBL-"+Info/projectGroupId
- *     +"-"+Info/projectArtifactId
- *     +"-"+Info/projectClassifier);
- * +Info/projectGroupId+"-"+Info/pr);
- * prefs.putBoolean("PLAY_JINGLE", bool);
- * prefs.flush();
+ * calより以下を実行する事で、ジングル音の無効/有効を変更できる。
+ * これはアプリ本体の設定時に音声を無しにした時等に、同時に変更される想定。
+ * (doto (.. Gdx app (getPreferences (str "CBL-" Info/projectGroupId
+ *                                        "-" Info/projectArtifactId
+ *                                        "-" Info/projectClassifier)))
+ *   (.putBoolean "PLAY_JINGLE" true-or-false)
+ *   (.flush)) ; see BootLoader.java
+ * TODO: これは将来、 jp.ne.tir.clan.util として提供する
  */
 
 import com.badlogic.gdx.Gdx;
@@ -276,9 +275,9 @@ public class BootLoader implements ApplicationListener {
 		jingle = solveJingle();
 		console = new Console(font, batch);
 		prefs = Gdx.app.getPreferences(
-				"CBL-"+Info/projectGroupId
-				+"-"+Info/projectArtifactId
-				+"-"+Info/projectClassifier);
+				"CBL-"+Info.projectGroupId
+				+"-"+Info.projectArtifactId
+				+"-"+Info.projectClassifier);
 	}
 
 	private void disposeTrue () {
