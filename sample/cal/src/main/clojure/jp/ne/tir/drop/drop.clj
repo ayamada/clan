@@ -22,12 +22,9 @@
 (def ^:const do-prof? false) ; see http://doc.intra.tir.ne.jp/devel/clan/memo
 (def ^:const macron-is-fn? false) ; for stacktrace
 
-(def ^:const pref-name "drop")
- * prefs = Gdx.app.getPreferences(
- *     "CBL-"+Info/projectGroupId
- *     +"-"+Info/projectArtifactId
- *     +"-"+Info/projectClassifier);
-
+(def ^:const pref-name (str "PREF-" Info/projectGroupId
+                            "-" Info/projectArtifactId
+                            "-" Info/projectClassifier)) ; must be unique
 
 (def ^:const assets-dir "drop")
 
