@@ -655,29 +655,41 @@ My app is too slow on android-real-machine. / android実機で超遅い
 
 
 Why cannot I compile ``*.clj``, it was skipped. / なぜか ``*.clj`` がスキップされてコンパイルされない
-   set to encoding = utf-8. This is spec of clojure-maven-plugin
-   probably.
+   set to encoding = utf-8,
+   or add string like ``-Dfile.encoding=utf-8`` to env-variable of MAVEN_OPTS.
+   This is spec of clojure-maven-plugin probably.
 
-   文字コードをutf-8にしてみる。clojure-maven-pluginの仕様のようです。
+   文字コードをutf-8にしてみる。
+   もしくは、環境変数MAVEN_OPTSに ``-Dfile.encoding=utf-8``
+   的な指定を追加してみる。
+   clojure-maven-pluginの仕様のようです。
 
 
 How to upgrade CLAN / CLANバージョンアップのやりかた
-   replace ``clan/`` directory, or ``git pull`` on ``clan/``
-   directory. but, you must check to ChangeLog for incompatible
-   changes at before.
+   replace ``clan/`` directory, or ``git pull`` on ``clan/`` directory.
+   but, you must check to ChangeLog for incompatible changes at before.
 
-   ``clan/`` ディレクトリを丸ごと新しいものに交換する。 もしくは
-   ``clan/`` ディレクトリ内で ``git pull`` を実行。
+   ``clan/`` ディレクトリを丸ごと新しいものに交換する。
+   もしくは ``clan/`` ディレクトリ内で ``git pull`` を実行。
    だが先にChangeLogを見て、非互換な変更がないか確認する事。
 
 
-Where is save data for desktop jar/exe / デスクトップ向けjar/exeのセーブデータの場所
-   it saves ``C:\Users\{USERNAME}\.pref\`` (for windows), or ~/.pref/
-   (other unix like OS). point is .prefs in home-directory by OS.
+Where is save data of Preferences / Preferences の実データの保存先
+   -  on Android, there is in preferences of android.
+      it delete by uninstall app.
+   -  on Windows, there is in ``C:\Users\{USERNAME}\.prefs\{PREFNAME}\``.
+      WARNING: ``.prefs`` is shared by other libgdx apps.
+      PREFNAME must have unique name!
+   -  on othre desktop OS, there is in ``~/.prefs/{PREFNAME}/``.
+      WARNING: ``.prefs`` is shared by other libgdx apps.
+      PREFNAME must have unique name!
 
-   windowsなら、 ``C:\ユーザー\{ユーザ名}\.pref\`` 、
-   windows以外なら、 ~/.pref/ 。
-   要はosの認識するホームディレクトリにある .prefs 。
+   -  androidでは、androidのpreferences内。アプリアンインストールで削除される。
+   -  windowsでは、 ``C:\Users\{USERNAME}\.prefs\{PREFNAME}\`` 内。
+      androidとは違い、他のlibgdx利用アプリと共通なので、
+      PREFNAMEはきちんとuniqueな名前にする必要がある！
+   -  windows以外のdesktopでは、 ``~/.prefs/{PREFNAME}/`` 内。
+      PREFNAMEについてはwindowsと同じ注意が必要！
 
 
 I want to change/erase background console output. / 背景のコンソール出力を変更したい/表示させたくない
