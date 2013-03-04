@@ -150,7 +150,9 @@ public class BootLoader implements ApplicationListener {
 			}
 		}
 		public void dump () {
+			// it is destractive!
 			Gdx.app.debug("CBL", "*** CBL LOG DUMP start ***");
+			bufs.removeLast(); // oldest line is empty
 			while (bufs.size() != 0) {
 				Gdx.app.debug("CBL", bufs.removeLast().toString());
 			}
