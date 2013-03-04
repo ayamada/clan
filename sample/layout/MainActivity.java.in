@@ -49,7 +49,7 @@ public class MainActivity extends AndroidApplication {
 								throw new RuntimeException("failed to initialize at clojure");
 							}
 						}
-					},
+					}, // NB: it must can to run another threads.
 					new Runnable() {
 						@Override
 						public void run() {
@@ -61,7 +61,7 @@ public class MainActivity extends AndroidApplication {
 								throw new RuntimeException("failed to initialize at neko");
 							}
 						}
-					},
+					}, // NB: it is certified to run main thread.
 					new Callable<ApplicationListener>() {
 						@Override public ApplicationListener call() { return new @PROJECT_CAL_CLASSNAME@(); }
 					}),
