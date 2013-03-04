@@ -20,7 +20,7 @@
 ;; ----------------------------------------------------------------
 ;; *** consts ***
 (def ^:const do-prof? false) ; see http://doc.intra.tir.ne.jp/devel/clan/memo
-(def ^:const macron-is-fn? false) ; for stacktrace
+(def ^:const definline-is-fn? false) ; for stacktrace
 
 (def ^:const pref-name (str "PREF-" Info/projectGroupId
                             "-" Info/projectArtifactId
@@ -56,23 +56,22 @@
 
 ;; ----------------------------------------------------------------
 ;; *** misc utilities ***
-;; macro as fn for profiler, cannot use & in args
-(defmacro defmacron [mname margs mbody]
-  (if macron-is-fn?
-    (let [tmp-mname (gensym mname)
-          fn-body `(~tmp-mname ~@margs)]
+;; definline as fn for profiler, cannot use & in args
+(defmacro definline- [mname & mdecl]
+  (if definline-is-fn?
+    (let [tmp-mname (gensym mname)]
       `(do
-         (defmacro ~tmp-mname ~margs ~mbody)
-         (defn ~mname ~margs ~fn-body)))
-    (list 'defmacro mname margs mbody)))
+         (definline ~tmp-mname ~@mdecl)
+         (defn ~mname [& args#] (apply ~tmp-mname args#))))
+    `(definline ~mname ~@mdecl)))
 
 ;; all asset files are in "assets/ASSETS-DIR/" for safety.
 (defn assets-file ^FileHandle [path]
   (.. Gdx files (internal (str assets-dir "/" path))))
 
-(defmacron get-delta [] `(* (.. Gdx graphics (getDeltaTime)) speed-level))
+(definline- get-delta [] `(* (.. Gdx graphics (getDeltaTime)) speed-level))
 
-(defmacron clamp-num [min-n n max-n]
+(definline- clamp-num [min-n n max-n]
   `(let [min-n# ~min-n n# ~n max-n# ~max-n
          n2# (if min-n# (max min-n# n#) n#)]
      (if max-n# (min n2# max-n#) n2#)))
@@ -102,11 +101,11 @@
 ;; but it may limited to use only about 1-2k for safety.
 (def a-prefs (atom {}))
 
-(defmacron pref [kwd] `^Preferences(~kwd @a-prefs))
+(definline- pref [kwd] `^Preferences(~kwd @a-prefs))
 
-(defmacron pref! [kwd new-val] `(swap! a-prefs merge {~kwd ~new-val}))
+(definline- pref! [kwd new-val] `(swap! a-prefs merge {~kwd ~new-val}))
 
-(defmacron get-gdx-pref [] `(.. Gdx app (getPreferences pref-name)))
+(definline- get-gdx-pref [] `(.. Gdx app (getPreferences pref-name)))
 
 (defn load-pref-from-storage! []
   (let [^Preferences gdx-pref (get-gdx-pref)
@@ -138,21 +137,20 @@
     (reset! a-music bgm)))
 
 (defn change-volume! [on-off]
-  (let [pref-name (str "CBL-" Info/projectGroupId "-" Info/projectArtifactId
-                       "-" Info/projectClassifier) ; see BootLoader.java
-        cbl-pref (.. Gdx app (getPreferences pref-name))]
-
-    (.putBoolean cbl-pref "PLAY_JINGLE" on-off)
-    (.flush cbl-pref))
+  (doto (.. Gdx app (getPreferences (str "CBL-" Info/projectGroupId
+                                         "-" Info/projectArtifactId
+                                         "-" Info/projectClassifier)))
+    (.putBoolean "PLAY_JINGLE" on-off)
+    (.flush)) ; see BootLoader.java
   (pref! :volume-off? (not on-off))
-  (if (pref :volume-off?) (.stop ^Music @a-music) (.play ^Music @a-music)))
+  (if on-off (.play ^Music @a-music) (.stop ^Music @a-music)))
 
 
 ;; ----------------------------------------------------------------
 ;; *** gdx's batch ***
 (def a-batch (atom nil))
 
-(defmacron batch [] `^SpriteBatch@a-batch)
+(definline- batch [] `^SpriteBatch@a-batch)
 
 (defn init-batch! []
   (let [b (SpriteBatch.)] (register-disposer! b) (reset! a-batch b)))
@@ -170,16 +168,16 @@
 (def a-camera (atom nil))
 (def ^Vector2 screen-rect (Vector2.))
 
-(defmacron camera [] `^OrthographicCamera@a-camera)
+(definline- camera [] `^OrthographicCamera@a-camera)
 
 (defn init-camera! [] (reset! a-camera (OrthographicCamera.)))
 
-(defmacron get-screen-width [] `(.x screen-rect))
-(defmacron get-screen-height [] `(.y screen-rect))
-(defmacron update-screen-rect! [w h]
+(definline- get-screen-width [] `(.x screen-rect))
+(definline- get-screen-height [] `(.y screen-rect))
+(definline- update-screen-rect! [w h]
   `(do (set! (.x screen-rect) ~w) (set! (.y screen-rect) ~h)))
 
-(defmacron get-touch-pos []
+(definline- get-touch-pos []
   `(let [^Vector3 pos# (Vector3.)]
      (.. pos# (set (.. Gdx input (getX)) (.. Gdx input (getY)) 0))
      (.. ^OrthographicCamera (camera) (unproject pos#))
@@ -191,7 +189,7 @@
 (def a-font (atom nil))
 (def a-font-line-height (atom nil))
 
-(defmacron font [] `^BitmapFont@a-font)
+(definline- font [] `^BitmapFont@a-font)
 
 (defn init-font! []
   (let [f (BitmapFont.)]
@@ -242,7 +240,7 @@
     (reset! a-volume-button-on-tex on-tex)
     (reset! a-volume-button-off-tex off-tex)))
 
-(defmacron get-volume-button-tex []
+(definline- get-volume-button-tex []
   `^Texture@(if (pref :volume-off?)
               a-volume-button-off-tex
               a-volume-button-on-tex))
@@ -256,13 +254,13 @@
         y (- (get-screen-height) h 1)]
     (.set volume-button-rect x y (float w) (float h))))
 
-(defmacron draw-volume-button! []
+(definline- draw-volume-button! []
   `(.draw ^SpriteBatch (batch)
           ^Texture (get-volume-button-tex)
           (.x volume-button-rect)
           (.y volume-button-rect)))
 
-(defmacron process-volume-button! [just-touched touch-x touch-y]
+(definline- process-volume-button! [just-touched touch-x touch-y]
   `(when (and
            ~just-touched
            (.contains volume-button-rect ~touch-x ~touch-y))
@@ -294,11 +292,12 @@
           (float 1)) ; height
     ))
 
-(defmacron update-player-max-x! []
+(definline- update-player-max-x! []
   `(reset! a-player-max-x (- (get-screen-width) @a-player-tex-width-half)))
-(defmacron update-player-locate-x! [x] `(set! (. player-hit-rect x) (float ~x)))
-(defmacron get-player-locate-x [] `(.x player-hit-rect))
-(defmacron clamp-player-locate-x [x]
+(definline- update-player-locate-x! [x]
+  `(set! (. player-hit-rect x) (float ~x)))
+(definline- get-player-locate-x [] `(.x player-hit-rect))
+(definline- clamp-player-locate-x [x]
   `(let [x# ~x
          min-x# @a-player-tex-width-half
          max-x# @a-player-max-x]
@@ -306,16 +305,16 @@
        (< x# min-x#) min-x#
        (< max-x# x#) max-x#
        :else x#)))
-(defmacron clamp-player-locate-x! []
+(definline- clamp-player-locate-x! []
   `(set! (. player-hit-rect x) (clamp-player-locate-x (get-player-locate-x))))
 
-(defmacron draw-player! []
+(definline- draw-player! []
   `(.draw ^SpriteBatch (batch)
           ^Texture @a-player-tex
           (float (- (.x player-hit-rect) @a-player-tex-width-half))
           (float (- (.y player-hit-rect) @a-player-tex-height))))
 
-(defmacron process-player! [is-touched touch-x touch-y]
+(definline- process-player! [is-touched touch-x touch-y]
   `(do
      ;; move by touch
      (when ~is-touched
@@ -351,13 +350,13 @@
   (reset! a-score-b-cache (BitmapFontCache. (font)))
   (reset! a-score-c-cache (BitmapFontCache. (font))))
 
-(defmacron solve-score-info [k]
+(definline- solve-score-info [k]
   `(case ~k
      :score-a [0 a-score-a-cache score-a-color]
      :score-b [1 a-score-b-cache score-b-color]
      :score-c [2 a-score-c-cache score-c-color]))
 
-(defmacron update-score! [score-key ^Long score]
+(definline- update-score! [score-key ^Long score]
   `(let [score-key# ~score-key
          score-str# (.toString ~score)
          [lv# a-cache# color#] (solve-score-info score-key#)
@@ -375,14 +374,14 @@
   (update-score! :score-b (pref :score-b))
   (update-score! :score-c (pref :score-c)))
 
-(defmacron inc-score! [item-key]
+(definline- inc-score! [item-key]
   `(let [item-desc# (~item-key item-table)
          score-key# (:type item-desc#)
          new-score# (+ 1 (pref score-key#))]
      (pref! score-key# new-score#)
      (update-score! score-key# new-score#)))
 
-(defmacron draw-score! []
+(definline- draw-score! []
   `(let [b# (batch)]
      (.draw ^BitmapFontCache @a-score-a-cache b#)
      (.draw ^BitmapFontCache @a-score-b-cache b#)
@@ -424,7 +423,7 @@
     (.set items-delete-screen-l-b-r x y z)
     (reset! a-items-delete-screen-width (+ z x))))
 
-(defmacron item-spawn []
+(definline- item-spawn []
   `(let [[k# desc#] (rand-nth (seq item-table))
          screen-width# (get-screen-width)
          screen-height# (get-screen-height)
@@ -444,7 +443,7 @@
          cd# (Rectangle. cd-x# cd-y# cd-w# cd-h#)]
      {:id k# :locate locate# :speed speed# :cd cd#}))
 
-(defmacron draw-items! []
+(definline- draw-items! []
   `(loop [items# @a-items]
      (when-not (empty? items#)
        (let [item# (first items#)
@@ -473,7 +472,7 @@
                 false)
          (recur (rest items#))))))
 
-(defmacron process-item! []
+(definline- process-item! []
   `(let [delta# (get-delta)
          next-timer# @a-items-next-spawn-nsec
          now# (TimeUtils/nanoTime)
@@ -560,9 +559,9 @@
         (float (/ (get-screen-height) 2)))
   (reset! a-star-dist (/ (+ (get-screen-width) (get-screen-height)) 2)))
 
-(defmacron distance->transparency [dist] `(Math/atan (/ ~dist 100)))
+(definline- distance->transparency [dist] `(Math/atan (/ ~dist 100)))
 
-(defmacron draw-background! []
+(definline- draw-background! []
   `(let [^SpriteBatch b# (batch)]
      (loop [stars# @a-background-stars]
        (when-not (empty? stars#)
@@ -575,7 +574,7 @@
            (recur (rest stars#)))))
      (.setColor b# (float 1) (float 1) (float 1) (float 1))))
 
-(defmacron star-spawn []
+(definline- star-spawn []
   `(let [tp# (+ 0.3 (rand))]
      {:angle (rand 360)
       :distance @a-star-dist
@@ -583,7 +582,7 @@
       :tp-cur (if (< 1 tp#) 1 tp#)
       :speed-level (+ 0.98 (rand 0.01))}))
 
-(defmacron process-background! []
+(definline- process-background! []
   `(let [screen-width# (get-screen-width)
          screen-height# (get-screen-height)
          interval# (get-delta)
@@ -628,7 +627,7 @@
 
 (defmacro when-debug [& bodies] (if Info/debug `(do ~@bodies) nil))
 
-(defmacron register-cache-map! [k text x y color]
+(definline- register-cache-map! [k text x y color]
   `(let [k# ~k
          x# ~x
          y# ~y
@@ -639,7 +638,7 @@
      (swap! a-console-cache-map merge entry#)
      (swap! a-console-cache-loc merge {k# (Vector2. x# y#)})))
 
-(defmacron register-cache-map-2! [k text color]
+(definline- register-cache-map-2! [k text color]
   `(do
      (register-cache-map! ~k ~text margin-x simple-console-draw-level ~color)
      (set! simple-console-draw-level
@@ -670,14 +669,14 @@
       (register-cache-map-2! :stars "BG-STARS: " color-console))
     ))
 
-(defmacron update-cache! [k text]
+(definline- update-cache! [k text]
   `(let [k# ~k
          ^BitmapFontCache cache# (k# @a-console-cache-map)
          ^Vector2 loc# (k# @a-console-cache-loc)]
      (when cache#
        (.setText cache# ~text (.x loc#) (.y loc#)))))
 
-(defmacron process-simple-console! []
+(definline- process-simple-console! []
   `(let [now# (TimeUtils/nanoTime)]
      (when (< @a-simple-console-timer now#)
        (reset! a-simple-console-timer (+ now# console-update-interval-nsec))
@@ -688,10 +687,10 @@
        (update-cache! :stars (str "BG-STARS: " (count @a-background-stars)))
        )))
 
-(defmacron draw-cache-if-exists [cache]
+(definline- draw-cache-if-exists [cache]
   `(let [^BitmapFontCache cache# ~cache] (when cache# (.draw cache# (batch)))))
 
-(defmacron draw-simple-console! []
+(definline- draw-simple-console! []
   `(loop [^BitmapFontCache cm# @a-console-cache-map]
      (when-not (empty? cm#)
        (draw-cache-if-exists (second (first cm#)))
@@ -721,7 +720,7 @@
       (.setText @a-eval-console-text eval-console-x @a-eval-console-y)
       (.setColor ^Color eval-console-color))))
 
-(defmacron pe-none! []
+(definline- pe-none! []
   `(when (.. Gdx input (isKeyPressed Input$Keys/E))
      (let [path# (eval '@#'jp.ne.tir.drop.al/eval-path)]
        (reset! a-eval-console-text "( loading file ... )")
@@ -734,7 +733,7 @@
            (reset! a-eval-console-text
                    "( cannot get thread, retry loading file ... )")
            (update-eval-console-text!))))))
-(defmacron pe-load! []
+(definline- pe-load! []
   `(when (future-done? @a-eval-console-future)
      (let [result# @@a-eval-console-future]
        (if (string? result#)
@@ -747,7 +746,7 @@
            (update-eval-console-text!)
            (reset! a-eval-console-status :done))))))
 
-(defmacron pe-eval! []
+(definline- pe-eval! []
   `(do
      (try
        (let [r# (binding [*ns* (find-ns 'jp.ne.tir.drop.drop)]
@@ -760,12 +759,12 @@
      (update-eval-console-text!)
      (reset! a-eval-console-status :done)))
 
-(defmacron pe-done! []
+(definline- pe-done! []
   ;; it is prevent to repeat key
   `(when-not (.. Gdx input (isKeyPressed Input$Keys/E))
      (reset! a-eval-console-status :none)))
 
-(defmacron process-eval-console! []
+(definline- process-eval-console! []
   (when Info/debug
     `(case @a-eval-console-status
        :none (pe-none!)
@@ -775,7 +774,7 @@
        (throw (RuntimeException. (str "no match status: "
                                       @a-eval-console-status))))))
 
-(defmacron draw-eval-console! []
+(definline- draw-eval-console! []
   (when Info/debug
     `(.draw ^BitmapFontCache @a-eval-console-fc (batch))))
 
@@ -802,7 +801,7 @@
 
 (defn drop-create []
   (when do-prof? (println "!!! do-prof? is true (slow) !!!"))
-  (when macron-is-fn? (println "!!! macron-is-fn? is true (slow) !!!"))
+  (when definline-is-fn? (println "!!! definline-is-fn? is true (slow) !!!"))
   (load-pref-from-storage!)
   (init-music!)
   (init-batch!)
