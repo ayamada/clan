@@ -643,6 +643,15 @@ CLAN自身のリリース手順
 FAQ
 ---
 
+How to use external library from clojars and etc / 外部ライブラリ追加したい
+   Now, add dependency to ``cal/pom.xml.in``.
+
+   今のところは、 ``cal/pom.xml.in`` にdependencyを追加してください。
+   他のdependencyのエントリをコピペする際には、
+   scopeがprovidedになってない事を確認する事。
+   providedになってたらバイナリに含まれない。compileにしとく。
+
+
 My app is too slow on android-real-machine. / android実機で超遅い
    enabling
    `*warn-on-reflection* <http://clojure.org/java_interop#Java%20Interop-Type%20Hints>`_,
