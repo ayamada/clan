@@ -20,7 +20,7 @@ public class Info {
 	public static String buildCompilerVersion = "";
 	/* dynamic-auto-generate-parameter end */
 
-	public static volatile String projectGroupId = "@PROJECT_GROUPID@";
+	public static String projectGroupId = "@PROJECT_GROUPID@";
 	public static String projectArtifactId = "@PROJECT_ARTIFACTID@";
 	public static String projectName = "@PROJECT_NAME@";
 	public static String projectVersion = "@PROJECT_VERSION@";
