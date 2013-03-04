@@ -821,6 +821,8 @@ TODO
       -  リリース版と開発版でAndroidManifest.xmlのuses-permissionの変更
          (要は開発時のみINTERNETとWRITE\_EXTERNAL\_STORAGEを有効にしたい的な)
 
+   -  provide jp.ne.tir.clan.util
+      -  内容は、よく使うマクロ定義とか、ブートジングルのオンオフ関数とか
    -  collecting and documentation to know-how in clojure(for android),
       libgdx, android, neko
    -  refactoring sample app
