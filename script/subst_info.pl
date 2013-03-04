@@ -48,7 +48,7 @@ sub main {
     while (1) {
       my $line = <$src_fh>;
       last if not defined $line;
-      if ($line =~ /^(\s+public static volatile) (\w+) (\w+) (\=) (.*)(\;\n)\z/) {
+      if ($line =~ /^(\s+public static) (\w+) (\w+) (\=) (.*)(\;\n)\z/) {
         my ($psf, $type, $var, $eq, $val, $delim) = ($1, $2, $3, $4, $5, $6);
         my $new_val = $subst_table->{$var};
         if (defined $new_val) {
