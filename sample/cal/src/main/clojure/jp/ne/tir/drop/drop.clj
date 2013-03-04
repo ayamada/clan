@@ -274,6 +274,8 @@
 (def a-player-tex-height (atom 0))
 (def a-player-max-x (atom 0))
 (def ^Rectangle player-hit-rect (Rectangle.))
+(def a-player-homing-level (atom 0))
+(def ^:const player-homing-level-max 16)
 
 (defn init-player! []
   (let [tex (Texture. (assets-file player-img-file))
@@ -314,14 +316,31 @@
           (float (- (.x player-hit-rect) @a-player-tex-width-half))
           (float (- (.y player-hit-rect) @a-player-tex-height))))
 
-(definline- process-player! [is-touched touch-x touch-y]
+(definline- process-player! [delta just-touched is-touched touch-x touch-y]
   `(do
      ;; move by touch
      (when ~is-touched
        (let [x# ~touch-x y# ~touch-y]
+         ;; prevent warp player at just-touched
+         (when ~just-touched
+           (reset! a-player-homing-level player-homing-level-max))
          ;; exclude to touch volume button
          (when-not (.contains volume-button-rect x# y#)
-           (update-player-locate-x! (clamp-player-locate-x x#)))))
+           (update-player-locate-x!
+             (clamp-player-locate-x
+               ;; prevent warp player at just-touched
+               (let [lv# @a-player-homing-level]
+                 (if (zero? lv#)
+                   x#
+                   (let [old-x# (.x player-hit-rect)
+                         delta# ~delta
+                         dist# (- x# old-x#)
+                         move-dist# (* dist# delta# (/ lv#))
+                         new-x# (+ old-x# move-dist#)]
+                     (if (or (< old-x# new-x# x#)
+                             (< x# new-x# old-x#))
+                       (do (reset! a-player-homing-level (- lv# 1)) new-x#)
+                       (do (reset! a-player-homing-level 0) x#))))))))))
      ;; move by keyboard
      (let [pressed-l# (.. Gdx input (isKeyPressed Input$Keys/LEFT))
            pressed-r# (.. Gdx input (isKeyPressed Input$Keys/RIGHT))]
@@ -329,7 +348,7 @@
                (and pressed-l# (not pressed-r#))
                (and (not pressed-l#) pressed-r#))
          (let [player-x# (get-player-locate-x)
-               delta# (get-delta)
+               delta# ~delta
                new-x# (clamp-player-locate-x (if pressed-l#
                                                (- player-x# delta#)
                                                (+ player-x# delta#)))]
@@ -472,8 +491,8 @@
                 false)
          (recur (rest items#))))))
 
-(definline- process-item! []
-  `(let [delta# (get-delta)
+(definline- process-item! [delta]
+  `(let [delta# ~delta
          next-timer# @a-items-next-spawn-nsec
          now# (TimeUtils/nanoTime)
          spawn?# (< next-timer# now#)
@@ -582,10 +601,10 @@
       :tp-cur (if (< 1 tp#) 1 tp#)
       :speed-level (+ 0.98 (rand 0.01))}))
 
-(definline- process-background! []
+(definline- process-background! [delta]
   `(let [screen-width# (get-screen-width)
          screen-height# (get-screen-height)
-         interval# (get-delta)
+         interval# ~delta
          result# (loop [stars# @a-background-stars rtmp# nil]
                    (if (empty? stars#)
                      rtmp#
@@ -842,11 +861,12 @@
         ^Vector3 pos (and is-touched (get-touch-pos))
         touch-x (and is-touched (.x pos))
         touch-y (and is-touched (.y pos))
+        delta (get-delta)
         ]
     (process-volume-button! just-touched touch-x touch-y)
-    (process-player! is-touched touch-x touch-y)
-    (process-item!)
-    (process-background!)
+    (process-player! delta just-touched is-touched touch-x touch-y)
+    (process-item! delta)
+    (process-background! delta)
     (process-simple-console!)
     (process-eval-console!)
     ))
