@@ -40,7 +40,7 @@ public class Desktop {
 					null,
 					new Callable<ApplicationListener>() {
 						@Override public ApplicationListener call() { return new @PROJECT_CAL_CLASSNAME@(); }
-					}),
+					}), // NB: it must can to run another threads.
 				config);
 	}
 }
