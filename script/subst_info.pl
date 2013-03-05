@@ -35,7 +35,7 @@ sub main {
   # 置換パラメータの用意
   my $subst_table = {
     debug => (not $release_flag),
-    buildNumber => oneline(`LANG=C date +%s.%N`),
+    buildNumber => oneline(`LANG=C date +%s`),
     buildDate => oneline(`LANG=C date`),
     buildEnv => oneline(`uname -a`),
     buildCompilerVersion => oneline(`javac -version 2>&1`),
