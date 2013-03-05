@@ -168,8 +168,7 @@ public class BootLoader implements ApplicationListener {
 
 	private static final String assetDir = "cbl"; // asset中の、 logo.png se.wav 等のあるdir
 	private SpriteBatch batch;
-	private Pixmap logoPixmap;
-	private Texture logo;
+	private Texture logo; // これは動的生成の為、pause()→resume()の度にdispose()と再生成を行わなくてはならない
 	private float logoFade;
 	private BitmapFont font;
 	private OrthographicCamera camera;
@@ -269,8 +268,9 @@ public class BootLoader implements ApplicationListener {
 	@Override
 	public void create () {
 		if (Info.debug) Gdx.app.setLogLevel(Application.LOG_DEBUG);
-		logoPixmap = solveLogoPixmap();
+		Pixmap logoPixmap = solveLogoPixmap();
 		logo = new Texture(logoPixmap);
+		logoPixmap.dispose();
 		font = solveLogoFont();
 		batch = new SpriteBatch();
 		camera = new OrthographicCamera();
@@ -289,8 +289,6 @@ public class BootLoader implements ApplicationListener {
 		// camera には dispose() はない
 		batch.dispose();
 		font.dispose();
-		logo.dispose();
-		logoPixmap.dispose();
 	}
 
 	@Override
@@ -356,11 +354,15 @@ public class BootLoader implements ApplicationListener {
 	@Override
 	public void pause () {
 		if (isClojureStarted()) { cal.pause(); return; }
+		logo.dispose();
 	}
 
 	@Override
 	public void resume () {
 		if (isClojureStarted()) { cal.resume(); return; }
+		Pixmap logoPixmap = solveLogoPixmap();
+		logo = new Texture(logoPixmap);
+		logoPixmap.dispose();
 	}
 
 	@Override
