@@ -324,6 +324,44 @@
      }))
 
 
+; ----------------------------------------------------------------
+;; *** space/drop button ***
+(def a-game-mode? (atom true))
+
+(defn init-space-button! [button]
+  (let [on-tex (Texture. (assets-file "sd_on.png"))
+        off-tex (Texture. (assets-file "sd_off.png"))]
+    (register-disposer! on-tex)
+    (register-disposer! off-tex)
+    (reset! (:a-on-off button) @a-game-mode?)
+    (reset! (:a-on-tex button) on-tex)
+    (reset! (:a-off-tex button) off-tex)))
+
+(defn update-space-button-rect! [button screen-w screen-h]
+  ;; it set to corner of up-right
+  (let [^Texture tex @(:a-on-tex button)
+        w (.getWidth tex)
+        h (.getHeight tex)
+        x (- screen-w w VOLUME-BUTTON-WIDTH)
+        y (- screen-h h 1)]
+    (.set ^Rectangle (:rect button) (float x) (float y) (float w) (float h))))
+
+(definline- process-space-button! [button]
+  `(let [b# ~button new-state# (not @a-game-mode?)]
+     (reset! (:a-on-off b#) new-state#)
+     (reset! a-game-mode? new-state#)))
+
+(defn register-space-button! []
+  (register-button!
+    {:key :space
+     :init init-space-button!
+     :update update-space-button-rect!
+     :pause identity
+     :resume identity
+     :just-touch process-space-button!
+     }))
+
+
 ;; ----------------------------------------------------------------
 ;; *** player ***
 (def a-player-tex (atom nil))
@@ -860,11 +898,13 @@
   (.. Gdx gl (glClear (. GL10 GL_COLOR_BUFFER_BIT)))
   (with-batch
     (draw-background!)
-    (draw-player!)
-    (draw-items!)
+    (when @a-game-mode?
+      (draw-player!)
+      (draw-items!))
     (draw-buttons!)
-    (draw-score!)
-    (draw-simple-console!)
+    (when @a-game-mode?
+      (draw-score!)
+      (draw-simple-console!))
     (draw-eval-console!)
     ))
 
@@ -883,6 +923,7 @@
   (init-font!)
   (init-score!)
   (register-volume-button!)
+  (register-space-button!)
   (init-buttons!)
   (init-player!)
   (init-items!)
@@ -939,10 +980,12 @@
           touch-y (.y touch-pos)
           ]
       (process-buttons! just-touched? touch-x touch-y)
-      (process-player! delta prev-touched? is-touched? touch-x touch-y)
-      (process-item! delta)
+      (when @a-game-mode?
+        (process-player! delta prev-touched? is-touched? touch-x touch-y)
+        (process-item! delta))
       (process-background! delta)
-      (process-simple-console!)
+      (when @a-game-mode?
+        (process-simple-console!))
       (process-eval-console!)
       (when (not= prev-touched? is-touched?)
         (reset! a-touched? is-touched?)))
