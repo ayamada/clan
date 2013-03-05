@@ -434,10 +434,6 @@
          score-str# (.toString ~score)
          [lv# a-cache# color#] (solve-score-info score-key#)
          line-height# @a-font-line-height
-         ;x# (- (get-screen-width)
-         ;      1
-         ;      (.width (.getBounds ^BitmapFont (font) score-str#)))
-         ;y# (- VOLUME-BUTTON-HEIGHT 1 (* line-height# lv#))
          score-width# (.width (.getBounds ^BitmapFont (font) score-str#))
          x# (- (get-screen-width) 8 score-width# (* 48 lv#))
          y# (+ 2 line-height#)]
@@ -915,24 +911,26 @@
 
 
 (defn drop-render []
-  (process-draw!)
-  (update-touch-pos!)
-  (let [delta (get-delta)
-        prev-touched? @a-touched?
-        is-touched? (.. Gdx input (isTouched))
-        just-touched? (.. Gdx input (justTouched))
-        _ (and (or is-touched? just-touched?) (update-touch-pos!))
-        touch-x (.x touch-pos)
-        touch-y (.y touch-pos)
-        ]
-    (process-buttons! just-touched? touch-x touch-y)
-    (process-player! delta prev-touched? is-touched? touch-x touch-y)
-    (process-item! delta)
-    (process-background! delta)
-    (process-simple-console!)
-    (process-eval-console!)
-    (when (not= prev-touched? is-touched?)
-      (reset! a-touched? is-touched?))))
+  (try
+    (process-draw!)
+    (update-touch-pos!)
+    (let [delta (get-delta)
+          prev-touched? @a-touched?
+          is-touched? (.. Gdx input (isTouched))
+          just-touched? (.. Gdx input (justTouched))
+          _ (and (or is-touched? just-touched?) (update-touch-pos!))
+          touch-x (.x touch-pos)
+          touch-y (.y touch-pos)
+          ]
+      (process-buttons! just-touched? touch-x touch-y)
+      (process-player! delta prev-touched? is-touched? touch-x touch-y)
+      (process-item! delta)
+      (process-background! delta)
+      (process-simple-console!)
+      (process-eval-console!)
+      (when (not= prev-touched? is-touched?)
+        (reset! a-touched? is-touched?)))
+    (catch Exception e (drop-pause) (throw e))))
 
 
 (defn drop-pause []
