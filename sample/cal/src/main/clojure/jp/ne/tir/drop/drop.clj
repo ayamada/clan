@@ -248,11 +248,12 @@
 
 (definline- process-buttons! [just-touched? touch-x touch-y]
   `(when ~just-touched?
-     (do-each
-       @a-buttons
-       [button#]
-       (when (.contains ^Rectangle (:rect button#) ~touch-x ~touch-y)
-         ((:just-touch button#) button#)))))
+     (let [x# ~touch-x y# ~touch-y]
+       (do-each
+         @a-buttons
+         [button#]
+         (when (.contains ^Rectangle (:rect button#) x# y#)
+           ((:just-touch button#) button#))))))
 
 (definline- draw-buttons! []
   `(do-each
@@ -294,10 +295,10 @@
         y (- screen-h h 2)]
     (.set ^Rectangle (:rect button) (float x) (float y) (float w) (float h))))
 
-(definline- process-space-button! [button]
-  `(let [b# ~button new-state# (not @a-game-mode?)]
-     (reset! (:a-on-off b#) new-state#)
-     (reset! a-game-mode? new-state#)))
+(defn process-space-button! [button]
+  (let [new-state (not @a-game-mode?)]
+    (reset! (:a-on-off button) new-state)
+    (reset! a-game-mode? new-state)))
 
 (defn register-space-button! []
   (register-button!
@@ -333,14 +334,14 @@
         y (- screen-h h 6)]
     (.set ^Rectangle (:rect button) (float x) (float y) (float w) (float h))))
 
-(definline- process-license-button! [button]
-  `(let [url# (cond
-                (= Application$ApplicationType/Android
-                   (.. Gdx app (getType))) url-license-apk
-                (.endsWith ^String (System/getProperty "sun.java.command" "")
-                           ".exe") url-license-exe
-                :else url-license-jar)]
-     (.openURI ^Net (.. Gdx app (getNet)) url#)))
+(defn process-license-button! [button]
+  (let [url (cond
+              (= Application$ApplicationType/Android
+                 (.. Gdx app (getType))) url-license-apk
+              (.endsWith ^String (System/getProperty "sun.java.command" "")
+                         ".exe") url-license-exe
+              :else url-license-jar)]
+    (.openURI ^Net (.. Gdx app (getNet)) url)))
 
 (defn register-license-button! []
   (register-button!
@@ -402,10 +403,9 @@
         y (- (.y ^Rectangle (get-button-rect :space)) h 2)]
     (.set ^Rectangle (:rect button) (float x) (float y) (float w) (float h))))
 
-(definline- process-volume-button! [button]
-  `(let [b# ~button]
-     (swap! (:a-on-off b#) not)
-     (change-volume! @(:a-on-off b#))))
+(defn process-volume-button! [button]
+  (swap! (:a-on-off button) not)
+  (change-volume! @(:a-on-off button)))
 
 (defn register-volume-button! []
   (register-button!
@@ -437,8 +437,8 @@
         y (- (.y ^Rectangle (get-button-rect :space)) h 4)]
     (.set ^Rectangle (:rect button) (float x) (float y) (float w) (float h))))
 
-(definline- process-clan-button! [button]
-  `(.openURI ^Net (.. Gdx app (getNet)) clan-url))
+(defn process-clan-button! [button]
+  (.openURI ^Net (.. Gdx app (getNet)) clan-url))
 
 (defn register-clan-button! []
   (register-button!
