@@ -1,7 +1,8 @@
 (ns jp.ne.tir.drop.drop
   (:import
     (jp.ne.tir.clan Info)
-    (com.badlogic.gdx Gdx Preferences Input$Keys Net)
+    (com.badlogic.gdx Gdx Preferences Input$Keys Net
+                      Application$ApplicationType)
     (com.badlogic.gdx.audio Music Sound)
     (com.badlogic.gdx.files FileHandle)
     (com.badlogic.gdx.graphics GL10 Camera OrthographicCamera Texture Color
@@ -286,8 +287,8 @@
   (let [^Texture tex @(:a-on-tex button)
         w (.getWidth tex)
         h (.getHeight tex)
-        x (- screen-w w 1)
-        y (- screen-h h 1)]
+        x (- screen-w w 2)
+        y (- screen-h h 2)]
     (.set ^Rectangle (:rect button) (float x) (float y) (float w) (float h))))
 
 (definline- process-space-button! [button]
@@ -307,35 +308,45 @@
 
 
 ; ----------------------------------------------------------------
-;; *** clan button ***
-(def ^:const clan-url "https://github.com/ayamada/clan")
+;; *** license button ***
+(def ^:const url-license-prefix
+  "https://github.com/ayamada/clan/raw/0.0.2-EXPERIMENTAL/doc/drop/")
+(def ^:const url-license-apk (str url-license-prefix "license_apk.txt"))
+(def ^:const url-license-jar (str url-license-prefix "license_jar.txt"))
+(def ^:const url-license-exe (str url-license-prefix "license_exe.txt"))
 
-(defn init-clan-button! [button]
-  (let [tex (Texture. (assets-file "clan.png"))]
+(defn init-license-button! [button]
+  (let [tex (Texture. (assets-file "license.png"))]
     (register-disposer! tex)
     (reset! (:a-on-tex button) tex)
     (reset! (:a-off-tex button) tex)))
 
-(defn update-clan-button-rect! [button screen-w screen-h]
+(defn update-license-button-rect! [button screen-w screen-h]
   ;; it set to corner of up-right
   (let [^Texture tex @(:a-on-tex button)
         w (.getWidth tex)
         h (.getHeight tex)
-        x (- screen-w w 1 (.width ^Rectangle (get-button-rect :space)))
-        y (- screen-h h 1)]
+        x (- (.x ^Rectangle (get-button-rect :space)) w 4)
+        y (- screen-h h 6)]
     (.set ^Rectangle (:rect button) (float x) (float y) (float w) (float h))))
 
-(definline- process-clan-button! [button]
-  `(.openURI ^Net (.. Gdx app (getNet)) clan-url))
+(definline- process-license-button! [button]
+  `(let [url# (cond
+                (= Application$ApplicationType/Android
+                   (.. Gdx app (getType))) url-license-apk
+                (.endsWith ^String (System/getProperty "sun.java.command" "")
+                           ".exe") url-license-exe
+                :else url-license-jar)]
+     (.openURI ^Net (.. Gdx app (getNet)) url#)))
 
-(defn register-clan-button! []
+(defn register-license-button! []
   (register-button!
-    {:key :clan
-     :init init-clan-button!
-     :update update-clan-button-rect!
+    {:key :license
+     :init init-license-button!
+     :update update-license-button-rect!
      :pause identity
      :resume identity
-     :just-touch process-clan-button!
+     :just-touch process-license-button!
      }))
 
 
@@ -384,8 +395,8 @@
   ;; it set to corner of up-right
   (let [w VOLUME-BUTTON-WIDTH
         h VOLUME-BUTTON-HEIGHT
-        x (- screen-w w 1)
-        y (- screen-h h 1 (.height ^Rectangle (get-button-rect :space)))]
+        x (- screen-w w 2)
+        y (- (.y ^Rectangle (get-button-rect :space)) h 2)]
     (.set ^Rectangle (:rect button) (float x) (float y) (float w) (float h))))
 
 (definline- process-volume-button! [button]
@@ -401,6 +412,39 @@
      :pause dispose-volume-button!
      :resume init-volume-button!
      :just-touch process-volume-button!
+     }))
+
+
+; ----------------------------------------------------------------
+;; *** clan button ***
+(def ^:const clan-url "https://github.com/ayamada/clan")
+
+(defn init-clan-button! [button]
+  (let [tex (Texture. (assets-file "clan.png"))]
+    (register-disposer! tex)
+    (reset! (:a-on-tex button) tex)
+    (reset! (:a-off-tex button) tex)))
+
+(defn update-clan-button-rect! [button screen-w screen-h]
+  ;; it set to corner of up-right
+  (let [^Texture tex @(:a-on-tex button)
+        w (.getWidth tex)
+        h (.getHeight tex)
+        x (- (.x ^Rectangle (get-button-rect :volume)) w)
+        y (- (.y ^Rectangle (get-button-rect :space)) h 4)]
+    (.set ^Rectangle (:rect button) (float x) (float y) (float w) (float h))))
+
+(definline- process-clan-button! [button]
+  `(.openURI ^Net (.. Gdx app (getNet)) clan-url))
+
+(defn register-clan-button! []
+  (register-button!
+    {:key :clan
+     :init init-clan-button!
+     :update update-clan-button-rect!
+     :pause identity
+     :resume identity
+     :just-touch process-clan-button!
      }))
 
 
@@ -965,8 +1009,9 @@
   (init-font!)
   (init-score!)
   (register-space-button!)
-  (register-clan-button!)
+  (register-license-button!)
   (register-volume-button!)
+  (register-clan-button!)
   (init-buttons!)
   (init-player!)
   (init-items!)
