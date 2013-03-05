@@ -822,6 +822,8 @@ Link
 -  `Neko(forked by Alexander
    Yakushev) <https://github.com/alexander-yakushev/neko>`_
 
+   -  `reference <http://alexander-yakushev.github.com/neko/>`_
+
 -  `launch4j <http://launch4j.sourceforge.net/>`_
 
 -  `CLANによるandroidアプリ開発 <http://doc.tir.ne.jp/devel/clan>`_:
