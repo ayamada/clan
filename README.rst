@@ -563,13 +563,10 @@ CLANはサンプルアプリとセットで開発を行う。
     cd clan_parent
     git clone git@github.com:ayamada/clan.git
     sh clan/script/spread_current_dir.sh
-    rm -rf clan/sample && mkdir -p clan/sample
 
 -  通常アプリとは違い、アプリのリリースはしないのでディレクトリは一段でよい
 -  push可能なように、sshでgit cloneする
 -  サンプルを展開する
--  うっかり再展開してしまわないように、一時的に clan/sample/
-   を空にしておく
 
 この状態で開発を行う。
 
