@@ -1,7 +1,7 @@
 (ns jp.ne.tir.drop.drop
   (:import
     (jp.ne.tir.clan Info)
-    (com.badlogic.gdx Gdx Preferences Input$Keys)
+    (com.badlogic.gdx Gdx Preferences Input$Keys Net)
     (com.badlogic.gdx.audio Music Sound)
     (com.badlogic.gdx.files FileHandle)
     (com.badlogic.gdx.graphics GL10 Camera OrthographicCamera Texture Color
@@ -231,16 +231,16 @@
   (swap! a-buttons conj (spawn-button m)))
 
 (defn init-buttons! []
-  (do-each @a-buttons [button] ((:init button) button)))
+  (do-each (reverse @a-buttons) [button] ((:init button) button)))
 
 (defn update-buttons! [w h]
-  (do-each @a-buttons [button] ((:update button) button w h)))
+  (do-each (reverse @a-buttons) [button] ((:update button) button w h)))
 
 (defn pause-buttons! []
-  (do-each @a-buttons [button] ((:pause button) button)))
+  (do-each (reverse @a-buttons) [button] ((:pause button) button)))
 
 (defn resume-buttons! []
-  (do-each @a-buttons [button] ((:resume button) button)))
+  (do-each (reverse @a-buttons) [button] ((:resume button) button)))
 
 (definline- process-buttons! [just-touched? touch-x touch-y]
   `(when ~just-touched?
@@ -257,6 +257,86 @@
      (let [^Rectangle r# (:rect b#)
            ^Texture t# (if @(:a-on-off b#) @(:a-on-tex b#) @(:a-off-tex b#))]
        (.draw ^SpriteBatch (batch) t# (.x r#) (.y r#)))))
+
+(definline- get-button [k]
+  `(loop [left# @a-buttons]
+     (when-not (empty? left#)
+       (let [b# (first left#)]
+         (if (= ~k (:key b#)) b# (recur (rest left#)))))))
+
+(definline- get-button-rect [k]
+  `(let [b# (get-button ~k)] (when b# ^Rectangle (:rect b#))))
+
+
+; ----------------------------------------------------------------
+;; *** space/drop button ***
+(def a-game-mode? (atom true))
+
+(defn init-space-button! [button]
+  (let [on-tex (Texture. (assets-file "sd_on.png"))
+        off-tex (Texture. (assets-file "sd_off.png"))]
+    (register-disposer! on-tex)
+    (register-disposer! off-tex)
+    (reset! (:a-on-off button) @a-game-mode?)
+    (reset! (:a-on-tex button) on-tex)
+    (reset! (:a-off-tex button) off-tex)))
+
+(defn update-space-button-rect! [button screen-w screen-h]
+  ;; it set to corner of up-right
+  (let [^Texture tex @(:a-on-tex button)
+        w (.getWidth tex)
+        h (.getHeight tex)
+        x (- screen-w w 1)
+        y (- screen-h h 1)]
+    (.set ^Rectangle (:rect button) (float x) (float y) (float w) (float h))))
+
+(definline- process-space-button! [button]
+  `(let [b# ~button new-state# (not @a-game-mode?)]
+     (reset! (:a-on-off b#) new-state#)
+     (reset! a-game-mode? new-state#)))
+
+(defn register-space-button! []
+  (register-button!
+    {:key :space
+     :init init-space-button!
+     :update update-space-button-rect!
+     :pause identity
+     :resume identity
+     :just-touch process-space-button!
+     }))
+
+
+; ----------------------------------------------------------------
+;; *** clan button ***
+(def ^:const clan-url "https://github.com/ayamada/clan")
+
+(defn init-clan-button! [button]
+  (let [tex (Texture. (assets-file "clan.png"))]
+    (register-disposer! tex)
+    (reset! (:a-on-tex button) tex)
+    (reset! (:a-off-tex button) tex)))
+
+(defn update-clan-button-rect! [button screen-w screen-h]
+  ;; it set to corner of up-right
+  (let [^Texture tex @(:a-on-tex button)
+        w (.getWidth tex)
+        h (.getHeight tex)
+        x (- screen-w w 1 (.width ^Rectangle (get-button-rect :space)))
+        y (- screen-h h 1)]
+    (.set ^Rectangle (:rect button) (float x) (float y) (float w) (float h))))
+
+(definline- process-clan-button! [button]
+  `(.openURI ^Net (.. Gdx app (getNet)) clan-url))
+
+(defn register-clan-button! []
+  (register-button!
+    {:key :clan
+     :init init-clan-button!
+     :update update-clan-button-rect!
+     :pause identity
+     :resume identity
+     :just-touch process-clan-button!
+     }))
 
 
 ; ----------------------------------------------------------------
@@ -304,8 +384,8 @@
   ;; it set to corner of up-right
   (let [w VOLUME-BUTTON-WIDTH
         h VOLUME-BUTTON-HEIGHT
-        x (- screen-w w)
-        y (- screen-h h 1)]
+        x (- screen-w w 1)
+        y (- screen-h h 1 (.height ^Rectangle (get-button-rect :space)))]
     (.set ^Rectangle (:rect button) (float x) (float y) (float w) (float h))))
 
 (definline- process-volume-button! [button]
@@ -321,44 +401,6 @@
      :pause dispose-volume-button!
      :resume init-volume-button!
      :just-touch process-volume-button!
-     }))
-
-
-; ----------------------------------------------------------------
-;; *** space/drop button ***
-(def a-game-mode? (atom true))
-
-(defn init-space-button! [button]
-  (let [on-tex (Texture. (assets-file "sd_on.png"))
-        off-tex (Texture. (assets-file "sd_off.png"))]
-    (register-disposer! on-tex)
-    (register-disposer! off-tex)
-    (reset! (:a-on-off button) @a-game-mode?)
-    (reset! (:a-on-tex button) on-tex)
-    (reset! (:a-off-tex button) off-tex)))
-
-(defn update-space-button-rect! [button screen-w screen-h]
-  ;; it set to corner of up-right
-  (let [^Texture tex @(:a-on-tex button)
-        w (.getWidth tex)
-        h (.getHeight tex)
-        x (- screen-w w VOLUME-BUTTON-WIDTH)
-        y (- screen-h h 1)]
-    (.set ^Rectangle (:rect button) (float x) (float y) (float w) (float h))))
-
-(definline- process-space-button! [button]
-  `(let [b# ~button new-state# (not @a-game-mode?)]
-     (reset! (:a-on-off b#) new-state#)
-     (reset! a-game-mode? new-state#)))
-
-(defn register-space-button! []
-  (register-button!
-    {:key :space
-     :init init-space-button!
-     :update update-space-button-rect!
-     :pause identity
-     :resume identity
-     :just-touch process-space-button!
      }))
 
 
@@ -922,8 +964,9 @@
   (init-camera!)
   (init-font!)
   (init-score!)
-  (register-volume-button!)
   (register-space-button!)
+  (register-clan-button!)
+  (register-volume-button!)
   (init-buttons!)
   (init-player!)
   (init-items!)
