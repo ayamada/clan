@@ -344,6 +344,10 @@ android向けの署名付き\ ``*.apk``\ を生成します。
 
    -  ``appname-android.apk  appname-desktop.exe  appname-desktop.jar``
 
+-  これらの3ファイルそれぞれに対して、最終動作確認を行います。
+
+   - この段階で問題が見付かる事が結構多い…もう少し検証工程が必要だ！
+
 -  必要に応じて、これらのファイルを配布物としてパッケージングしたり、
    google playに登録したりします。
 
