@@ -228,6 +228,9 @@
    :a-on-off (atom false)
    })
 
+(defn unregister-all-button! []
+  (reset! a-buttons nil))
+
 (defn register-button! [m]
   (swap! a-buttons conj (spawn-button m)))
 
@@ -1008,6 +1011,7 @@
   (init-camera!)
   (init-font!)
   (init-score!)
+  (unregister-all-button!)
   (register-space-button!)
   (register-license-button!)
   (register-volume-button!)
