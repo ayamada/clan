@@ -65,6 +65,14 @@
          (defn ~mname [& args#] (apply ~tmp-mname args#))))
     `(definline ~mname ~@mdecl)))
 
+;; replacement of dorun
+(defmacro do-each [targets [match-arg] & bodies]
+  `(loop [left# ~targets]
+     (when-not (empty? left#)
+       (let [~match-arg (first left#)]
+         ~@bodies
+         (recur (rest left#))))))
+
 ;; all asset files are in "assets/ASSETS-DIR/" for safety.
 (defn assets-file ^FileHandle [path]
   (.. Gdx files (internal (str assets-dir "/" path))))
@@ -167,6 +175,7 @@
 ;; *** gdx's camera ***
 (def a-camera (atom nil))
 (def ^Vector2 screen-rect (Vector2.))
+(def ^Vector3 touch-pos (Vector3.))
 
 (definline- camera [] `^OrthographicCamera@a-camera)
 
@@ -177,11 +186,11 @@
 (definline- update-screen-rect! [w h]
   `(do (set! (.x screen-rect) ~w) (set! (.y screen-rect) ~h)))
 
-(definline- get-touch-pos []
-  `(let [^Vector3 pos# (Vector3.)]
-     (.. pos# (set (.. Gdx input (getX)) (.. Gdx input (getY)) 0))
-     (.. ^OrthographicCamera (camera) (unproject pos#))
-     pos#))
+(definline- update-touch-pos! []
+  `(do
+     (.. touch-pos (set (.. Gdx input (getX)) (.. Gdx input (getY)) 0))
+     (.. ^OrthographicCamera (camera) (unproject touch-pos))
+     nil))
 
 
 ;; ----------------------------------------------------------------
@@ -198,6 +207,60 @@
     (reset! a-font-line-height (.getLineHeight f))
     (register-disposer! f)
     (reset! a-font f)))
+
+
+; ----------------------------------------------------------------
+;; *** generalized button ***
+(def a-buttons (atom {}))
+
+(defn spawn-button [on-tex off-tex init update just-touch]
+  (let []
+    {:a-on-tex (atom on-tex) ; (Texture.)
+     :a-off-tex (atom off-tex) ; (Texture.)
+     :a-on-off (atom false)
+     :rect (Rectangle.)
+     :init init ; (fn [] ...)
+     :update update ; (fn [width height] ...)
+     :just-touch just-touch ; (fn [] ...)
+     }))
+
+
+
+
+;; 以下はインターフェース案
+
+;(definline- register-button! [k & args]
+;  (swap! a-buttons merge {k (apply spawn-button args)}))
+;
+;(definline- init-buttons! []
+;  (do-each
+;    @a-buttons
+;    [button]
+;    ...
+;    ))
+;
+;(definline- update-buttons! []
+;  (do-each
+;    @a-buttons
+;    [button]
+;    ...
+;    ))
+;
+;(definline- draw-buttons! []
+;  (do-each
+;    @a-buttons
+;    [button]
+;    ...
+;    ))
+;
+;(definline- process-buttons! [just-touched? touch-x touch-y]
+;  (do-each
+;    @a-buttons
+;    [button]
+;    ...
+;    ))
+
+
 
 
 ; ----------------------------------------------------------------
@@ -235,8 +298,6 @@
         ]
     (.dispose on-pm)
     (.dispose off-pm)
-    (register-disposer! on-tex)
-    (register-disposer! off-tex)
     (reset! a-volume-button-on-tex on-tex)
     (reset! a-volume-button-off-tex off-tex)))
 
@@ -245,11 +306,15 @@
               a-volume-button-off-tex
               a-volume-button-on-tex))
 
+(defn dispose-volume-button! []
+  (let [on @a-volume-button-on-tex off @a-volume-button-off-tex]
+    (when on (.dispose ^Texture on) (reset! a-volume-button-on-tex nil))
+    (when off (.dispose ^Texture off) (reset! a-volume-button-off-tex nil))))
+
 (defn update-volume-button-rect! []
   ;; it set to corner of up-right
-  (let [^Texture tex (get-volume-button-tex)
-        w (.getWidth tex)
-        h (.getHeight tex)
+  (let [w VOLUME-BUTTON-WIDTH
+        h VOLUME-BUTTON-HEIGHT
         x (- (get-screen-width) w)
         y (- (get-screen-height) h 1)]
     (.set volume-button-rect x y (float w) (float h))))
@@ -260,9 +325,9 @@
           (.x volume-button-rect)
           (.y volume-button-rect)))
 
-(definline- process-volume-button! [just-touched touch-x touch-y]
+(definline- process-volume-button! [just-touched? touch-x touch-y]
   `(when (and
-           ~just-touched
+           ~just-touched?
            (.contains volume-button-rect ~touch-x ~touch-y))
      (change-volume! (pref :volume-off?))))
 
@@ -316,14 +381,14 @@
           (float (- (.x player-hit-rect) @a-player-tex-width-half))
           (float (- (.y player-hit-rect) @a-player-tex-height))))
 
-(definline- process-player! [delta just-touched is-touched touch-x touch-y]
+(definline- process-player! [delta prev-touched? is-touched? touch-x touch-y]
   `(do
      ;; move by touch
-     (when ~is-touched
+     (when ~is-touched?
+       ;; prevent warp player at just-touched
+       (when-not ~prev-touched?
+         (reset! a-player-homing-level player-homing-level-max))
        (let [x# ~touch-x y# ~touch-y]
-         ;; prevent warp player at just-touched
-         (when ~just-touched
-           (reset! a-player-homing-level player-homing-level-max))
          ;; exclude to touch volume button
          (when-not (.contains volume-button-rect x# y#)
            (update-player-locate-x!
@@ -333,9 +398,8 @@
                  (if (zero? lv#)
                    x#
                    (let [old-x# (.x player-hit-rect)
-                         delta# ~delta
                          dist# (- x# old-x#)
-                         move-dist# (* dist# delta# (/ lv#))
+                         move-dist# (* dist# (/ lv#))
                          new-x# (+ old-x# move-dist#)]
                      (if (or (< old-x# new-x# x#)
                              (< x# new-x# old-x#))
@@ -560,17 +624,17 @@
 (def ^Vector2 pt-center (Vector2.))
 
 (defn init-background! []
-  (let [width 1
-        height 1
-        pm (doto (Pixmap. width height Pixmap$Format/RGBA8888)
+  (let [pm (doto (Pixmap. 1 1 Pixmap$Format/RGBA8888)
              (.setColor (Color. 1 1 1 1))
-             (.fill)
-             )
-        tex (Texture. pm)
-        ]
+             (.fill))
+        tex (Texture. pm)]
     (.dispose pm)
-    (register-disposer! tex)
     (reset! a-background-star-tex tex)))
+
+(defn dispose-background! []
+  (when @a-background-star-tex
+    (.dispose ^Texture @a-background-star-tex)
+    (reset! a-background-star-tex nil)))
 
 (defn update-background-info! []
   (.set pt-center
@@ -799,7 +863,9 @@
 
 
 ;; ----------------------------------------------------------------
-;; *** process draw ***
+;; *** process dispatch ***
+(def a-touched? (atom false))
+
 (defn process-draw! []
   (.. Gdx gl (glClearColor 0.0 0.0 0.1 1.0)) ; R G B A
   (.. Gdx gl (glClear (. GL10 GL_COLOR_BUFFER_BIT)))
@@ -856,24 +922,31 @@
 
 (defn drop-render []
   (process-draw!)
-  (let [just-touched (.. Gdx input (justTouched))
-        is-touched (or just-touched (.. Gdx input (isTouched)))
-        ^Vector3 pos (and is-touched (get-touch-pos))
-        touch-x (and is-touched (.x pos))
-        touch-y (and is-touched (.y pos))
-        delta (get-delta)
+  (update-touch-pos!)
+  (let [delta (get-delta)
+        prev-touched? @a-touched?
+        is-touched? (.. Gdx input (isTouched))
+        just-touched? (.. Gdx input (justTouched))
+        _ (and (or is-touched? just-touched?) (update-touch-pos!))
+        touch-x (.x touch-pos)
+        touch-y (.y touch-pos)
         ]
-    (process-volume-button! just-touched touch-x touch-y)
-    (process-player! delta just-touched is-touched touch-x touch-y)
+    (process-volume-button! just-touched? touch-x touch-y)
+    (process-player! delta prev-touched? is-touched? touch-x touch-y)
     (process-item! delta)
     (process-background! delta)
     (process-simple-console!)
     (process-eval-console!)
-    ))
+    (when (not= prev-touched? is-touched?)
+      (reset! a-touched? is-touched?))))
 
 
 (defn drop-pause []
-  (save-pref-to-storage!))
+  (save-pref-to-storage!)
+  ;; dynamic-generated-texture was reset by pause->resume,
+  ;; that must be dispose.
+  (dispose-volume-button!)
+  (dispose-background!))
 
 
 (defn drop-resume []
