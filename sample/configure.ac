@@ -4,7 +4,7 @@ dnl ----------------------------------------------------------------
 dnl Defines
 
 dnl 基礎プロジェクト設定(要変更)
-AC_INIT(drop, 1.0.2-SNAPSHOT)
+AC_INIT(drop, 1.0.3-SNAPSHOT)
 dnl ↑プロジェクト名(兼artifactId)およびプロジェクトのバージョン値を指定。
 PROJECT_NAME="space drop"
 AC_SUBST(PROJECT_NAME)
@@ -23,7 +23,7 @@ dnl   配布時にどのアプリが有効になっているかを示す目的�
 dnl   「同一ソースに複数の別のアプリのエントリを含む」使い方をしないなら
 dnl   空でよい。
 dnl   (しかしゲーム開発ではこの使い方の方が便利だと思う)
-PROJECT_ANDROID_VERSIONCODE=1
+PROJECT_ANDROID_VERSIONCODE=2
 AC_SUBST(PROJECT_ANDROID_VERSIONCODE)
 dnl ↑androidの例のアレ。リリース毎に数値を増やす事。
 dnl   TODO: 自動的に増えるようにしたい(しかも安全に)が…どうやればできる？
