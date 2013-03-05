@@ -845,9 +845,11 @@
 
 (defn update-simple-console! []
   (binding [simple-console-draw-level (- (get-screen-height) 1 margin-y)]
-    (when-debug
+    (if Info/debug
       (register-cache-map-2!
-        :debug (str "DEBUG: " Info/projectVersion) color-debug))
+        :debug (str "DEBUG: " Info/projectVersion) color-debug)
+      (register-cache-map-2!
+        :ver (str "VER: " Info/projectVersion) color-console))
     (when-debug
       (register-cache-map-2!
         :build-date (str "BDT: " Info/buildDate) color-console))
@@ -882,8 +884,9 @@
        (reset! a-heap-record (format "%09d" (.. Gdx app (getNativeHeap))))
        (update-cache! :fps (str "FPS: " (.. Gdx graphics (getFramesPerSecond))))
        (update-cache! :heap (str "MEM: " @a-heap-record))
-       (update-cache! :items (str "ITEMS: " (count @a-items)))
-       (update-cache! :stars (str "BG-STARS: " (count @a-background-stars)))
+       (when-debug
+         (update-cache! :items (str "ITEMS: " (count @a-items)))
+         (update-cache! :stars (str "BG-STARS: " (count @a-background-stars))))
        )))
 
 (definline- draw-cache-if-exists [cache]
