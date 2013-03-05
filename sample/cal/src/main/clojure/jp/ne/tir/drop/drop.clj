@@ -211,67 +211,60 @@
 
 ; ----------------------------------------------------------------
 ;; *** generalized button ***
-(def a-buttons (atom {}))
+(def a-buttons (atom nil))
 
-(defn spawn-button [on-tex off-tex init update just-touch]
-  (let []
-    {:a-on-tex (atom on-tex) ; (Texture.)
-     :a-off-tex (atom off-tex) ; (Texture.)
-     :a-on-off (atom false)
-     :rect (Rectangle.)
-     :init init ; (fn [] ...)
-     :update update ; (fn [width height] ...)
-     :just-touch just-touch ; (fn [] ...)
-     }))
+(defn spawn-button [{k :key init :init update :update
+                     pause :pause resume :resume just-touch :just-touch}]
+  {:key k ; button identifier
+   :init init ; (fn [button] ...) or identity
+   :update update ; (fn [button width height] ...) or identity
+   :pause pause ; (fn [button] ...) or identity
+   :resume resume ; (fn [button] ...) or identity
+   :just-touch just-touch ; (fn [button] ...) or identity
+   :a-on-tex (atom nil) ; (Texture.)
+   :a-off-tex (atom nil) ; (Texture.)
+   :rect (Rectangle.)
+   :a-on-off (atom false)
+   })
 
+(defn register-button! [m]
+  (swap! a-buttons conj (spawn-button m)))
 
+(defn init-buttons! []
+  (do-each @a-buttons [button] ((:init button) button)))
 
+(defn update-buttons! [w h]
+  (do-each @a-buttons [button] ((:update button) button w h)))
 
-;; 以下はインターフェース案
+(defn pause-buttons! []
+  (do-each @a-buttons [button] ((:pause button) button)))
 
-;(definline- register-button! [k & args]
-;  (swap! a-buttons merge {k (apply spawn-button args)}))
-;
-;(definline- init-buttons! []
-;  (do-each
-;    @a-buttons
-;    [button]
-;    ...
-;    ))
-;
-;(definline- update-buttons! []
-;  (do-each
-;    @a-buttons
-;    [button]
-;    ...
-;    ))
-;
-;(definline- draw-buttons! []
-;  (do-each
-;    @a-buttons
-;    [button]
-;    ...
-;    ))
-;
-;(definline- process-buttons! [just-touched? touch-x touch-y]
-;  (do-each
-;    @a-buttons
-;    [button]
-;    ...
-;    ))
+(defn resume-buttons! []
+  (do-each @a-buttons [button] ((:resume button) button)))
 
+(definline- process-buttons! [just-touched? touch-x touch-y]
+  `(when ~just-touched?
+     (do-each
+       @a-buttons
+       [button#]
+       (when (.contains ^Rectangle (:rect button#) ~touch-x ~touch-y)
+         ((:just-touch button#) button#)))))
 
+(definline- draw-buttons! []
+  `(do-each
+     @a-buttons
+     [b#]
+     (let [^Rectangle r# (:rect b#)
+           ^Texture t# (if @(:a-on-off b#) @(:a-on-tex b#) @(:a-off-tex b#))]
+       (.draw ^SpriteBatch (batch) t# (.x r#) (.y r#)))))
 
 
 ; ----------------------------------------------------------------
 ;; *** volume button ***
 (def ^:const VOLUME-BUTTON-WIDTH 64)
 (def ^:const VOLUME-BUTTON-HEIGHT 64)
-(def a-volume-button-on-tex (atom nil))
-(def a-volume-button-off-tex (atom nil))
-(def ^Rectangle volume-button-rect (Rectangle.))
 
-(defn init-volume-button! []
+(defn init-volume-button! [button]
   (let [button-frame-color (Color. 0.5 0.5 0.5 0.5)
         button-color (Color. 0 0.2 0.4 1)
         on-pm (doto (Pixmap. VOLUME-BUTTON-WIDTH VOLUME-BUTTON-HEIGHT
@@ -298,38 +291,37 @@
         ]
     (.dispose on-pm)
     (.dispose off-pm)
-    (reset! a-volume-button-on-tex on-tex)
-    (reset! a-volume-button-off-tex off-tex)))
+    (reset! (:a-on-off button) (not (pref :volume-off?)))
+    (reset! (:a-on-tex button) on-tex)
+    (reset! (:a-off-tex button) off-tex)))
 
-(definline- get-volume-button-tex []
-  `^Texture@(if (pref :volume-off?)
-              a-volume-button-off-tex
-              a-volume-button-on-tex))
+(defn dispose-volume-button! [button]
+  (let [on @(:a-on-tex button) off @(:a-off-tex button)]
+    (when on (.dispose ^Texture on) (reset! (:a-on-tex button) nil))
+    (when off (.dispose ^Texture off) (reset! (:a-off-tex button) nil))))
 
-(defn dispose-volume-button! []
-  (let [on @a-volume-button-on-tex off @a-volume-button-off-tex]
-    (when on (.dispose ^Texture on) (reset! a-volume-button-on-tex nil))
-    (when off (.dispose ^Texture off) (reset! a-volume-button-off-tex nil))))
-
-(defn update-volume-button-rect! []
+(defn update-volume-button-rect! [button screen-w screen-h]
   ;; it set to corner of up-right
   (let [w VOLUME-BUTTON-WIDTH
         h VOLUME-BUTTON-HEIGHT
-        x (- (get-screen-width) w)
-        y (- (get-screen-height) h 1)]
-    (.set volume-button-rect x y (float w) (float h))))
+        x (- screen-w w)
+        y (- screen-h h 1)]
+    (.set ^Rectangle (:rect button) (float x) (float y) (float w) (float h))))
 
-(definline- draw-volume-button! []
-  `(.draw ^SpriteBatch (batch)
-          ^Texture (get-volume-button-tex)
-          (.x volume-button-rect)
-          (.y volume-button-rect)))
+(definline- process-volume-button! [button]
+  `(let [b# ~button]
+     (swap! (:a-on-off b#) not)
+     (change-volume! @(:a-on-off b#))))
 
-(definline- process-volume-button! [just-touched? touch-x touch-y]
-  `(when (and
-           ~just-touched?
-           (.contains volume-button-rect ~touch-x ~touch-y))
-     (change-volume! (pref :volume-off?))))
+(defn register-volume-button! []
+  (register-button!
+    {:key :volume
+     :init init-volume-button!
+     :update update-volume-button-rect!
+     :pause dispose-volume-button!
+     :resume init-volume-button!
+     :just-touch process-volume-button!
+     }))
 
 
 ;; ----------------------------------------------------------------
@@ -389,22 +381,20 @@
        (when-not ~prev-touched?
          (reset! a-player-homing-level player-homing-level-max))
        (let [x# ~touch-x y# ~touch-y]
-         ;; exclude to touch volume button
-         (when-not (.contains volume-button-rect x# y#)
-           (update-player-locate-x!
-             (clamp-player-locate-x
-               ;; prevent warp player at just-touched
-               (let [lv# @a-player-homing-level]
-                 (if (zero? lv#)
-                   x#
-                   (let [old-x# (.x player-hit-rect)
-                         dist# (- x# old-x#)
-                         move-dist# (* dist# (/ lv#))
-                         new-x# (+ old-x# move-dist#)]
-                     (if (or (< old-x# new-x# x#)
-                             (< x# new-x# old-x#))
-                       (do (reset! a-player-homing-level (- lv# 1)) new-x#)
-                       (do (reset! a-player-homing-level 0) x#))))))))))
+         (update-player-locate-x!
+           (clamp-player-locate-x
+             ;; prevent warp player at just-touched
+             (let [lv# @a-player-homing-level]
+               (if (zero? lv#)
+                 x#
+                 (let [old-x# (.x player-hit-rect)
+                       dist# (- x# old-x#)
+                       move-dist# (* dist# (/ lv#))
+                       new-x# (+ old-x# move-dist#)]
+                   (if (or (< old-x# new-x# x#)
+                           (< x# new-x# old-x#))
+                     (do (reset! a-player-homing-level (- lv# 1)) new-x#)
+                     (do (reset! a-player-homing-level 0) x#)))))))))
      ;; move by keyboard
      (let [pressed-l# (.. Gdx input (isKeyPressed Input$Keys/LEFT))
            pressed-r# (.. Gdx input (isKeyPressed Input$Keys/RIGHT))]
@@ -435,19 +425,22 @@
 
 (definline- solve-score-info [k]
   `(case ~k
-     :score-a [0 a-score-a-cache score-a-color]
+     :score-a [2 a-score-a-cache score-a-color]
      :score-b [1 a-score-b-cache score-b-color]
-     :score-c [2 a-score-c-cache score-c-color]))
+     :score-c [0 a-score-c-cache score-c-color]))
 
 (definline- update-score! [score-key ^Long score]
   `(let [score-key# ~score-key
          score-str# (.toString ~score)
          [lv# a-cache# color#] (solve-score-info score-key#)
          line-height# @a-font-line-height
-         x# (- (get-screen-width)
-               1
-               (.width (.getBounds ^BitmapFont (font) score-str#)))
-         y# (- (.y volume-button-rect) 1 (* line-height# lv#))]
+         ;x# (- (get-screen-width)
+         ;      1
+         ;      (.width (.getBounds ^BitmapFont (font) score-str#)))
+         ;y# (- VOLUME-BUTTON-HEIGHT 1 (* line-height# lv#))
+         score-width# (.width (.getBounds ^BitmapFont (font) score-str#))
+         x# (- (get-screen-width) 8 score-width# (* 48 lv#))
+         y# (+ 2 line-height#)]
      (doto ^BitmapFontCache @a-cache#
        (.setText score-str# x# y#)
        (.setColor ^Color color#))))
@@ -873,7 +866,7 @@
     (draw-background!)
     (draw-player!)
     (draw-items!)
-    (draw-volume-button!)
+    (draw-buttons!)
     (draw-score!)
     (draw-simple-console!)
     (draw-eval-console!)
@@ -893,7 +886,8 @@
   (init-camera!)
   (init-font!)
   (init-score!)
-  (init-volume-button!)
+  (register-volume-button!)
+  (init-buttons!)
   (init-player!)
   (init-items!)
   (init-background!)
@@ -909,7 +903,7 @@
     (.update ^Camera (camera))
     (.setProjectionMatrix ^SpriteBatch (batch)
                           (.combined ^OrthographicCamera (camera)))
-    (update-volume-button-rect!)
+    (update-buttons! w h)
     (update-player-max-x!)
     (clamp-player-locate-x!)
     (update-all-score!)
@@ -931,7 +925,7 @@
         touch-x (.x touch-pos)
         touch-y (.y touch-pos)
         ]
-    (process-volume-button! just-touched? touch-x touch-y)
+    (process-buttons! just-touched? touch-x touch-y)
     (process-player! delta prev-touched? is-touched? touch-x touch-y)
     (process-item! delta)
     (process-background! delta)
@@ -945,14 +939,14 @@
   (save-pref-to-storage!)
   ;; dynamic-generated-texture was reset by pause->resume,
   ;; that must be dispose.
-  (dispose-volume-button!)
+  (pause-buttons!)
   (dispose-background!))
 
 
 (defn drop-resume []
   ;; dynamic-generated-texture was reset by pause->resume,
   ;; that must be reconstruct.
-  (init-volume-button!)
+  (resume-buttons!)
   (init-background!)
   )
 
