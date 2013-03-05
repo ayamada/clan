@@ -362,8 +362,7 @@ android向けの署名付き\ ``*.apk``\ を生成します。
 ~~~~~~~~~~~~
 
 -  clan : このフレームワーク、配布物一式、ディレクトリ名
--  cal : CLAN ApplicationListener。アプリ本体、これを主にいじる。 cal/
-   が実体
+-  cal : CLAN ApplicationListener。アプリ本体、これを主にいじる。 cal/ が実体
 -  cbl : CLAN BootLoader。ブート画面部分。clan/cbl/ 内にソースあり
 
 ディレクトリ解説
@@ -737,6 +736,12 @@ I dont want boot screen. / ブート画面を出したくない
    -  この挙動が保証されたものであるなら便利に使えるが、そうでないなら利用するのは危険である。
       -  androidのドキュメントおよびandroid版clojureのソースを調べる必要あり。
    -  もしこの現象が安全なもので、なおかつjava側からもこの現象を利用する方法があるなら、二回目起動時は起動画面をスキップするようにしたいところ(長いから)
+
+
+How to make windows exe for debug / デバッグ版exeを作りたい
+   do ``make jar inner-release-exe``. but it is dangerous and be discouraged.
+
+   ``make jar inner-release-exe`` で作れます。しかし危険なのでおすすめしない。
 
 
 What is something wrong to collision-detection of sample-app? / サンプルアプリの当たり判定おかしくない？
