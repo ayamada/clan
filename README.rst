@@ -564,7 +564,7 @@ CLANはサンプルアプリとセットで開発を行う。
     git clone git@github.com:ayamada/clan.git
     sh clan/script/spread_current_dir.sh
 
--  通常アプリとは違い、アプリのリリースはしないのでディレクトリは一段でよい
+-  サンプルアプリのリリースは手動で行う為、ディレクトリは一段でよい
 -  push可能なように、sshでgit cloneする
 -  サンプルを展開する
 
