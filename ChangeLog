@@ -1,3 +1,9 @@
+2013-03-05  ayamada
+	* release 0.0.2-EXPERIMENTAL:
+	  - improve sample app
+	  - fix many bugs
+	  - wrote to README.rst more
+
 2013-03-03  ayamada
 	* release 0.0.1-EXPERIMENTAL:
 	  i forget to add to sample/.gitignore .
