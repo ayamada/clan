@@ -305,16 +305,16 @@ inner-release-apk: android/target/$(PROJECT_ANDROID_ARTIFACTID)-signed-aligned.a
 # (ただしmake releaseのみ三種類全部同時に作るようにする)
 # また、処理が終わった後にinfoが再利用されてしまわないように、
 # 明示的にcleanしておく(compile時info判定の為、info依存物も消す)
-release-jar: clean inner-release-jar
+release-jar: clean release-clean inner-release-jar
 	$(MAKE) clean
 
-release-exe: clean inner-release-exe
+release-exe: clean release-clean inner-release-exe
 	$(MAKE) clean
 
-release-apk: clean inner-release-apk
+release-apk: clean release-clean inner-release-apk
 	$(MAKE) clean
 
-release: clean inner-release-jar inner-release-exe inner-release-apk
+release: clean release-clean inner-release-jar inner-release-exe inner-release-apk
 	$(MAKE) clean
 
 release-clean:
