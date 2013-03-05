@@ -910,6 +910,22 @@
     ))
 
 
+(defn drop-pause []
+  (save-pref-to-storage!)
+  ;; dynamic-generated-texture was reset by pause->resume,
+  ;; that must be dispose.
+  (pause-buttons!)
+  (dispose-background!))
+
+
+(defn drop-resume []
+  ;; dynamic-generated-texture was reset by pause->resume,
+  ;; that must be reconstruct.
+  (resume-buttons!)
+  (init-background!)
+  )
+
+
 (defn drop-render []
   (try
     (process-draw!)
@@ -931,22 +947,6 @@
       (when (not= prev-touched? is-touched?)
         (reset! a-touched? is-touched?)))
     (catch Exception e (drop-pause) (throw e))))
-
-
-(defn drop-pause []
-  (save-pref-to-storage!)
-  ;; dynamic-generated-texture was reset by pause->resume,
-  ;; that must be dispose.
-  (pause-buttons!)
-  (dispose-background!))
-
-
-(defn drop-resume []
-  ;; dynamic-generated-texture was reset by pause->resume,
-  ;; that must be reconstruct.
-  (resume-buttons!)
-  (init-background!)
-  )
 
 
 (defn drop-dispose []
