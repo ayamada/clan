@@ -7,7 +7,8 @@
     (com.badlogic.gdx.files FileHandle)
     (com.badlogic.gdx.graphics GL10 Camera OrthographicCamera Texture Color
                                Pixmap Pixmap$Format)
-    (com.badlogic.gdx.graphics.g2d SpriteBatch BitmapFont BitmapFontCache)
+    (com.badlogic.gdx.graphics.g2d SpriteBatch BitmapFont BitmapFontCache
+                                   NinePatch)
     (com.badlogic.gdx.math Vector2 Vector3 Rectangle Matrix4)
     (com.badlogic.gdx.utils TimeUtils Disposable)
     (java.lang.reflect Method)
@@ -210,6 +211,72 @@
     (reset! a-font f)))
 
 
+;; ----------------------------------------------------------------
+;; *** dialog (by NinePatch) ***
+(def a-dialog-tex (atom nil))
+(def a-dialog-np (atom nil))
+(def a-dialog-nothing? (atom true))
+(def a-dialog-title (atom ""))
+(def a-dialog-url (atom ""))
+(def ^Rectangle dialog-url-rect (Rectangle.))
+(def ^Rectangle dialog-close-rect (Rectangle.))
+(def ^:const dialog-close-label "[CLOSE]")
+
+(defn init-dialog! []
+  (let [tex (Texture. (assets-file "dialog.png"))
+        np (NinePatch. tex 16 16 16 16)
+        ]
+    (register-disposer! tex)
+    (reset! a-dialog-tex tex)
+    (reset! a-dialog-np np)))
+
+(defn open-dialog! [title url]
+  (reset! a-dialog-nothing? false)
+  (reset! a-dialog-title title)
+  (reset! a-dialog-url url))
+
+(defn draw-dialog! []
+  (when-not @a-dialog-nothing?
+    (let [^NinePatch np @a-dialog-np
+          url @a-dialog-url
+          sc-w (get-screen-width)
+          sc-h (get-screen-height)
+          np-w 256
+          np-h 128
+          np-x (/ (- sc-w np-w) 2)
+          np-y (/ (- sc-h np-h) 2)
+          line-height @a-font-line-height
+          label-x (+ np-x (.getPadLeft np))
+          label-y (- (+ np-y np-h) (.getPadTop np))
+          close-w (.width (.getBounds ^BitmapFont (font) dialog-close-label))
+          close-h line-height
+          close-x (- (+ np-x np-w) (.getPadRight np) close-w)
+          close-y label-y
+          np-inner-w (- np-w (.getPadLeft np) (.getPadRight np))
+          url-b (.getWrappedBounds ^BitmapFont (font) url np-inner-w)
+          url-w (.width url-b)
+          url-h (.height url-b)
+          url-x (/ (- sc-w url-w) 2)
+          url-y (+ np-y (.getPadBottom np) url-h)
+          ]
+      (.set dialog-close-rect close-x (- close-y close-h) close-w close-h)
+      (.set dialog-url-rect url-x (- url-y url-h) url-w url-h)
+      (.draw np (batch) np-x np-y np-w np-h)
+      (.setColor ^BitmapFont (font) Color/BLACK)
+      (.draw ^BitmapFont (font) (batch) @a-dialog-title label-x label-y)
+      (.setColor ^BitmapFont (font) Color/BLUE)
+      (.draw ^BitmapFont (font) (batch) dialog-close-label close-x close-y)
+      (.drawWrapped ^BitmapFont (font) (batch) url url-x url-y np-inner-w))))
+
+(defn process-dialog! [x y]
+  (let [pressed-url? (.contains ^Rectangle dialog-url-rect x y)
+        pressed-close? (.contains ^Rectangle dialog-close-rect x y)]
+    (when pressed-url?
+      (.openURI ^Net (.. Gdx app (getNet)) @a-dialog-url))
+    (when pressed-close?
+      (reset! a-dialog-nothing? true))))
+
+
 ; ----------------------------------------------------------------
 ;; *** generalized button ***
 (def a-buttons (atom nil))
@@ -341,7 +408,7 @@
               (.endsWith ^String (System/getProperty "sun.java.command" "")
                          ".exe") url-license-exe
               :else url-license-jar)]
-    (.openURI ^Net (.. Gdx app (getNet)) url)))
+    (open-dialog! "LICENSE" url)))
 
 (defn register-license-button! []
   (register-button!
@@ -438,7 +505,7 @@
     (.set ^Rectangle (:rect button) (float x) (float y) (float w) (float h))))
 
 (defn process-clan-button! [button]
-  (.openURI ^Net (.. Gdx app (getNet)) clan-url))
+  (open-dialog! "CLAN" clan-url))
 
 (defn register-clan-button! []
   (register-button!
@@ -997,6 +1064,7 @@
     (when @a-game-mode?
       (draw-score!)
       (draw-simple-console!))
+    (draw-dialog!)
     (draw-eval-console!)
     ))
 
@@ -1014,6 +1082,7 @@
   (init-camera!)
   (init-font!)
   (init-score!)
+  (init-dialog!)
   (unregister-all-button!)
   (register-space-button!)
   (register-license-button!)
@@ -1073,17 +1142,22 @@
           _ (and (or is-touched? just-touched?) (update-touch-pos!))
           touch-x (.x touch-pos)
           touch-y (.y touch-pos)
+          game-mode? @a-game-mode?
+          dialog-nothing? @a-dialog-nothing?
           ]
-      (process-buttons! just-touched? touch-x touch-y)
-      (when @a-game-mode?
+      (when dialog-nothing?
+        (process-buttons! just-touched? touch-x touch-y))
+      (when (and game-mode? dialog-nothing?)
         (process-player! delta prev-touched? is-touched? touch-x touch-y)
         (process-item! delta))
       (process-background! delta)
-      (when @a-game-mode?
+      (when game-mode?
         (process-simple-console!))
       (process-eval-console!)
       (when (not= prev-touched? is-touched?)
-        (reset! a-touched? is-touched?)))
+        (reset! a-touched? is-touched?))
+      (when (and just-touched? (not dialog-nothing?))
+        (process-dialog! touch-x touch-y)))
     (catch Exception e (drop-pause) (throw e))))
 
 
