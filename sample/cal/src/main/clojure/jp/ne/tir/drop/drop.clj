@@ -259,8 +259,9 @@
           url-x (/ (- sc-w url-w) 2)
           url-y (+ np-y (.getPadBottom np) url-h)
           ]
-      (.set dialog-close-rect close-x (- close-y close-h) close-w close-h)
-      (.set dialog-url-rect url-x (- url-y url-h) url-w url-h)
+      (.set dialog-close-rect
+            close-x (- close-y close-h 8) close-w (+ close-h 16))
+      (.set dialog-url-rect url-x (- url-y url-h 8) url-w (+ url-h 16))
       (.draw np (batch) np-x np-y np-w np-h)
       (.setColor ^BitmapFont (font) Color/BLACK)
       (.draw ^BitmapFont (font) (batch) @a-dialog-title label-x label-y)
