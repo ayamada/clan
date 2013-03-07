@@ -537,15 +537,19 @@ makeの依存関係はドットファイルのフラグファイルで管理し�
 
 -  make clean
 
-   -  全てのクラスファイル、実行ファイル、リリースファイルを削除します。
+   -  全てのクラスファイル、実行ファイルを削除します。
 
 -  make ac-clean
 
    -  ``autoconf && ./configure`` が生成するファイルを削除します。
 
+-  make release-clean
+
+   -  リリース用ファイルを削除します。
+
 -  make distclean
 
-   -  ``make clean ac-clean`` と同じです。
+   -  ``make clean ac-clean release-clean`` と同じです。
 
 -  make maintainer-clean
 
