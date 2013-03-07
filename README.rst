@@ -54,5 +54,6 @@ CLAN have `Apache License 2.0 <http://www.apache.org/licenses/LICENSE-2.0>`_.
 
 Which can be found in the file `LICENSE <LICENSE>`_.
 
+and see http://doc.tir.ne.jp/devel/clan/license .
 
 
