@@ -1,9 +1,9 @@
 .. image:: https://github.com/ayamada/clan/raw/master/doc/img/logo_b.png
 
-CLAN : Clojure, LibGDX, Android, Neko development framework
-===========================================================
+CLAN : Clojure, LibGDX, Android, Neko application construct kit
+===============================================================
 
-CLAN supply to an environment that develop android application using
+CLAN supply to an environment that construct android application using
 libgdx by only clojure code. You must understand to clojure and libgdx.
 
 WARNING: This package version is 0.0.2-EXPERIMENTAL. It cannot upgrade
@@ -11,10 +11,10 @@ to future version 1.0.0 . Please try to CLAN if you still OK.
 
 --------------
 
-**CLAN : Clojure, LibGDX, Android, Neko 開発フレームワーク**
+**CLAN : Clojure, LibGDX, Android, Neko アプリケーション構築キット**
 
 これは「clojureのコード書くだけでlibgdx使ったandroidアプリができた！」を
-実現する為の開発フレームワークです。
+実現する為のアプリ構築キットです。
 別途、clojureとlibgdxの知識が必要です。
 
 注意：現在のバージョンは 0.0.2-EXPERIMENTAL です。
@@ -368,7 +368,7 @@ android向けの署名付き\ ``*.apk``\ を生成します。
 用語について
 ~~~~~~~~~~~~
 
--  clan : このフレームワーク、配布物一式、ディレクトリ名
+-  clan : この構築キット、配布物一式、ディレクトリ名
 -  cal : CLAN ApplicationListener。アプリ本体、これを主にいじる。 cal/ が実体
 -  cbl : CLAN BootLoader。ブート画面部分。clan/cbl/ 内にソースあり
 
@@ -777,6 +777,17 @@ How do license? / ライセンスどうすればいい？
    http://doc.tir.ne.jp/devel/clan/license を見てください。
 
 
+I dont know how to use neko / nekoの使い方がわからない
+   androidではActivity内に子Activityを持つ構造が普通で、
+   libgdxはその子Activity内にゲームを作る機能はあるけれど、
+   Activity構造自体をどうこうする機能は提供していない。
+   nekoはその機能があるので、そういう構造にしたい場合はnekoを使う。
+   がayamadaがまだそういう機能を必要とするアプリを作ってないので
+   取り込むだけ取り込んで放置されている。
+   そういうアプリを作り始めたらドキュメントを書く。
+   それまではnekoの
+
+
 What is CLAN logo? / CLANのロゴは何？
    This is my family emblem. Change more better logo on later.
    (because it is too cutting corners.) logo's emblem part came from
@@ -832,6 +843,8 @@ Link
    Yakushev) <https://github.com/alexander-yakushev/neko>`_
 
    -  `reference <http://alexander-yakushev.github.com/neko/>`_
+   -  `Clojure Development on Android <http://clojure-android.blogspot.jp/>`_:
+      nekoのメンテナの人の解説ブログ。
 
 -  `launch4j <http://launch4j.sourceforge.net/>`_
 
@@ -860,9 +873,6 @@ TODO
 
 -  later
 
-   -  今更だが「フレームワーク」なのはlibgdxとnekoであって、CLAN自体は
-      フレームワークではないと思う。しかし他に適切な呼び名を思い付かない。
-      思い付いたら説明文を変更する事。
    -  開発版ビルドとリリース版ビルドの切り分け部分の改善
 
       -  「開発版でのみjarに含めるライブラリ」みたいな事ができるようにしたい
