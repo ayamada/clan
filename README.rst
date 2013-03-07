@@ -25,6 +25,9 @@ TODOにある「lein化」と「platform別ライブラリ化」が完了した�
 
 ( cal 内は多分そのまま使えますが、 configure.in 等は移行不可能です。)
 
+- 紹介動画を作りました → http://www.nicovideo.jp/watch/sm20266312
+
+
 Advantages / Disadvantages
 --------------------------
 
@@ -844,7 +847,7 @@ TODO
 -  important
 
    -  http://ch.nicovideo.jp/indies-game
-      にプラットフォーム部門で応募して五万円を狙う為の動画を作成
+      にゲーム部門で応募して十万円を狙う為のゲームと動画を作成
    -  「autoconf+make+maven」はやめて、leinで統一する(しかし先にleinの使い方を学ぶ必要あり…)
    -  cal内にて、「android限定のコード(と利用ライブラリ)」と
       「desktop限定のコード(と利用ライブラリ)」をうまく切り分けられるようにする
