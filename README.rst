@@ -455,8 +455,8 @@ makeターゲット一覧
 makeの依存関係はドットファイルのフラグファイルで管理しています。
 これは主に、mavenのローカルリポジトリに入るファイルを判定する為です。
 
-実際の依存関係のグラフは、同梱の ``doc/dependencies.*`` を
-参照してみてください。
+実際の依存関係のグラフは、同梱の `doc/dependencies.dot`_ および
+`doc/dependencies.png`_ を参照してみてください。
 
 -  make info
 
