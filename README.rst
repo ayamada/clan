@@ -59,7 +59,7 @@ Link
 
 -  `launch4j <http://launch4j.sourceforge.net/>`_
 
--  `lein-droid <https://github.com/alexander-yakushev/lein-droid>`_: leinでandroidアプリを生成する為のleinプラグイン。非リリース時にnREPLサーバを自動で組み込んで、android実機の外からプロセスにREPL接続できるようにする機能あり。以前はwindowsでうまく動かなかったが対応されたようなのであとで組み込む。
+-  `lein-droid <https://github.com/alexander-yakushev/lein-droid>`_: leinでandroidアプリを生成する為のleinプラグイン。開発中はapkにnREPLサーバ機能を自動で組み込んで、android実機の外からプロセスにREPL接続できるようにする機能あり。以前はwindowsでうまく動かなかったが対応されたようなのであとで組み込む。
 
 License
 -------
