@@ -11,7 +11,7 @@ CLAN_NAME="CLAN"
 #     CLAN_ANDROID_VERSION は
 #     http://mvnrepository.com/artifact/com.google.android/android
 #     CLAN_NEKO_VERSION は https://clojars.org/neko
-CLAN_CLOJURE_VERSION="1.4.0"
+CLAN_CLOJURE_VERSION="1.5.0"
 CLAN_LIBGDX_VERSION="0.9.7"
 CLAN_ANDROID_VERSION="2.3.3"
 CLAN_NEKO_VERSION="2.0.0-beta1"
