@@ -6,6 +6,10 @@ CLAN : Clojure, LibGDX, Android, Neko application construct kit
 CLAN supply to an environment that construct android application using
 libgdx by only clojure code. You must understand to clojure and libgdx.
 
+It can construct application for not only android but also
+windows and other desktop OS at a time
+(but it need install java runtime to work).
+
 see document http://doc.tir.ne.jp/devel/clan .
 
 --------------
@@ -16,7 +20,11 @@ see document http://doc.tir.ne.jp/devel/clan .
 実現する為のアプリ構築キットです。
 別途、clojureとlibgdxの知識が必要です。
 
-http://doc.tir.ne.jp/devel/clan のドキュメントを見てください。
+androidアプリだけではなく、windowsとその他のデスクトップos向けアプリも
+同時に構築できます(ただし実行にはjavaインストールが必要)。
+
+詳細は http://doc.tir.ne.jp/devel/clan のドキュメントを見てください。
+
 
 Link
 ----
