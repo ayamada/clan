@@ -342,87 +342,6 @@
 
 
 ; ----------------------------------------------------------------
-;; *** space/drop button ***
-(def a-game-mode? (atom true))
-
-(defn init-space-button! [button]
-  (let [on-tex (Texture. (assets-file "sd_on.png"))
-        off-tex (Texture. (assets-file "sd_off.png"))]
-    (register-disposer! on-tex)
-    (register-disposer! off-tex)
-    (reset! (:a-on-off button) @a-game-mode?)
-    (reset! (:a-on-tex button) on-tex)
-    (reset! (:a-off-tex button) off-tex)))
-
-(defn update-space-button-rect! [button screen-w screen-h]
-  ;; it set to corner of up-right
-  (let [^Texture tex @(:a-on-tex button)
-        w (.getWidth tex)
-        h (.getHeight tex)
-        x (- screen-w w 2)
-        y (- screen-h h 2)]
-    (.set ^Rectangle (:rect button) (float x) (float y) (float w) (float h))))
-
-(defn process-space-button! [button]
-  (let [new-state (not @a-game-mode?)]
-    (reset! (:a-on-off button) new-state)
-    (reset! a-game-mode? new-state)))
-
-(defn register-space-button! []
-  (register-button!
-    {:key :space
-     :init init-space-button!
-     :update update-space-button-rect!
-     :pause identity
-     :resume identity
-     :just-touch process-space-button!
-     }))
-
-
-; ----------------------------------------------------------------
-;; *** license button ***
-(def ^:const url-license-prefix
-  "https://github.com/ayamada/clan/raw/0.0.2-EXPERIMENTAL/doc/drop/")
-(def ^:const url-license-apk (str url-license-prefix "license_apk.txt"))
-(def ^:const url-license-jar (str url-license-prefix "license_jar.txt"))
-(def ^:const url-license-exe (str url-license-prefix "license_exe.txt"))
-
-(defn init-license-button! [button]
-  (let [tex (Texture. (assets-file "license.png"))]
-    (register-disposer! tex)
-    (reset! (:a-on-tex button) tex)
-    (reset! (:a-off-tex button) tex)))
-
-(defn update-license-button-rect! [button screen-w screen-h]
-  ;; it set to corner of up-right
-  (let [^Texture tex @(:a-on-tex button)
-        w (.getWidth tex)
-        h (.getHeight tex)
-        x (- (.x ^Rectangle (get-button-rect :space)) w 4)
-        y (- screen-h h 6)]
-    (.set ^Rectangle (:rect button) (float x) (float y) (float w) (float h))))
-
-(defn process-license-button! [button]
-  (let [url (cond
-              (= Application$ApplicationType/Android
-                 (.. Gdx app (getType))) url-license-apk
-              (.endsWith ^String (System/getProperty "sun.java.command" "")
-                         ".exe") url-license-exe
-              :else url-license-jar)]
-    (open-dialog! "LICENSE" url)))
-
-(defn register-license-button! []
-  (register-button!
-    {:key :license
-     :init init-license-button!
-     :update update-license-button-rect!
-     :pause identity
-     :resume identity
-     :just-touch process-license-button!
-     }))
-
-
-; ----------------------------------------------------------------
 ;; *** volume button ***
 (def ^:const VOLUME-BUTTON-WIDTH 64)
 (def ^:const VOLUME-BUTTON-HEIGHT 64)
@@ -468,7 +387,7 @@
   (let [w VOLUME-BUTTON-WIDTH
         h VOLUME-BUTTON-HEIGHT
         x (- screen-w w 2)
-        y (- (.y ^Rectangle (get-button-rect :space)) h 2)]
+        y (- screen-h h 2)]
     (.set ^Rectangle (:rect button) (float x) (float y) (float w) (float h))))
 
 (defn process-volume-button! [button]
@@ -502,7 +421,7 @@
         w (.getWidth tex)
         h (.getHeight tex)
         x (- (.x ^Rectangle (get-button-rect :volume)) w)
-        y (- (.y ^Rectangle (get-button-rect :space)) h 4)]
+        y (- screen-h h 2)]
     (.set ^Rectangle (:rect button) (float x) (float y) (float w) (float h))))
 
 (defn process-clan-button! [button]
@@ -516,6 +435,87 @@
      :pause identity
      :resume identity
      :just-touch process-clan-button!
+     }))
+
+
+; ----------------------------------------------------------------
+;; *** license button ***
+(def ^:const url-license-prefix
+  "https://github.com/ayamada/clan/raw/0.0.2-EXPERIMENTAL/doc/drop/")
+(def ^:const url-license-apk (str url-license-prefix "license_apk.txt"))
+(def ^:const url-license-jar (str url-license-prefix "license_jar.txt"))
+(def ^:const url-license-exe (str url-license-prefix "license_exe.txt"))
+
+(defn init-license-button! [button]
+  (let [tex (Texture. (assets-file "license.png"))]
+    (register-disposer! tex)
+    (reset! (:a-on-tex button) tex)
+    (reset! (:a-off-tex button) tex)))
+
+(defn update-license-button-rect! [button screen-w screen-h]
+  ;; it set to corner of up-right
+  (let [^Texture tex @(:a-on-tex button)
+        w (.getWidth tex)
+        h (.getHeight tex)
+        x (- (.x ^Rectangle (get-button-rect :clan)) w)
+        y (- screen-h h 2)]
+    (.set ^Rectangle (:rect button) (float x) (float y) (float w) (float h))))
+
+(defn process-license-button! [button]
+  (let [url (cond
+              (= Application$ApplicationType/Android
+                 (.. Gdx app (getType))) url-license-apk
+              (.endsWith ^String (System/getProperty "sun.java.command" "")
+                         ".exe") url-license-exe
+              :else url-license-jar)]
+    (open-dialog! "LICENSE" url)))
+
+(defn register-license-button! []
+  (register-button!
+    {:key :license
+     :init init-license-button!
+     :update update-license-button-rect!
+     :pause identity
+     :resume identity
+     :just-touch process-license-button!
+     }))
+
+
+; ----------------------------------------------------------------
+;; *** space/drop button ***
+(def a-game-mode? (atom true))
+
+(defn init-space-button! [button]
+  (let [on-tex (Texture. (assets-file "sd_on.png"))
+        off-tex (Texture. (assets-file "sd_off.png"))]
+    (register-disposer! on-tex)
+    (register-disposer! off-tex)
+    (reset! (:a-on-off button) @a-game-mode?)
+    (reset! (:a-on-tex button) on-tex)
+    (reset! (:a-off-tex button) off-tex)))
+
+(defn update-space-button-rect! [button screen-w screen-h]
+  ;; it set to corner of up-right
+  (let [^Texture tex @(:a-on-tex button)
+        w (.getWidth tex)
+        h (.getHeight tex)
+        x (- screen-w w 2)
+        y (- (.y ^Rectangle (get-button-rect :volume)) h)]
+    (.set ^Rectangle (:rect button) (float x) (float y) (float w) (float h))))
+
+(defn process-space-button! [button]
+  (let [new-state (not @a-game-mode?)]
+    (reset! (:a-on-off button) new-state)
+    (reset! a-game-mode? new-state)))
+
+(defn register-space-button! []
+  (register-button!
+    {:key :space
+     :init init-space-button!
+     :update update-space-button-rect!
+     :pause identity
+     :resume identity
+     :just-touch process-space-button!
      }))
 
 
@@ -1085,10 +1085,10 @@
   (init-score!)
   (init-dialog!)
   (unregister-all-button!)
-  (register-space-button!)
-  (register-license-button!)
   (register-volume-button!)
   (register-clan-button!)
+  (register-license-button!)
+  (register-space-button!)
   (init-buttons!)
   (init-player!)
   (init-items!)
