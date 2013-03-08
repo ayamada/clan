@@ -40,7 +40,7 @@ Link
    -  `Clojure for Android <https://github.com/sattvik/clojure>`_
 
       -  `Deep Blue Lambda <http://www.deepbluelambda.org/>`_: Clojure for Android のメンテナの人のサイト。nekoのオリジナル版もこの人が作った。
-      -  `Clojure REPL <https://play.google.com/store/apps/details?id=com.sattvik.clojure_repl>`_: この人が作った、android用clojureREPL。一行コンソールからだけではなく、Nailgun内蔵で外からVimClojure経由の操作もできる。android実機の環境で「○○クラスは標準で入ってるのか？」みたいな調べ物をするのに便利。
+      -  `Clojure REPL <https://play.google.com/store/apps/details?id=com.sattvik.clojure_repl>`_: この人が作った、android用clojureのREPLコンソール。一行コンソールからだけではなく、Nailgun内蔵で外からVimClojure経由の操作もできる。android実機の環境で「○○クラスは標準で入ってるのか？」みたいな調べ物をするのに便利。
 
 -  `LibGDX <http://libgdx.badlogicgames.com/>`_
 
