@@ -38,17 +38,15 @@ Link
    -  `CheatSheet <http://clojure.org/cheatsheet>`_
    -  `ClojureDocs <http://clojuredocs.org/>`_
    -  `Clojure for Android <https://github.com/sattvik/clojure>`_
-      -  `Deep Blue Lambda <http://www.deepbluelambda.org/>`_:
-         Clojure for Android のメンテナの人のサイト。nekoのオリジナル版もこの人が作った。
-      -  `Clojure REPL <https://play.google.com/store/apps/details?id=com.sattvik.clojure_repl>`_:
-         この人が作った、android用clojureREPL。一行コンソールからだけではなく、Nailgun内蔵で外からVimClojure経由の操作もできる。android実機の環境で「○○クラスは標準で入ってるのか？」みたいな調べ物をするのに便利。
+
+      -  `Deep Blue Lambda <http://www.deepbluelambda.org/>`_: Clojure for Android のメンテナの人のサイト。nekoのオリジナル版もこの人が作った。
+      -  `Clojure REPL <https://play.google.com/store/apps/details?id=com.sattvik.clojure_repl>`_: この人が作った、android用clojureREPL。一行コンソールからだけではなく、Nailgun内蔵で外からVimClojure経由の操作もできる。android実機の環境で「○○クラスは標準で入ってるのか？」みたいな調べ物をするのに便利。
 
 -  `LibGDX <http://libgdx.badlogicgames.com/>`_
 
    -  `libgdx API <http://libgdx.badlogicgames.com/nightlies/docs/api/overview-summary.html>`_
    -  `Wiki <http://code.google.com/p/libgdx/wiki/TableOfContents>`_
-   -  `Androidゲームプログラミング A to Z <http://www.impressjapan.jp/books/3113>`_\ (`amazon <http://www.amazon.co.jp/dp/4844331132>`_):
-      `Beginning Android Games <http://www.apress.com/9781430230427>`_\ の日本語訳版。良書。ただし本家の方は\ `2nd Edition <http://www.apress.com/9781430246770>`_\ が出てるが日本語訳版は初版ベース。
+   -  `Androidゲームプログラミング A to Z <http://www.impressjapan.jp/books/3113>`_\ (`amazon <http://www.amazon.co.jp/dp/4844331132>`_): `Beginning Android Games <http://www.apress.com/9781430230427>`_\ の日本語訳版。良書。ただし本家の方は\ `2nd Edition <http://www.apress.com/9781430246770>`_\ が出てるが日本語訳版は初版ベース。
 
 -  `Android <http://developer.android.com/index.html>`_
 
@@ -57,8 +55,7 @@ Link
 -  `Neko(forked by Alexander Yakushev) <https://github.com/alexander-yakushev/neko>`_
 
    -  `reference <http://alexander-yakushev.github.com/neko/>`_
-   -  `Clojure Development on Android <http://clojure-android.blogspot.jp/>`_:
-      nekoのメンテナの人の解説ブログ。
+   -  `Clojure Development on Android <http://clojure-android.blogspot.jp/>`_: nekoのメンテナの人の解説ブログ。
 
 -  `launch4j <http://launch4j.sourceforge.net/>`_
 
