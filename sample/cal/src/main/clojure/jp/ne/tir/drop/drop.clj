@@ -441,7 +441,7 @@
 ; ----------------------------------------------------------------
 ;; *** license button ***
 (def ^:const url-license-prefix
-  "https://github.com/ayamada/clan/raw/0.0.2-EXPERIMENTAL/doc/drop/")
+  "https://github.com/ayamada/clan/raw/0.0.3-EXPERIMENTAL/doc/drop/")
 (def ^:const url-license-apk (str url-license-prefix "license_apk.txt"))
 (def ^:const url-license-jar (str url-license-prefix "license_jar.txt"))
 (def ^:const url-license-exe (str url-license-prefix "license_exe.txt"))
