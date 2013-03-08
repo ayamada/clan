@@ -1,3 +1,9 @@
+2013-03-08  ayamada
+	* release 0.0.3-EXPERIMENTAL:
+	  - upgrade clojure to 1.5.0
+	  - improve sample app
+	  - move document from README.rst to http://doc.tir.ne.jp/devel/clan
+
 2013-03-05  ayamada
 	* release 0.0.2-EXPERIMENTAL:
 	  - improve sample app
