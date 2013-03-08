@@ -25,6 +25,10 @@ androidアプリだけではなく、windowsとその他のデスクトップos�
 
 詳細は http://doc.tir.ne.jp/devel/clan のドキュメントを見てください。
 
+ChangeLog
+---------
+
+-  `<ChangeLog>`_
 
 Link
 ----
@@ -53,7 +57,6 @@ Link
       nekoのメンテナの人の解説ブログ。
 
 -  `launch4j <http://launch4j.sourceforge.net/>`_
-
 
 License
 -------
