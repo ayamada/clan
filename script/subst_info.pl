@@ -36,7 +36,7 @@ sub main {
   my $subst_table = {
     debug => (not $release_flag),
     buildNumber => oneline(`LANG=C date +%s`),
-    buildDate => oneline(`LANG=C date`),
+    buildDate => oneline(`LANG=C date '+%Y/%m/%d %H:%M:%S'`),
     buildEnv => oneline(`uname -a`),
     buildCompilerVersion => oneline(`javac -version 2>&1`),
   };
