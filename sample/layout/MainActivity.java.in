@@ -35,7 +35,7 @@ public class MainActivity extends AndroidApplication {
 		final Context context = this.getApplicationContext();
 		// it is for disable boot-screen.
 		//RT.var("clojure.core", "require").invoke(Symbol.intern("neko.compilation"));
-		//RT.var("neko.compilation", "init").invoke(context, "classes");
+		//RT.var("neko.compilation", "init").invoke(context);
 		//initialize(new @PROJECT_CAL_CLASSNAME@(), config);
 		initialize(
 				new BootLoader(
@@ -55,7 +55,7 @@ public class MainActivity extends AndroidApplication {
 						public void run() {
 							try {
 								RT.var("clojure.core", "require").invoke(Symbol.intern("neko.compilation"));
-								RT.var("neko.compilation", "init").invoke(context, "classes");
+								RT.var("neko.compilation", "init").invoke(context);
 							}
 							catch (Exception e) {
 								throw new RuntimeException("failed to initialize at neko");
