@@ -251,8 +251,9 @@ android/target/$(PROJECT_ANDROID_ARTIFACTID).apk: .layout-done .cal-done .cbl-do
 
 apk: android/target/$(PROJECT_ANDROID_ARTIFACTID).apk
 
-apk-install: android/target/$(PROJECT_ANDROID_ARTIFACTID).apk
-	cd android && $(MVN) install
+apk-install: .layout-done .cal-done .cbl-done
+	if [ $(RELEASE_FLAG) = 0 ]; then $(MAKE) info-silent-update; fi
+	if [ x != x$(ADB) ]; then cd android && $(MVN) install; fi
 
 android/target/$(PROJECT_ANDROID_ARTIFACTID)-signed-aligned.apk: .layout-done .cal-done .cbl-done
 	if [ x != x$(ADB) ]; then \
