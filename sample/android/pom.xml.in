@@ -121,7 +121,7 @@
 					<undeployBeforeDeploy>true</undeployBeforeDeploy>
 					<dex>
 						<jvmArguments>
-							<jvmArgument>-Xmx1024m</jvmArgument>
+							<jvmArgument>-Xmx1280m</jvmArgument>
 						</jvmArguments>
 					</dex>
 				</configuration>
