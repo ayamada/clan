@@ -1,4 +1,8 @@
 2013-04-14  ayamada
+	* release 0.0.6:
+	  - upgrade com.google.android to 4.1.1.4
+
+2013-04-14  ayamada
 	* release 0.0.5:
 	  - upgrade libgdx to 0.9.8
 
