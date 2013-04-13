@@ -147,11 +147,11 @@
     (reset! a-music bgm)))
 
 (defn change-volume! [on-off]
-  (doto (.. Gdx app (getPreferences (str "CBL-" Info/projectGroupId
-                                         "-" Info/projectArtifactId
-                                         "-" Info/projectClassifier)))
-    (.putBoolean "PLAY_JINGLE" on-off)
-    (.flush)) ; see BootLoader.java
+  ;(doto (.. Gdx app (getPreferences (str "CBL-" Info/projectGroupId
+  ;                                       "-" Info/projectArtifactId
+  ;                                       "-" Info/projectClassifier)))
+  ;  (.putBoolean "PLAY_JINGLE" on-off)
+  ;  (.flush)) ; see BootLoader.java
   (pref! :volume-off? (not on-off))
   (if on-off (.play ^Music @a-music) (.stop ^Music @a-music)))
 

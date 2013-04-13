@@ -4,15 +4,19 @@ package jp.ne.tir.clan;
  * このモジュールは、clojureの初期化にかかる時間を
  * ごまかす為のブートエフェクト類を出すモジュールです。
  *
- * メモ:
- * calより以下を実行する事で、ジングル音の無効/有効を変更できる。
- * これはアプリ本体の設定時に音声を無しにした時等に、同時に変更される想定。
+ * TODO:
+ * 以前は、以下をcalより実行する事で、ジングル音の無効/有効を変更できた。
  * (doto (.. Gdx app (getPreferences (str "CBL-" Info/projectGroupId
  *                                        "-" Info/projectArtifactId
  *                                        "-" Info/projectClassifier)))
  *   (.putBoolean "PLAY_JINGLE" true-or-false)
  *   (.flush)) ; see BootLoader.java
- * TODO: これは将来、 jp.ne.tir.clan.util として提供する
+ * 現在はこのコードはコメントアウトしている。
+ * 理由は、PC向けにて、Preferencesの扱いに難がある上に
+ * Preferences以外ではローカルファイルぐらいしか渡す手段がない為。
+ * かといってローカルファイル渡しも微妙かもしれない。
+ * 諦めて、layout内かどこかで固定の設定をできるようにすべきかも。
+ * - Android/PC向けなら、ジングルを鳴らす/鳴らさない
  */
 
 import com.badlogic.gdx.Gdx;
@@ -179,7 +183,7 @@ public class BootLoader implements ApplicationListener {
 	private int phaseStep;
 	private float phaseSec;
 	private Console console;
-	private Preferences prefs;
+	//private Preferences prefs;
 	private Runnable cljInit;
 	private Runnable nekoInit;
 	private Callable<ApplicationListener> spawner;
@@ -276,10 +280,10 @@ public class BootLoader implements ApplicationListener {
 		camera = new OrthographicCamera();
 		jingle = solveJingle();
 		console = new Console(font, batch);
-		prefs = Gdx.app.getPreferences(
-				"CBL-"+Info.projectGroupId
-				+"-"+Info.projectArtifactId
-				+"-"+Info.projectClassifier);
+		//prefs = Gdx.app.getPreferences(
+		//		"CBL-"+Info.projectGroupId
+		//		+"-"+Info.projectArtifactId
+		//		+"-"+Info.projectClassifier);
 	}
 
 	private void disposeTrue () {
@@ -404,7 +408,8 @@ public class BootLoader implements ApplicationListener {
 			if (jingle == null) {
 				console.appendLatest(" jingle not found, skipped.");
 			}
-			else if (prefs.getBoolean("PLAY_JINGLE", true)) {
+			//else if (prefs.getBoolean("PLAY_JINGLE", true)) {
+			else if (true) {
 				jingle.play();
 				console.appendLatest(" start.");
 			}
