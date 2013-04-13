@@ -1,3 +1,19 @@
+2013-04-14  ayamada
+	* release 0.0.4:
+	  - Android実機では、プロセス停止直後にまた実行された
+	    場合(二回目実行時等)は高速に開始できるので、その際には
+	    起動スクリーンの表示を行わないようにした
+	    dont show boot-loader-screen when second boot
+	  - prefによる、起動ジングル再生のオン/オフ制御を一時的に廃止
+	    deprecate to change on/off to play jingle by pref
+	  - bump-up to android:targetSdkVersion=17
+	  - bump-up to -Xmx1280m when make apk
+	  - mavenが二重にbuildしていたと思われる部分を修正
+	    maven not use already exists file, avoid twice build
+	  - Info/buildDateの書式をyyyy/mm/dd形式に変更
+	    change format of Info/buildDate
+	  - maintain README.rst
+
 2013-03-08  ayamada
 	* release 0.0.3-EXPERIMENTAL:
 	  - upgrade clojure to 1.5.0
