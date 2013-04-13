@@ -42,6 +42,12 @@ import java.lang.StringBuilder;
 
 import jp.ne.tir.clan.Info;
 
+// ApplicationListenerCache
+class ALC {
+	static ApplicationListener al = null;
+	static boolean reserveNextAlClear = false;
+}
+
 public class BootLoader implements ApplicationListener {
 	static final float fadeSec = 1.0f; // fadein/fadeoutにかける秒数
 	static final float[] bgColorRGB = {0f, 0f, 0f}; // 背景色
@@ -271,6 +277,11 @@ public class BootLoader implements ApplicationListener {
 
 	@Override
 	public void create () {
+		if (ALC.reserveNextAlClear) {
+			ALC.reserveNextAlClear = false;
+			ALC.al = null;
+		}
+		if (null != ALC.al) { ALC.al.create(); return; }
 		if (Info.debug) Gdx.app.setLogLevel(Application.LOG_DEBUG);
 		Pixmap logoPixmap = solveLogoPixmap();
 		logo = new Texture(logoPixmap);
@@ -297,6 +308,7 @@ public class BootLoader implements ApplicationListener {
 
 	@Override
 	public void resize (int width, int height) {
+		if (null != ALC.al) { ALC.al.resize(width, height); return; }
 		if (isClojureStarted()) { cal.resize(width, height); return; }
 		screenWidth = width;
 		if (screenWidth < 128) screenWidth = 128;
@@ -309,6 +321,7 @@ public class BootLoader implements ApplicationListener {
 
 	@Override
 	public void render () {
+		if (null != ALC.al) { ALC.al.render(); return; }
 		if (isClojureStarted()) { cal.render(); return; }
 		try {
 			float delta = Gdx.graphics.getDeltaTime();
@@ -357,12 +370,14 @@ public class BootLoader implements ApplicationListener {
 
 	@Override
 	public void pause () {
+		if (null != ALC.al) { ALC.al.pause(); return; }
 		if (isClojureStarted()) { cal.pause(); return; }
 		logo.dispose();
 	}
 
 	@Override
 	public void resume () {
+		if (null != ALC.al) { ALC.al.resume(); return; }
 		if (isClojureStarted()) { cal.resume(); return; }
 		Pixmap logoPixmap = solveLogoPixmap();
 		logo = new Texture(logoPixmap);
@@ -371,6 +386,7 @@ public class BootLoader implements ApplicationListener {
 
 	@Override
 	public void dispose () {
+		if (null != ALC.al) { ALC.al.dispose(); return; }
 		// clojure起動後は、clojure側をdispose()する
 		if (isClojureStarted()) cal.dispose();
 		// そうでない場合は、まだCBLのdisposeTrue()が実行されてないので、実行する
@@ -551,6 +567,7 @@ public class BootLoader implements ApplicationListener {
 				System.gc();
 			}}.run();
 			// calに制御を渡すフラグを立て、抜ける
+			ALC.al = cal;
 			phase = Phase.CALEXEC; phaseStep = 0;
 		}
 	}
