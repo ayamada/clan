@@ -1,4 +1,8 @@
 2013-04-14  ayamada
+	* release 0.0.5:
+	  - upgrade libgdx to 0.9.8
+
+2013-04-14  ayamada
 	* release 0.0.4:
 	  - Android実機では、プロセス停止直後にまた実行された
 	    場合(二回目実行時等)は高速に開始できるので、その際には
