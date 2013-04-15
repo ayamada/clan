@@ -47,16 +47,16 @@ AC_SUBST(PROJECT_NAME_AND_CLASSIFIER)
 dnl cal設定(変更可)
 PROJECT_CAL_GROUPID=${PROJECT_GROUPID}
 AC_SUBST(PROJECT_CAL_GROUPID)
-dnl ↑cal内のパッケージ名。
+dnl ↑cal内のパッケージ名。maven用。
 PROJECT_CAL_ARTIFACTID=${PROJECT_ARTIFACTID_AND_CLASSIFIER}
 AC_SUBST(PROJECT_CAL_ARTIFACTID)
-dnl ↑cal内の内部パッケージ用のartifactId。適当でよい
+dnl ↑cal内の内部パッケージ用のartifactId。maven用、表には出ない
 PROJECT_CAL_VERSION=${PROJECT_VERSION}
 AC_SUBST(PROJECT_CAL_VERSION)
-dnl ↑cal内の内部パッケージ用のversion。適当でよい
+dnl ↑cal内の内部パッケージ用のversion。maven用、表には出ない
 PROJECT_CAL_NAME=${PROJECT_NAME_AND_CLASSIFIER}
 AC_SUBST(PROJECT_CAL_NAME)
-dnl ↑cal内の内部パッケージ用のname。適当でよい
+dnl ↑cal内の内部パッケージ用のname。maven用、表には出ない
 PROJECT_CAL_CLASSNAME="al"
 AC_SUBST(PROJECT_CAL_CLASSNAME)
 dnl ↑cblから呼び出されるべき、cal内のApplicationListenerのクラス名を指定。
