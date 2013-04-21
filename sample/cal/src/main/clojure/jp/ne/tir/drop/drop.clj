@@ -1164,7 +1164,6 @@
 
 (defn drop-dispose []
   (when do-prof? (eval '(android.os.Debug/startMethodTracing)))
-  (shutdown-agents)
   (dispose-all!))
 
 
