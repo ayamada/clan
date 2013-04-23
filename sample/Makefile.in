@@ -238,7 +238,7 @@ desktop/target/$(PROJECT_DESKTOP_ARTIFACTID)-$(PROJECT_DESKTOP_VERSION)-jar-with
 jar: desktop/target/$(PROJECT_DESKTOP_ARTIFACTID)-$(PROJECT_DESKTOP_VERSION)-jar-with-dependencies.jar
 
 jar-exec: desktop/target/$(PROJECT_DESKTOP_ARTIFACTID)-$(PROJECT_DESKTOP_VERSION)-jar-with-dependencies.jar
-	$(JAVA) -jar desktop/target/$(PROJECT_DESKTOP_ARTIFACTID)-$(PROJECT_DESKTOP_VERSION)-jar-with-dependencies.jar
+	cd desktop && $(JAVA) -jar target/$(PROJECT_DESKTOP_ARTIFACTID)-$(PROJECT_DESKTOP_VERSION)-jar-with-dependencies.jar
 
 jar-clean:
 	cd desktop && $(MVN) clean
