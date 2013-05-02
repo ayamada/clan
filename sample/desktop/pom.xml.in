@@ -113,6 +113,12 @@
 			<artifactId>gdx-backend-lwjgl-natives</artifactId>
 			<version>@CLAN_LIBGDX_VERSION@</version>
 		</dependency>
+
+		<dependency>
+			<groupId>com.badlogic.gdx</groupId>
+			<artifactId>gdx-tools</artifactId>
+			<version>@CLAN_LIBGDX_VERSION@</version>
+		</dependency>
 	</dependencies>
 
 	<repositories>
