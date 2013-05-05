@@ -140,7 +140,7 @@ android/libs/armeabi/libgdx.so: tmp/libgdx/gdx.jar
 	cd tmp/libgdx && for f in *.jar; do \
 		$(MVN) install:install-file -Dfile=$$f -DgroupId=com.badlogic.gdx -DartifactId=$${f%%.jar} -Dversion=$(CLAN_LIBGDX_VERSION) -Dpackaging=jar -DgeneratePom=true -DcreateChecksum=true || break 0; \
 	done
-	cd tmp/libgdx $(MVN) install:install-file -Dfile=extensions/gdx-tools/gdx-tools.jar -DgroupId=com.badlogic.gdx -DartifactId=gdx-tools -Dversion=$(CLAN_LIBGDX_VERSION) -Dpackaging=jar -DgeneratePom=true -DcreateChecksum=true
+	cd tmp/libgdx/extensions/gdx-tools && $(MVN) install:install-file -Dfile=gdx-tools.jar -DgroupId=com.badlogic.gdx -DartifactId=gdx-tools -Dversion=$(CLAN_LIBGDX_VERSION) -Dpackaging=jar -DgeneratePom=true -DcreateChecksum=true
 	touch .dep-libgdx-done
 
 dep-libgdx: .dep-libgdx-done
