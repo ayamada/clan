@@ -21,7 +21,7 @@
       <groupId>org.clojure</groupId>
       <artifactId>clojure-contrib</artifactId>
       <version>1.2.0</version>
-      <scope>compile</scope>
+      <scope>provided</scope>
     </dependency>
     -->
 
