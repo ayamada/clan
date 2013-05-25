@@ -12,9 +12,8 @@ package @PROJECT_DESKTOP_GROUPID@;
 */
 
 import java.util.concurrent.Callable;
-import @CLAN_CBL_GROUPID@.@CLAN_CBL_CLASSNAME@;
-
-import @PROJECT_CAL_GROUPID@.@PROJECT_CAL_CLASSNAME@;
+import jp.ne.tir.clan.BootLoader;
+//import jp.ne.tir.clan.Config;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ApplicationListener;
@@ -22,24 +21,35 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.badlogic.gdx.Files.FileType;
 
+//import clojure.lang.RT;
+//import clojure.lang.Symbol;
+
 public class Desktop {
 	public static void main(String[] args) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		config.title = "@PROJECT_DESKTOP_NAME@";
+		config.title = "@PROJECT_NAME@";
+		//config.useGL20 = Config.useGL20;
 		config.useGL20 = false;
 		//config.width = 480;
 		//config.height = 320;
-		config.addIcon("icon/128x128.png", FileType.Internal);
-		config.addIcon("icon/32x32.png", FileType.Internal);
-		config.addIcon("icon/16x16.png", FileType.Internal);
+		config.addIcon("assets/process_icon/128x128.png", FileType.Internal);
+		config.addIcon("assets/process_icon/32x32.png", FileType.Internal);
+		config.addIcon("assets/process_icon/16x16.png", FileType.Internal);
 		// it is for disable boot-screen.
-		//new LwjglApplication(new @PROJECT_CAL_CLASSNAME@(), config);
+		//new LwjglApplication(new @PROJECT_CAL_CLASS@(), config);
 		new LwjglApplication(
 				new BootLoader(
 					null,
 					null,
 					new Callable<ApplicationListener>() {
-						@Override public ApplicationListener call() { return new @PROJECT_CAL_CLASSNAME@(); }
+						@Override public ApplicationListener call() {
+							//return new @PROJECT_CAL_CLASS@();
+							try {
+								return (ApplicationListener)Class.forName("@PROJECT_CAL_CLASS@").newInstance();
+							} catch (Exception e) {
+								throw e;
+							}
+						}
 					}), // NB: it must can to run another threads.
 				config);
 	}

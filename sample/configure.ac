@@ -3,116 +3,43 @@ AC_PREREQ(2.54)
 dnl ----------------------------------------------------------------
 dnl Defines
 
-dnl 基礎プロジェクト設定(要変更)
+dnl artifactId, version
 AC_INIT(drop, 1.0.5-SNAPSHOT)
-dnl ↑プロジェクト名(兼artifactId)およびプロジェクトのバージョン値を指定。
+
+dnl application-name(for human reading)(マルチバイト指定可)
 PROJECT_NAME="space drop"
 AC_SUBST(PROJECT_NAME)
-dnl ↑人間向けのアプリタイトル。
-PROJECT_GROUPID="jp.ne.tir.drop"
+
+dnl groupId
+PROJECT_GROUPID="jp.ne.tir.drop.android"
 AC_SUBST(PROJECT_GROUPID)
-dnl ↑プロジェクトのgroupId。重要。下の方のPROJECT_CAL_CLASSNAMEの解説を確認！
-dnl   android/desktopの各パッケージでは更に末尾に何かがくっつく。
-PROJECT_CLASSIFIER=""
-AC_SUBST(PROJECT_CLASSIFIER)
-dnl ↑PROJECT_CLASSIFIERの使い方について。
-dnl   これはandroid/desktopのみ、artifactIdおよびnameの末尾に自動付与する。
-dnl   具体的には「同一ソースに複数の別のアプリのエントリを含む」構造の時に、
-dnl   起動すべき特定アプリを指定すると共に、
-dnl   配布時にどのアプリが有効になっているかを示す目的のもの。
-dnl   「同一ソースに複数の別のアプリのエントリを含む」使い方をしないなら
-dnl   空でよい。
-dnl   (しかしゲーム開発ではこの使い方の方が便利だと思う)
+
+dnl android version-code(for google play)
 PROJECT_ANDROID_VERSIONCODE=6
 AC_SUBST(PROJECT_ANDROID_VERSIONCODE)
-dnl ↑androidの例のアレ。リリース毎に数値を増やす事。
-dnl   TODO: 自動的に増えるようにしたい(しかも安全に)が…どうやればできる？
+dnl TODO: 自動的に増えるようにしたい(しかも安全に)が…どうやればできる？
 
-dnl 上記より自動生成される残りのプロジェクト情報(変更可)
-dnl PROJECT_GROUPID= 設定済
-dnl AC_SUBST(PROJECT_GROUPID)
+dnl class of ApplicationListener by clojure
+PROJECT_CAL_CLASS=drop.al
+AC_SUBST(PROJECT_CAL_CLASS)
+
+
+dnl ----------------------------------------------------------------
+dnl Aliases
 PROJECT_ARTIFACTID=$PACKAGE_NAME
 AC_SUBST(PROJECT_ARTIFACTID)
-#PROJECT_NAME= 設定済
-#AC_SUBST(PROJECT_NAME)
 PROJECT_VERSION=$PACKAGE_VERSION
 AC_SUBST(PROJECT_VERSION)
-dnl PROJECT_CLASSIFIER= 設定済
-dnl AC_SUBST(PROJECT_CLASSIFIER)
-PROJECT_ARTIFACTID_AND_CLASSIFIER=${PROJECT_ARTIFACTID}${PROJECT_CLASSIFIER:+-}${PROJECT_CLASSIFIER}
-AC_SUBST(PROJECT_ARTIFACTID_AND_CLASSIFIER)
-PROJECT_NAME_AND_CLASSIFIER=${PROJECT_NAME}${PROJECT_CLASSIFIER:+ }${PROJECT_CLASSIFIER}
-AC_SUBST(PROJECT_NAME_AND_CLASSIFIER)
 
-dnl cal設定(変更可)
-PROJECT_CAL_GROUPID=${PROJECT_GROUPID}
-AC_SUBST(PROJECT_CAL_GROUPID)
-dnl ↑cal内のパッケージ名。maven用。
-PROJECT_CAL_ARTIFACTID=${PROJECT_ARTIFACTID_AND_CLASSIFIER}
-AC_SUBST(PROJECT_CAL_ARTIFACTID)
-dnl ↑cal内の内部パッケージ用のartifactId。maven用、表には出ない
-PROJECT_CAL_VERSION=${PROJECT_VERSION}
-AC_SUBST(PROJECT_CAL_VERSION)
-dnl ↑cal内の内部パッケージ用のversion。maven用、表には出ない
-PROJECT_CAL_NAME=${PROJECT_NAME_AND_CLASSIFIER}
-AC_SUBST(PROJECT_CAL_NAME)
-dnl ↑cal内の内部パッケージ用のname。maven用、表には出ない
-PROJECT_CAL_CLASSNAME="al"
-AC_SUBST(PROJECT_CAL_CLASSNAME)
-dnl ↑cblから呼び出されるべき、cal内のApplicationListenerのクラス名を指定。
-dnl   cal/src/${PROJECT_CAL_GROUPID}/${PROJECT_CAL_CLASSNAME}.clj に対応する。
-
-
-
-dnl android設定(必要ならば変更可、通常は変更不要)
-PROJECT_ANDROID_GROUPID=${PROJECT_GROUPID}.android${PROJECT_CLASSIFIER:+.}${PROJECT_CLASSIFIER}
-AC_SUBST(PROJECT_ANDROID_GROUPID)
-PROJECT_ANDROID_ARTIFACTID=${PROJECT_ARTIFACTID_AND_CLASSIFIER}-android
-AC_SUBST(PROJECT_ANDROID_ARTIFACTID)
-PROJECT_ANDROID_VERSION=${PROJECT_VERSION}
-AC_SUBST(PROJECT_ANDROID_VERSION)
-PROJECT_ANDROID_NAME=${PROJECT_NAME_AND_CLASSIFIER}
-AC_SUBST(PROJECT_ANDROID_NAME)
-
-dnl ↓アプリのバージョンアップ時等での同一アプリ判定に使われるパッケージ名
-PROJECT_ANDROID_PACKAGE=${PROJECT_ANDROID_GROUPID}
-AC_SUBST(PROJECT_ANDROID_PACKAGE)
-dnl ↓起動に必要なActivity指定
-PROJECT_ANDROID_ACTIVITY=${PROJECT_ANDROID_GROUPID}.MainActivity
-AC_SUBST(PROJECT_ANDROID_ACTIVITY)
-dnl ↓表示用バージョン文字列
-PROJECT_ANDROID_VERSIONNAME=${PROJECT_ANDROID_VERSION}
-AC_SUBST(PROJECT_ANDROID_VERSIONNAME)
-dnl ↓バージョン大小判定用バージョン値
-dnl PROJECT_ANDROID_VERSIONCODE= 設定済
-dnl AC_SUBST(PROJECT_ANDROID_VERSIONCODE)
-
-
-
-
-
-dnl desktop設定(必要ならば変更可、通常は変更不要)
-PROJECT_DESKTOP_GROUPID=${PROJECT_GROUPID}.java${PROJECT_CLASSIFIER:+.}${PROJECT_CLASSIFIER}
+dnl もし必要なら以下を変更してもよい
+PROJECT_DESKTOP_GROUPID=${PROJECT_GROUPID}
 AC_SUBST(PROJECT_DESKTOP_GROUPID)
-PROJECT_DESKTOP_ARTIFACTID=${PROJECT_ARTIFACTID_AND_CLASSIFIER}-desktop
-AC_SUBST(PROJECT_DESKTOP_ARTIFACTID)
-PROJECT_DESKTOP_VERSION=${PROJECT_VERSION}
-AC_SUBST(PROJECT_DESKTOP_VERSION)
-PROJECT_DESKTOP_NAME=${PROJECT_NAME_AND_CLASSIFIER}
-AC_SUBST(PROJECT_DESKTOP_NAME)
-
-dnl ↓起動に必要なメインクラス指定
-PROJECT_DESKTOP_MAINCLASS=${PROJECT_DESKTOP_GROUPID}.Desktop
-AC_SUBST(PROJECT_DESKTOP_MAINCLASS)
+PROJECT_ANDROID_GROUPID=${PROJECT_GROUPID}
+AC_SUBST(PROJECT_ANDROID_GROUPID)
 
 
-
-
-
-
-dnl 以下はCLAN内部用の設定(基本的に変更不要)
-
-dnl clan設定
+dnl ----------------------------------------------------------------
+dnl clan information
 source clan/script/settings.sh
 AC_SUBST(CLAN_GROUPID)
 AC_SUBST(CLAN_ARTIFACTID)
@@ -124,33 +51,8 @@ AC_SUBST(CLAN_ANDROID_VERSION)
 AC_SUBST(CLAN_NEKO_VERSION)
 
 
-dnl cbl設定
-CLAN_CBL_GROUPID=${CLAN_GROUPID}
-AC_SUBST(CLAN_CBL_GROUPID)
-CLAN_CBL_ARTIFACTID="cbl"
-AC_SUBST(CLAN_CBL_ARTIFACTID)
-CLAN_CBL_VERSION=${CLAN_VERSION}
-AC_SUBST(CLAN_CBL_VERSION)
-CLAN_CBL_NAME="${CLAN_NAME} BootLoader"
-AC_SUBST(CLAN_CBL_NAME)
-CLAN_CBL_CLASSNAME="BootLoader"
-AC_SUBST(CLAN_CBL_CLASSNAME)
-
-dnl info設定
-CLAN_INFO_GROUPID=${CLAN_GROUPID}
-AC_SUBST(CLAN_INFO_GROUPID)
-CLAN_INFO_ARTIFACTID="info"
-AC_SUBST(CLAN_INFO_ARTIFACTID)
-CLAN_INFO_VERSION=${CLAN_VERSION}
-AC_SUBST(CLAN_INFO_VERSION)
-CLAN_INFO_NAME="${CLAN_NAME} Info"
-AC_SUBST(CLAN_INFO_NAME)
-
-
-
-
-
-dnl auto-generatedメッセージ対応
+dnl ----------------------------------------------------------------
+dnl auto-generated message
 AC_MSG_1="This file is automatically generated *.in file."
 AC_MSG_2="Do not modify this file - YOUR CHANGES WILL BE ERASED!"
 AC_MSG_3="You can edit *.in file and 'autoconf && ./configure'"
@@ -164,7 +66,7 @@ AC_SUBST(AC_MSG_4)
 AC_SUBST(AC_MSG_5)
 AC_SUBST(AC_MSG_6)
 
-AC_MSG_TMPL_1="this file was came from layout/ by origin."
+AC_MSG_TMPL_1="this file was came from layout/ ."
 AC_MSG_TMPL_2="このファイルのオリジナルは layout/ 配下にあります。"
 AC_SUBST(AC_MSG_TMPL_1)
 AC_SUBST(AC_MSG_TMPL_2)
@@ -178,6 +80,8 @@ AC_PATH_PROG([JAVAC_PATH], [javac])
 AS_IF(test x"$JAVAC_PATH" = x, AC_MSG_ERROR([javac not found]))
 AC_PATH_PROG([JAR_PATH], [jar])
 AS_IF(test x"$JAR_PATH" = x, AC_MSG_ERROR([jar not found]))
+AC_PATH_PROG([LEIN_PATH], [lein])
+AS_IF(test x"$LEIN_PATH" = x, AC_MSG_ERROR([lein not found]))
 AC_PATH_PROG([MVN_PATH], [mvn])
 AS_IF(test x"$MVN_PATH" = x, AC_MSG_ERROR([mvn not found]))
 AC_PATH_PROG([ADB_PATH], [adb])
@@ -199,8 +103,8 @@ dnl ----------------------------------------------------------------
 dnl Outputs
 
 dnl 自動生成ファイルの一覧を作成する
-IN_TARGET_DIRS="clan layout cal desktop android l4j"
-IN_TARGET_DIRS_EXCLUDE="clan/sample"
+IN_TARGET_DIRS="clan/cbl clan/depinst layout desktop android src src-java"
+IN_TARGET_DIRS_EXCLUDE="desktop/assets"
 IN_FILES=`find ${IN_TARGET_DIRS} | grep '\.in$' | grep -v ${IN_TARGET_DIRS_EXCLUDE} | perl -ne 'chomp $_ && ($_ =~ s|^(.*)\.in$|$1|) && print "$_ "' && echo Makefile`
 AC_GENERATED_FILES="autom4te.cache configure VERSION $IN_FILES"
 AC_SUBST(AC_GENERATED_FILES)

@@ -5,18 +5,15 @@ package jp.ne.tir.clan;
  * ごまかす為のブートエフェクト類を出すモジュールです。
  *
  * TODO:
- * 以前は、以下をcalより実行する事で、ジングル音の無効/有効を変更できた。
- * (doto (.. Gdx app (getPreferences (str "CBL-" Info/projectGroupId
- *                                        "-" Info/projectArtifactId
- *                                        "-" Info/projectClassifier)))
- *   (.putBoolean "PLAY_JINGLE" true-or-false)
- *   (.flush)) ; see BootLoader.java
- * 現在はこのコードはコメントアウトしている。
- * 理由は、PC向けにて、Preferencesの扱いに難がある上に
- * Preferences以外ではローカルファイルぐらいしか渡す手段がない為。
- * かといってローカルファイル渡しも微妙かもしれない。
- * 諦めて、layout内かどこかで固定の設定をできるようにすべきかも。
- * - Android/PC向けなら、ジングルを鳴らす/鳴らさない
+ * BootLoaderのコンストラクタの引数で以下を設定/変更できるようにする事
+ * - ジングルファイル
+ * - ロゴファイル
+ * - ロゴファイルの表示処理
+ * - 背景色
+ * - コンソールのフォント、色
+ * - コンソールに表示する文字列
+ *   - 「loading」「...」「done」の各文字列
+ *   - 回転カーソル表示
  */
 
 import com.badlogic.gdx.Gdx;
@@ -40,7 +37,7 @@ import java.util.*;
 import java.util.concurrent.Callable;
 import java.lang.StringBuilder;
 
-import jp.ne.tir.clan.Info;
+//import jp.ne.tir.clan.Info;
 
 // ApplicationListenerCache
 class ALC {
@@ -176,7 +173,7 @@ public class BootLoader implements ApplicationListener {
 		}
 	}
 
-	private static final String assetDir = "cbl"; // asset中の、 logo.png se.wav 等のあるdir
+	private static final String assetDir = "assets"; // logo.png se.wav 等のあるdir
 	private SpriteBatch batch;
 	private Texture logo; // これは動的生成の為、pause()→resume()の度にdispose()と再生成を行わなくてはならない
 	private float logoFade;
@@ -229,7 +226,7 @@ public class BootLoader implements ApplicationListener {
 		return result;
 	}
 	private Pixmap solveLogoPixmap () {
-		FileHandle fh = solveFileHandle("logo.png");
+		FileHandle fh = solveFileHandle("cbl_logo.png");
 		Pixmap result;
 		if (fh.exists()) {
 			Pixmap p = new Pixmap(fh);
@@ -242,13 +239,21 @@ public class BootLoader implements ApplicationListener {
 			p.dispose();
 		}
 		else {
-			throw new RuntimeException("logo.png not found");
+			//throw new RuntimeException("cbl_logo.png not found");
+			return null;
 		}
 		return result;
 	}
+	private Texture solveLogoTexture () {
+		Pixmap logoPixmap = solveLogoPixmap();
+		if (logoPixmap == null) { return null; }
+		Texture t = new Texture(logoPixmap);
+		logoPixmap.dispose();
+		return t;
+	}
 	private BitmapFont solveLogoFont () {
-		FileHandle fntFh = solveFileHandle("font.fnt");
-		FileHandle pngFh = solveFileHandle("font.png");
+		FileHandle fntFh = solveFileHandle("cbl_font.fnt");
+		FileHandle pngFh = solveFileHandle("cbl_font.png");
 		BitmapFont font;
 		if (fntFh.exists() && pngFh.exists()) {
 			font = new BitmapFont(fntFh, pngFh, false);
@@ -260,7 +265,7 @@ public class BootLoader implements ApplicationListener {
 	}
 
 	private Music solveJingle () {
-		FileHandle jingleFh = solveFileHandle("jingle.ogg");
+		FileHandle jingleFh = solveFileHandle("cbl_jingle.ogg");
 		Music jingle;
 		if (jingleFh.exists()) {
 			jingle = Gdx.audio.newMusic(jingleFh);
@@ -282,10 +287,8 @@ public class BootLoader implements ApplicationListener {
 			ALC.al = null;
 		}
 		if (null != ALC.al) { ALC.al.create(); return; }
-		if (Info.debug) Gdx.app.setLogLevel(Application.LOG_DEBUG);
-		Pixmap logoPixmap = solveLogoPixmap();
-		logo = new Texture(logoPixmap);
-		logoPixmap.dispose();
+		//if (Info.debug) Gdx.app.setLogLevel(Application.LOG_DEBUG);
+		logo = solveLogoTexture();
 		font = solveLogoFont();
 		batch = new SpriteBatch();
 		camera = new OrthographicCamera();
@@ -343,7 +346,9 @@ public class BootLoader implements ApplicationListener {
 			}
 			// ロゴを画面中央に出す
 			batch.setColor(1, 1, 1, logoFade);
-			batch.draw(logo, (screenWidth-logo.getWidth())/2, (screenHeight-logo.getHeight())/2);
+			if (null != logo) {
+				batch.draw(logo, (screenWidth-logo.getWidth())/2, (screenHeight-logo.getHeight())/2);
+			}
 			batch.end();
 
 			// CBL内のフェーズ別の処理にディスパッチする
@@ -372,16 +377,14 @@ public class BootLoader implements ApplicationListener {
 	public void pause () {
 		if (null != ALC.al) { ALC.al.pause(); return; }
 		if (isClojureStarted()) { cal.pause(); return; }
-		logo.dispose();
+		if (null != logo) { logo.dispose(); }
 	}
 
 	@Override
 	public void resume () {
 		if (null != ALC.al) { ALC.al.resume(); return; }
 		if (isClojureStarted()) { cal.resume(); return; }
-		Pixmap logoPixmap = solveLogoPixmap();
-		logo = new Texture(logoPixmap);
-		logoPixmap.dispose();
+		logo = solveLogoTexture();
 	}
 
 	@Override
@@ -396,6 +399,10 @@ public class BootLoader implements ApplicationListener {
 	// TODO: リストとか使って、コードに継続を埋め込まなくてすむようにする(現状だと順序変更すると書き換えする量が多くて面倒)
 	private void phaseNone (float delta) {
 		if (phaseStep == 1) {
+			console.push("================================");
+			console.push("CLAN-BOOT-LOADER start.");
+			console.push("================================");
+			/*
 			console.push("================================");
 			console.push("CLAN-BOOT-LOADER Ver."+Info.clanCblVersion+" start.");
 			console.push("CLAN information:");
@@ -413,6 +420,7 @@ public class BootLoader implements ApplicationListener {
 				console.push("  * include: neko-"+Info.clanNekoVersion);
 			}
 			console.push("================================");
+			*/
 		}
 		else {
 			phase = Phase.JINGLE; phaseStep = 0;
@@ -560,9 +568,11 @@ public class BootLoader implements ApplicationListener {
 				console.push("all done. pass control to CAL, goodbye.");
 
 				// デバッグ時のみ、ここまでのコンソール内容をログに出力する
+				/*
 				if (Info.debug) {
 					console.dump();
 				}
+				*/
 				// ついでにGCしておく
 				System.gc();
 			}}.run();

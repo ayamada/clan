@@ -12,9 +12,9 @@ package @PROJECT_ANDROID_GROUPID@;
 */
 
 import java.util.concurrent.Callable;
-import @CLAN_CBL_GROUPID@.@CLAN_CBL_CLASSNAME@;
+import jp.ne.tir.clan.BootLoader;
 
-import @PROJECT_CAL_GROUPID@.@PROJECT_CAL_CLASSNAME@;
+import @PROJECT_CAL_CLASS@;
 
 import android.os.Bundle;
 import android.content.Context;
@@ -36,7 +36,7 @@ public class MainActivity extends AndroidApplication {
 		// it is for disable boot-screen.
 		//RT.var("clojure.core", "require").invoke(Symbol.intern("neko.compilation"));
 		//RT.var("neko.compilation", "init").invoke(context);
-		//initialize(new @PROJECT_CAL_CLASSNAME@(), config);
+		//initialize(new @PROJECT_CAL_CLASS@(), config);
 		initialize(
 				new BootLoader(
 					new Runnable() {
@@ -63,7 +63,7 @@ public class MainActivity extends AndroidApplication {
 						}
 					}, // NB: it is certified to run main thread.
 					new Callable<ApplicationListener>() {
-						@Override public ApplicationListener call() { return new @PROJECT_CAL_CLASSNAME@(); }
+						@Override public ApplicationListener call() { return new @PROJECT_CAL_CLASS@(); }
 					}), // NB: it must can to run another threads.
 				config);
 	}

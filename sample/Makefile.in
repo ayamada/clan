@@ -8,48 +8,14 @@
 
 # (TODO: translate explain from japanese to english)
 
-PROJECT_GROUPID    := @PROJECT_GROUPID@
-PROJECT_ARTIFACTID := @PROJECT_ARTIFACTID@
-PROJECT_VERSION    := @PROJECT_VERSION@
-PROJECT_NAME       := @PROJECT_NAME@
-PROJECT_CLASSIFIER := @PROJECT_CLASSIFIER@
+EMPTY :=
+SPACE := $(EMPTY) $(EMPTY)
 
-PROJECT_CAL_GROUPID    := @PROJECT_CAL_GROUPID@
-PROJECT_CAL_ARTIFACTID := @PROJECT_CAL_ARTIFACTID@
-PROJECT_CAL_VERSION    := @PROJECT_CAL_VERSION@
-PROJECT_CAL_NAME       := @PROJECT_CAL_NAME@
-
-PROJECT_ANDROID_GROUPID    := @PROJECT_ANDROID_GROUPID@
-PROJECT_ANDROID_ARTIFACTID := @PROJECT_ANDROID_ARTIFACTID@
-PROJECT_ANDROID_VERSION    := @PROJECT_ANDROID_VERSION@
-PROJECT_ANDROID_NAME       := @PROJECT_ANDROID_NAME@
-
-PROJECT_DESKTOP_GROUPID    := @PROJECT_DESKTOP_GROUPID@
-PROJECT_DESKTOP_ARTIFACTID := @PROJECT_DESKTOP_ARTIFACTID@
-PROJECT_DESKTOP_VERSION    := @PROJECT_DESKTOP_VERSION@
-PROJECT_DESKTOP_NAME       := @PROJECT_DESKTOP_NAME@
-
-CLAN_GROUPID    := @CLAN_GROUPID@
-CLAN_ARTIFACTID := @CLAN_ARTIFACTID@
-CLAN_VERSION    := @CLAN_VERSION@
-CLAN_NAME       := @CLAN_NAME@
-CLAN_CLOJURE_VERSION := @CLAN_CLOJURE_VERSION@
-CLAN_LIBGDX_VERSION  := @CLAN_LIBGDX_VERSION@
-CLAN_ANDROID_VERSION := @CLAN_ANDROID_VERSION@
-CLAN_NEKO_VERSION    := @CLAN_NEKO_VERSION@
-
-CLAN_CBL_GROUPID     := @CLAN_CBL_GROUPID@
-CLAN_CBL_ARTIFACTID  := @CLAN_CBL_ARTIFACTID@
-CLAN_CBL_VERSION     := @CLAN_CBL_VERSION@
-CLAN_CBL_NAME        := @CLAN_CBL_NAME@
-CLAN_INFO_GROUPID     := @CLAN_INFO_GROUPID@
-CLAN_INFO_ARTIFACTID  := @CLAN_INFO_ARTIFACTID@
-CLAN_INFO_VERSION     := @CLAN_INFO_VERSION@
-CLAN_INFO_NAME        := @CLAN_INFO_NAME@
 
 JAVA    := @JAVA_PATH@
 JAVAC   := @JAVAC_PATH@
 JAR     := @JAR_PATH@
+LEIN    := @LEIN_PATH@
 MVN     := @MVN_PATH@
 ADB     := @ADB_PATH@
 WGET    := @WGET_PATH@
@@ -62,33 +28,52 @@ L4J_JAR = $(L4J_DIR)launch4j.jar
 
 
 
+PROJECT_GROUPID    := @PROJECT_GROUPID@
+PROJECT_ARTIFACTID := @PROJECT_ARTIFACTID@
+PROJECT_VERSION    := @PROJECT_VERSION@
+PROJECT_NAME       := @PROJECT_NAME@
 
-EMPTY :=
-SPACE := $(EMPTY) $(EMPTY)
+PROJECT_CAL_CLASS  := @PROJECT_CAL_CLASS@
 
-LAYOUT_MAINACTIVITY_ROOT      := android/src/main/java
-LAYOUT_DESKTOP_ROOT           := desktop/src/main/java
+PROJECT_DESKTOP_GROUPID    := @PROJECT_DESKTOP_GROUPID@
+PROJECT_ANDROID_GROUPID    := @PROJECT_ANDROID_GROUPID@
+PROJECT_ANDROID_VERSIONCODE := @PROJECT_ANDROID_VERSIONCODE@
+
+CLAN_GROUPID    := @CLAN_GROUPID@
+CLAN_ARTIFACTID := @CLAN_ARTIFACTID@
+CLAN_VERSION    := @CLAN_VERSION@
+CLAN_NAME       := @CLAN_NAME@
+CLAN_CLOJURE_VERSION := @CLAN_CLOJURE_VERSION@
+CLAN_LIBGDX_VERSION  := @CLAN_LIBGDX_VERSION@
+CLAN_ANDROID_VERSION := @CLAN_ANDROID_VERSION@
+CLAN_NEKO_VERSION    := @CLAN_NEKO_VERSION@
+
+
+
+
+
+
+LAYOUT_MAINACTIVITY_ROOT      := android/src-java
+LAYOUT_DESKTOP_ROOT           := desktop/src-java
 LAYOUT_MAINACTIVITY_DIR       := $(LAYOUT_MAINACTIVITY_ROOT)/$(subst .,/,$(PROJECT_ANDROID_GROUPID))
 LAYOUT_DESKTOP_DIR            := $(LAYOUT_DESKTOP_ROOT)/$(subst .,/,$(PROJECT_DESKTOP_GROUPID))
 
 LIBGDX_ZIP := libgdx-$(CLAN_LIBGDX_VERSION).zip
 LIBGDX_URL := http://libgdx.googlecode.com/files/$(LIBGDX_ZIP)
 
-NEKO_COMPILE_JARS := clan/neko/target/dependency/*.jar
+
+# TODO: nekoコンパイル回りは一旦コメントアウト(可能ならleinでまとめてコンパイルしたい)
+#NEKO_COMPILE_JARS := clan/neko/target/dependency/*.jar
 # NB: ↓は即座には評価されないらしい。
 #       (即座に評価されてしまうとNEKO_COMPILE_JARSが空になってしまう)
 #       詳細は以下を参照 http://d.hatena.ne.jp/m-hiyama/20071024/1193202017
-DEP_COMPILE_CPS_NEKO = ../../$(subst $(SPACE),:../../,$(wildcard $(NEKO_COMPILE_JARS)))
+#DEP_COMPILE_CPS_NEKO = ../../$(subst $(SPACE),:../../,$(wildcard $(NEKO_COMPILE_JARS)))
 
 # neko中でコンパイルが必要なものを列挙
 #NEKO_COMPILE_TARGETS := neko.compilation
-NEKO_COMPILE_TARGETS = $(shell find tmp/neko/orig/neko | grep '\.clj$$' | $(PERL) -ne 'chomp; s|^tmp/neko/orig/(.*)\.clj$$|$$1|; s|/|.|g; s|_|-|g; print "$$_ "' && echo)
+#NEKO_COMPILE_TARGETS = $(shell find tmp/neko/orig/neko | grep '\.clj$$' | $(PERL) -ne 'chomp; s|^tmp/neko/orig/(.*)\.clj$$|$$1|; s|/|.|g; s|_|-|g; print "$$_ "' && echo)
 
 
-
-# Makefileのダイナミックスコープ記法で一時的に変更可能
-# ( http://masahir0y.blogspot.jp/2012/06/makefile.html )
-RELEASE_FLAG := 0
 
 
 
@@ -97,26 +82,6 @@ RELEASE_FLAG := 0
 
 help:
 	@echo "sorry, see clan/README.rst"
-
-
-
-
-# NB: make info は一番最初に行われるようにする事！
-.info-exists:
-	$(PERL) clan/script/subst_info.pl clan/info/src/main/java/jp/ne/tir/clan/Info.java $(RELEASE_FLAG)
-	cd clan/info && $(MVN) install
-	touch .info-exists
-
-info: .info-exists
-
-# これは .info-exists を更新してはならない(更新するとcalやらcblやら全部またコンパイルされてしまう)
-info-silent-update:
-	$(PERL) clan/script/subst_info.pl clan/info/src/main/java/jp/ne/tir/clan/Info.java $(RELEASE_FLAG)
-	cd clan/info && $(MVN) clean install
-
-info-clean:
-	cd clan/info && $(MVN) clean
-	rm -f .info-exists
 
 
 
@@ -138,10 +103,16 @@ android/libs/armeabi/libgdx.so: tmp/libgdx/gdx.jar
 
 .dep-libgdx-done: tmp/libgdx/gdx.jar android/libs/armeabi/libgdx.so
 	cd tmp/libgdx && for f in *.jar; do \
-		$(MVN) install:install-file -Dfile=$$f -DgroupId=com.badlogic.gdx -DartifactId=$${f%%.jar} -Dversion=$(CLAN_LIBGDX_VERSION) -Dpackaging=jar -DgeneratePom=true -DcreateChecksum=true || break 0; \
+		cd ../../clan/depinst && lein localrepo install ../../tmp/libgdx/$$f com.badlogic.gdx/$${f%%.jar} $(CLAN_LIBGDX_VERSION) || break 0; \
 	done
-	cd tmp/libgdx/extensions/gdx-tools && $(MVN) install:install-file -Dfile=gdx-tools.jar -DgroupId=com.badlogic.gdx -DartifactId=gdx-tools -Dversion=$(CLAN_LIBGDX_VERSION) -Dpackaging=jar -DgeneratePom=true -DcreateChecksum=true
+	cd clan/depinst && lein localrepo install ../../tmp/libgdx/extensions/gdx-tools/gdx-tools.jar com.badlogic.gdx/gdx-tools $(CLAN_LIBGDX_VERSION)
 	touch .dep-libgdx-done
+
+#	cd tmp/libgdx && for f in *.jar; do \
+#		$(MVN) install:install-file -Dfile=$$f -DgroupId=com.badlogic.gdx -DartifactId=$${f%%.jar} -Dversion=$(CLAN_LIBGDX_VERSION) -Dpackaging=jar -DgeneratePom=true -DcreateChecksum=true || break 0; \
+#	done
+#	cd tmp/libgdx/extensions/gdx-tools && $(MVN) install:install-file -Dfile=gdx-tools.jar -DgroupId=com.badlogic.gdx -DartifactId=gdx-tools -Dversion=$(CLAN_LIBGDX_VERSION) -Dpackaging=jar -DgeneratePom=true -DcreateChecksum=true
+#	touch .dep-libgdx-done
 
 dep-libgdx: .dep-libgdx-done
 
@@ -152,42 +123,48 @@ dep-libgdx-clean:
 
 
 
+
+
+# TODO: nekoコンパイル回りは一旦コメントアウト(可能ならleinでまとめてコンパイルしたい)
 # NB: .dep-neko-src-doneが分離しているのは、↓で参照しているNEKO_COMPILE_*変数の判定タイミングが、makeターゲット実行中には存在しない為。これを一緒にしてしまうとNEKO_COMPILE_*が空になる。
-.dep-neko-src-done:
-	mkdir -p tmp/neko/classes/neko/ui/adapters tmp/neko/orig
-	cd clan/neko && $(MVN) dependency:copy-dependencies
-	cd tmp/neko/orig && $(JAR) xf ../../../clan/neko/target/dependency/neko-$(CLAN_NEKO_VERSION).jar
-	cp tmp/neko/orig/neko/ui/adapters/*.class tmp/neko/classes/neko/ui/adapters
-	touch .dep-neko-src-done
+#.dep-neko-src-done:
+#	mkdir -p tmp/neko/classes/neko/ui/adapters tmp/neko/orig
+#	cd clan/neko && $(MVN) dependency:copy-dependencies
+#	cd tmp/neko/orig && $(JAR) xf ../../../clan/neko/target/dependency/neko-$(CLAN_NEKO_VERSION).jar
+#	cp tmp/neko/orig/neko/ui/adapters/*.class tmp/neko/classes/neko/ui/adapters
+#	touch .dep-neko-src-done
 # TODO: ↑の*.classのコピーは、nekoのバージョンが上がったらもっと増やさないといけなくなる。対策が必要。
 
-.dep-neko-done: .dep-neko-src-done
-	cd tmp/neko && for x in $(NEKO_COMPILE_TARGETS); do \
-		$(JAVA) -cp ./classes:$(DEP_COMPILE_CPS_NEKO) clojure.main -e "(compile '$$x)" || break 0; \
-	done
-	cd tmp/neko && $(JAR) cvf neko.jar -C classes .
-	cd tmp/neko && $(MVN) install:install-file -Dfile=neko.jar -DgroupId=neko -DartifactId=neko -Dclassifier=compiled -Dversion=$(CLAN_NEKO_VERSION) -Dpackaging=jar -DgeneratePom=true -DcreateChecksum=true
-	touch .dep-neko-done
+#.dep-neko-done: .dep-neko-src-done
+#	cd tmp/neko && for x in $(NEKO_COMPILE_TARGETS); do \
+#		$(JAVA) -cp ./classes:$(DEP_COMPILE_CPS_NEKO) clojure.main -e "(compile '$$x)" || break 0; \
+#	done
+#	cd tmp/neko && $(JAR) cvf neko.jar -C classes .
+#	cd tmp/neko && $(MVN) install:install-file -Dfile=neko.jar -DgroupId=neko -DartifactId=neko -Dclassifier=compiled -Dversion=$(CLAN_NEKO_VERSION) -Dpackaging=jar -DgeneratePom=true -DcreateChecksum=true
+#	touch .dep-neko-done
 
-dep-neko: .dep-neko-done
+#dep-neko: .dep-neko-done
 
-dep-neko-clean:
-	cd clan/neko && $(MVN) clean
-	rm -rf tmp/neko
-	rm -f .dep-neko-src-done
-	rm -f .dep-neko-done
+#dep-neko-clean:
+#	cd clan/neko && $(MVN) clean
+#	rm -rf tmp/neko
+#	rm -f .dep-neko-src-done
+#	rm -f .dep-neko-done
 
 
 
-dep: .dep-libgdx-done .dep-neko-done
+#dep: .dep-libgdx-done .dep-neko-done
+dep: .dep-libgdx-done
 
-depclean: dep-libgdx-clean dep-neko-clean
+#depclean: dep-libgdx-clean dep-neko-clean
+depclean: dep-libgdx-clean
 	rm -rf tmp
 
 
 
 
-.layout-done: .info-exists
+#.layout-done: .info-exists
+.layout-done:
 	mkdir -p $(LAYOUT_MAINACTIVITY_DIR)
 	cp layout/MainActivity.java $(LAYOUT_MAINACTIVITY_DIR)
 	mkdir -p $(LAYOUT_DESKTOP_DIR)
@@ -202,30 +179,30 @@ layout-clean:
 	rm -f .layout-done
 
 
-.cal-done: .info-exists .dep-libgdx-done .dep-neko-done
-	cd cal && $(MVN) install
-	touch .cal-done
+#.cal-done: .info-exists .dep-libgdx-done .dep-neko-done
+#	cd cal && $(MVN) install
+#	touch .cal-done
 
-cal: .cal-done
+#cal: .cal-done
 
-cal-clean:
-	cd cal && $(MVN) clean
-	rm -f .cal-done
-
-
+#cal-clean:
+#	cd cal && $(MVN) clean
+#	rm -f .cal-done
 
 
 
 
-.cbl-done: .info-exists .dep-libgdx-done
-	cd clan/cbl && $(MVN) install
-	touch .cbl-done
 
-cbl: .cbl-done
 
-cbl-clean:
-	cd clan/cbl && $(MVN) clean
-	rm -f .cbl-done
+#.cbl-done: .info-exists .dep-libgdx-done
+#	cd clan/cbl && $(MVN) install
+#	touch .cbl-done
+
+#cbl: .cbl-done
+
+#cbl-clean:
+#	cd clan/cbl && $(MVN) clean
+#	rm -f .cbl-done
 
 
 
@@ -233,16 +210,18 @@ cbl-clean:
 
 
 desktop/target/$(PROJECT_DESKTOP_ARTIFACTID)-$(PROJECT_DESKTOP_VERSION)-jar-with-dependencies.jar: .layout-done .cal-done .cbl-done
-	if [ $(RELEASE_FLAG) = 0 ]; then $(MAKE) info-silent-update; fi
-	cd desktop && $(MVN) package
+	cd desktop && $(MVN) uberjar
 
 jar: desktop/target/$(PROJECT_DESKTOP_ARTIFACTID)-$(PROJECT_DESKTOP_VERSION)-jar-with-dependencies.jar
 
+# TODO: lein run じゃなく、jarから起動するようにする
 jar-exec: desktop/target/$(PROJECT_DESKTOP_ARTIFACTID)-$(PROJECT_DESKTOP_VERSION)-jar-with-dependencies.jar
-	cd desktop && $(JAVA) -jar target/$(PROJECT_DESKTOP_ARTIFACTID)-$(PROJECT_DESKTOP_VERSION)-jar-with-dependencies.jar
+	cd desktop && $(LEIN) run
+
+#	cd desktop && $(JAVA) -jar target/$(PROJECT_DESKTOP_ARTIFACTID)-$(PROJECT_DESKTOP_VERSION)-jar-with-dependencies.jar
 
 jar-clean:
-	cd desktop && $(MVN) clean
+	cd desktop && $(LEIN) clean
 
 
 
@@ -327,7 +306,8 @@ release-clean:
 
 
 
-clean: cal-clean cbl-clean jar-clean apk-clean layout-clean info-clean
+#clean: cal-clean cbl-clean jar-clean apk-clean layout-clean info-clean
+clean: jar-clean apk-clean layout-clean
 
 ac-clean:
 	rm -f config.log config.status

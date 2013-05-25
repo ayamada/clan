@@ -6,14 +6,11 @@
 @AC_MSG_4@
 @AC_MSG_5@
 @AC_MSG_6@
-
-@AC_MSG_TMPL_1@
-@AC_MSG_TMPL_2@
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      package="@PROJECT_ANDROID_PACKAGE@"
+      package="@PROJECT_ANDROID_GROUPID@"
       android:versionCode="@PROJECT_ANDROID_VERSIONCODE@"
-      android:versionName="@PROJECT_ANDROID_VERSIONNAME@"
+      android:versionName="@PROJECT_VERSION@"
       android:installLocation="auto">
     <uses-sdk android:minSdkVersion="9" android:targetSdkVersion="17" />
     <!-- see http://developer.android.com/reference/android/Manifest.permission.html -->
@@ -21,9 +18,9 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <!--
     -->
-    <application android:icon="@drawable/icon" android:label="@PROJECT_ANDROID_NAME@">
-        <activity android:name="@PROJECT_ANDROID_ACTIVITY@"
-                  android:label="@PROJECT_ANDROID_NAME@"
+    <application android:icon="@drawable/icon" android:label="@PROJECT_NAME@">
+        <activity android:name="@PROJECT_ANDROID_GROUPID@.MainActivity"
+                  android:label="@PROJECT_NAME@"
                   android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
                   android:screenOrientation="nosensor"
                   android:configChanges="keyboard|keyboardHidden|orientation|screenSize">

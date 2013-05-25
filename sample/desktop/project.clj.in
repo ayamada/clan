@@ -1,0 +1,52 @@
+;; @AC_MSG_1@
+;; @AC_MSG_2@
+;; @AC_MSG_3@
+;; @AC_MSG_4@
+;; @AC_MSG_5@
+;; @AC_MSG_6@
+
+;; see https://github.com/technomancy/leiningen/blob/master/sample.project.clj
+
+(defproject
+  @PROJECT_ARTIFACTID@ "@PROJECT_VERSION@"
+  ;:description "FIXME: write description"
+  ;:url "http://example.com/FIXME"
+  ;:license {:name "Eclipse Public License"
+  ;          :url "http://www.eclipse.org/legal/epl-v10.html"}
+  :dependencies [[org.clojure/clojure "1.5.0"]
+                 [com.badlogic.gdx/gdx "@CLAN_LIBGDX_VERSION@"]
+                 [com.badlogic.gdx/gdx-natives "@CLAN_LIBGDX_VERSION@"]
+                 [com.badlogic.gdx/gdx-backend-lwjgl "@CLAN_LIBGDX_VERSION@"]
+                 [com.badlogic.gdx/gdx-backend-lwjgl-natives "@CLAN_LIBGDX_VERSION@"]
+                 ;[org.jclouds/jclouds "1.0" :scope "provided"]
+                 ]
+  :profiles {:release {:global-vars {*warn-on-reflection* false
+                                     *assert* false}
+                       :omit-source true
+                       ;:jar-name "sample.jar"
+                       ;:uberjar-name "sample-standalone.jar"
+                       ;:jar-exclusions [#"(?:^|/).svn/"]
+                       ;:uberjar-exclusions [#"META-INF/DUMMY.SF"]
+                       }
+             }
+  ;; TODO: あとできちんと必要なものを全て指定する事
+  :aot [@PROJECT_CAL_CLASS@]
+
+  :main @PROJECT_DESKTOP_GROUPID@.Desktop
+
+  ;; TODO: infoおよびutilの提供が必要。設置場所も考える事
+  :source-paths ["src" "../src"]
+
+  :java-source-paths ["src-java" "../src-java" "../clan/cbl/src/main/java"]
+
+  ;; TODO: あとで
+  :test-paths []
+
+  :resource-paths ["../assets" "../texture_atlas" "process_icon"]
+
+  :compile-path "target/classes" ; For .class files.
+  :target-path "target/" ; Where to place the project's jar file.
+  ;:native-path "src/native" ; Where to extract native dependencies.
+  :global-vars {*warn-on-reflection* true
+                *assert* true}
+  )
