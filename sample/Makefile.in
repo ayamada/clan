@@ -123,6 +123,15 @@ dep-libgdx-clean:
 
 
 
+desktop/assets/pack.png: .dep-libgdx-done
+	cd clan/tpack && lein run -m com.badlogic.gdx.tools.imagepacker.TexturePacker2 ../../textures ../../desktop/assets
+
+ta: desktop/assets/pack.png
+
+ta-force: ta-clean ta
+
+ta-clean:
+	rm -f desktop/assets/pack.{atlas,png}
 
 
 # TODO: nekoコンパイル回りは一旦コメントアウト(可能ならleinでまとめてコンパイルしたい)
@@ -307,7 +316,7 @@ release-clean:
 
 
 #clean: cal-clean cbl-clean jar-clean apk-clean layout-clean info-clean
-clean: jar-clean apk-clean layout-clean
+clean: jar-clean apk-clean layout-clean ta-clean
 
 ac-clean:
 	rm -f config.log config.status

@@ -1,0 +1,26 @@
+;; @AC_MSG_1@
+;; @AC_MSG_2@
+;; @AC_MSG_3@
+;; @AC_MSG_4@
+;; @AC_MSG_5@
+;; @AC_MSG_6@
+
+;; this is dummy project to make texture atlas
+
+(defproject
+  texture-packer2 "0.0.0"
+  ;:description "FIXME: write description"
+  ;:url "http://example.com/FIXME"
+  ;:license {:name "Eclipse Public License"
+  ;          :url "http://www.eclipse.org/legal/epl-v10.html"}
+  :dependencies [[org.clojure/clojure "@CLAN_CLOJURE_VERSION@"]
+                 [com.badlogic.gdx/gdx "@CLAN_LIBGDX_VERSION@"]
+                 [com.badlogic.gdx/gdx-tools "@CLAN_LIBGDX_VERSION@"]
+                 ]
+  :source-paths []
+  :java-source-paths []
+  :test-paths []
+  :resource-paths []
+  :plugins []
+  )
+
