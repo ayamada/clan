@@ -87,6 +87,16 @@ Which can be found in the file `LICENSE <LICENSE>`_.
 and see http://doc.tir.ne.jp/devel/clan/license .
 
 
+WANTED
+------
+
+Please give me(ayamada) a work.
+
+ayamadaは現在お仕事募集中です。
+
+- http://tir.jp/RSM
+
+
 Apps built with CLAN
 --------------------
 
@@ -104,8 +114,8 @@ I will append to this list.
 
    -  A short game that the cat want to return to home from
       empire of underworld.
-      (sorry, this app is required to read japanese)
       Wrote by ayamada.
+      (sorry, this app is required to read japanese.)
 
    -  猫を操作して地底帝国からの脱出を目指す、ぬるいRPGです。
       ayamada作。
@@ -113,8 +123,8 @@ I will append to this list.
 -  http://vnctst.tir.jp/ja/games/space_drop.html
 
    -  Packaged version of bundled sample app 'space drop'
-      (sorry, this page written in japanese)
       Wrote by ayamada.
+      (sorry, this page written in japanese.)
 
    -  同梱のサンプルアプリ'space drop'のパッケージ版です。
       ayamada作。
