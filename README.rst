@@ -12,7 +12,7 @@ windows and other desktop OS at a time
 
 See document http://doc.tir.ne.jp/devel/clan .
 
-Version `0.0.6 <https://github.com/ayamada/clan/tree/0.0.6>`_ is latest.
+Version `0.0.6 <https://github.com/ayamada/clan/tree/0.0.6>`_ is latest stable.
 
 Currently, `use_lein <https://github.com/ayamada/clan/tree/use_lein>`_
 branch is developed.
@@ -30,7 +30,7 @@ androidアプリだけではなく、windowsとその他のデスクトップos�
 
 詳細は http://doc.tir.ne.jp/devel/clan のドキュメントを見てください。
 
-最新バージョンは `0.0.6 <https://github.com/ayamada/clan/tree/0.0.6>`_ です。
+最新安定版は `0.0.6 <https://github.com/ayamada/clan/tree/0.0.6>`_ です。
 
 現在 `use_lein <https://github.com/ayamada/clan/tree/use_lein>`_
 ブランチにて大幅改変中です。
@@ -90,7 +90,7 @@ and see http://doc.tir.ne.jp/devel/clan/license .
 Apps built with CLAN
 --------------------
 
-I'm glad to see, if you made apps by CLAN, and inform that to
+I'm glad, if you made apps by CLAN, and inform that to
 `@rnkv(=ayamada) <https://twitter.com/rnkv>`_.
 I will append to this list.
 
@@ -105,15 +105,19 @@ I will append to this list.
    - A short game that the cat want to return to home from
      empire of underworld.
      (sorry, this app is required to read japanese)
+     Wrote by ayamada.
 
    - 猫を操作して地底帝国からの脱出を目指す、ぬるいRPGです。
+     ayamada作。
 
 - http://vnctst.tir.jp/ja/games/space_drop.html
 
    - Packaged version of bundled sample app 'space drop'
      (sorry, this page written in japanese)
+     Wrote by ayamada.
 
    - 同梱のサンプルアプリ'space drop'のパッケージ版です。
+     ayamada作。
 
 
 
