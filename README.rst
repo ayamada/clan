@@ -100,24 +100,24 @@ I will append to this list.
 
 --------------
 
-- http://vnctst.tir.jp/ja/games/driftcat_underworld.html
+-  http://vnctst.tir.jp/ja/games/driftcat_underworld.html
 
-   - A short game that the cat want to return to home from
-     empire of underworld.
-     (sorry, this app is required to read japanese)
-     Wrote by ayamada.
+   -  A short game that the cat want to return to home from
+      empire of underworld.
+      (sorry, this app is required to read japanese)
+      Wrote by ayamada.
 
-   - 猫を操作して地底帝国からの脱出を目指す、ぬるいRPGです。
-     ayamada作。
+   -  猫を操作して地底帝国からの脱出を目指す、ぬるいRPGです。
+      ayamada作。
 
-- http://vnctst.tir.jp/ja/games/space_drop.html
+-  http://vnctst.tir.jp/ja/games/space_drop.html
 
-   - Packaged version of bundled sample app 'space drop'
-     (sorry, this page written in japanese)
-     Wrote by ayamada.
+   -  Packaged version of bundled sample app 'space drop'
+      (sorry, this page written in japanese)
+      Wrote by ayamada.
 
-   - 同梱のサンプルアプリ'space drop'のパッケージ版です。
-     ayamada作。
+   -  同梱のサンプルアプリ'space drop'のパッケージ版です。
+      ayamada作。
 
 
 
