@@ -10,7 +10,12 @@ It can construct application for not only android but also
 windows and other desktop OS at a time
 (but it need install java runtime to work).
 
-see document http://doc.tir.ne.jp/devel/clan .
+See document http://doc.tir.ne.jp/devel/clan .
+
+Version `0.0.6 <https://github.com/ayamada/clan/tree/0.0.6>`_ is latest.
+
+Currently, `use_lein <https://github.com/ayamada/clan/tree/use_lein>`_
+branch is developed.
 
 --------------
 
@@ -25,10 +30,17 @@ androidアプリだけではなく、windowsとその他のデスクトップos�
 
 詳細は http://doc.tir.ne.jp/devel/clan のドキュメントを見てください。
 
+最新バージョンは `0.0.6 <https://github.com/ayamada/clan/tree/0.0.6>`_ です。
+
+現在 `use_lein <https://github.com/ayamada/clan/tree/use_lein>`_
+ブランチにて大幅改変中です。
+
+
 ChangeLog
 ---------
 
 -  `<ChangeLog>`_
+
 
 Link
 ----
@@ -64,6 +76,7 @@ Link
 
 -  `clojurelibgdx <https://github.com/thomas-villagers/clojurelibgdx>`_: 類似プロジェクト。
 
+
 License
 -------
 
@@ -72,5 +85,35 @@ CLAN have `Apache License 2.0 <http://www.apache.org/licenses/LICENSE-2.0>`_.
 Which can be found in the file `LICENSE <LICENSE>`_.
 
 and see http://doc.tir.ne.jp/devel/clan/license .
+
+
+Apps built with CLAN
+--------------------
+
+I'm glad to see, if you made apps by CLAN, and inform that to
+`@rnkv(=ayamada) <https://twitter.com/rnkv>`_.
+I will append to this list.
+
+(もしあなたがCLANを使って何かアプリを作ったら、
+`@rnkv(=ayamada) <https://twitter.com/rnkv>`_
+まで教えてもらえると嬉しいです。このリストに追加します。)
+
+--------------
+
+- http://vnctst.tir.jp/ja/games/driftcat_underworld.html
+
+   - A short game that the cat want to return to home from
+     empire of underworld.
+     (sorry, this app is required to read japanese)
+
+   - 猫を操作して地底帝国からの脱出を目指す、ぬるいRPGです。
+
+- http://vnctst.tir.jp/ja/games/space_drop.html
+
+   - Packaged version of bundled sample app 'space drop'
+     (sorry, this page written in japanese)
+
+   - 同梱のサンプルアプリ'space drop'のパッケージ版です。
+
 
 
