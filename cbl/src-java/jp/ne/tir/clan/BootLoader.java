@@ -37,8 +37,6 @@ import java.util.*;
 import java.util.concurrent.Callable;
 import java.lang.StringBuilder;
 
-//import jp.ne.tir.clan.Info;
-
 // ApplicationListenerCache
 class ALC {
 	static ApplicationListener al = null;
@@ -135,6 +133,7 @@ public class BootLoader implements ApplicationListener {
 					updateLast = true;
 				}
 			}
+			/* コンソール内容はログにのみ表示し、表には"loading ... "しか出さない
 			if (updateLast || updateAll) {
 				int max = updateAll ? bufs.size() : 1;
 				int x = 8;
@@ -155,6 +154,25 @@ public class BootLoader implements ApplicationListener {
 			for (int i = 0; i < max; i++) {
 				fontCaches.get(i).draw(batch);
 			}
+			*/
+			if (updateLast || updateAll) {
+				BitmapFontCache fc = fontCaches.get(0);
+				fc.setColor(fgColorRGB[0], fgColorRGB[1], fgColorRGB[2], 1);
+				int x = 8;
+				int y = 8;
+				y += lineHeight;
+				String line;
+				// TODO: あとでカスタマイズしやすいようにしておく事
+				// TODO: 20%とか現在の状況をパーセント表示できないか考える
+				if (enableCursor) {
+					line = "loading ..." + cursor;
+				}
+				else {
+					line = "loading ... done.";
+				}
+				fc.setText(line, x, y);
+			}
+			fontCaches.get(0).draw(batch);
 		}
 		public void dump () {
 			// it is destractive!
@@ -536,6 +554,7 @@ public class BootLoader implements ApplicationListener {
 			console.push("fade-out splash-screen ...");
 			fadeinFlag = false;
 			phaseSec = 0.0F;
+			console.hideCursor(); // was changed by display log timing
 		}
 		else if (phaseSec < fadeSec) {
 			logoFade = 1.0F - phaseSec / fadeSec;
@@ -543,7 +562,7 @@ public class BootLoader implements ApplicationListener {
 		else {
 			logoFade = 0.0F;
 			console.appendLatest(" done.");
-			console.hideCursor();
+			//console.hideCursor(); // was changed by display log timing
 			phase = Phase.CALSTART; phaseStep = 0;
 		}
 	}

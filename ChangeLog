@@ -1,3 +1,15 @@
+2013-XX-XX  ayamada
+	* release 0.1.0: まだリリース準備中
+	  - 起動速度が大幅向上
+	  - 一部をlein化
+	  - ディレクトリ構造を全体的に変更
+	  - Info.javaの廃止
+	  - clanutil.cljの提供
+	  - gdx-tools.jarを利用可能に
+	  - make taによりtexture atlasを生成する
+	  - BootLoader.javaの簡略化および将来拡張の為の準備
+	  - サンプルアプリspace dropの改善、pref不使用化
+
 2013-04-14  ayamada
 	* release 0.0.6:
 	  - upgrade com.google.android to 4.1.1.4
