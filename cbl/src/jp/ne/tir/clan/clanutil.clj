@@ -1,11 +1,14 @@
 (ns jp.ne.tir.clan.clanutil
   (:import
-    (com.badlogic.gdx Gdx Application$ApplicationType)
+    (com.badlogic.gdx Gdx Application$ApplicationType ApplicationListener)
     )
   (:use
     [clj-time.local :only [local-now]]
     [clj-time.format :only [unparse formatter-local]]
     )
+  ;(:gen-class
+  ;  :name jp.ne.tir.clan.clanutil
+  ;  :methods [#^{:static true} [genCal [String] ApplicationListener]]
   )
 
 ;;; ----------------------------------------------------------------
@@ -21,14 +24,14 @@
 
 (def ^:const clan-info-build-target ; (or :desktop :android ...)
   (eager
-    (let [build-target (or (System/getenv "BUILD_TARGET") "desktop")
+    (let [build-target (or (System/getenv "CLAN_TARGET") "desktop")
           k (case (keyword build-target)
               :desktop :desktop
               :android :android
               nil)]
       (assert k build-target))))
 (def ^:const clan-info-release?
-  (eager (boolean (System/getenv "IS_RELEASE"))))
+  (eager (boolean (System/getenv "CLAN_RELEASE"))))
 (def ^:const clan-info-build-number
   ;; TODO: must be include more information
   (eager (str (System/currentTimeMillis))))
@@ -78,6 +81,14 @@
 (defmacro set-display-bootlogo-in-android! []
   `(set! (. jp.ne.tir.clan.ALC reserveNextAlClear) true))
 
+;; BootLoader.javaがcalを取り出す為に使う
+(defn generate-cal [class-str fn-str]
+  (let [class-symbol (symbol class-str)
+        fn-symbol (symbol (str class-str "/" fn-str))]
+    (eval `(do
+             (require '~class-symbol)
+             (~fn-symbol)))))
+
 
 ;;; ----------------------------------------------------------------
 ;;; libgdx utilities
@@ -98,4 +109,5 @@
       :else :unknown)))
 
 
+;;; ----------------------------------------------------------------
 

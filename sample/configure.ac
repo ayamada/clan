@@ -20,8 +20,10 @@ AC_SUBST(PROJECT_ANDROID_VERSIONCODE)
 dnl TODO: 自動的に増えるようにしたい(しかも安全に)が…どうやればできる？
 
 dnl class of ApplicationListener by clojure
-PROJECT_CAL_CLASS=drop.al
-AC_SUBST(PROJECT_CAL_CLASS)
+PROJECT_CAL_GENERATOR_CLASS=drop.main
+AC_SUBST(PROJECT_CAL_GENERATOR_CLASS)
+PROJECT_CAL_GENERATOR_FN=generate-al
+AC_SUBST(PROJECT_CAL_GENERATOR_FN)
 
 
 dnl ----------------------------------------------------------------
@@ -103,7 +105,7 @@ dnl ----------------------------------------------------------------
 dnl Outputs
 
 dnl 自動生成ファイルの一覧を作成する
-IN_TARGET_DIRS="clan/cbl clan/depinst clan/tpack layout desktop android src src-java"
+IN_TARGET_DIRS="clan/cbl clan/depinst clan/tpack layout desktop android src src-java project-common.clj.in"
 IN_TARGET_DIRS_EXCLUDE="desktop/assets"
 IN_FILES=`find ${IN_TARGET_DIRS} | grep '\.in$' | grep -v ${IN_TARGET_DIRS_EXCLUDE} | perl -ne 'chomp $_ && ($_ =~ s|^(.*)\.in$|$1|) && print "$_ "' && echo Makefile`
 AC_GENERATED_FILES="autom4te.cache configure VERSION $IN_FILES"

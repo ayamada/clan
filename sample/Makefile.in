@@ -33,8 +33,6 @@ PROJECT_ARTIFACTID := @PROJECT_ARTIFACTID@
 PROJECT_VERSION    := @PROJECT_VERSION@
 PROJECT_NAME       := @PROJECT_NAME@
 
-PROJECT_CAL_CLASS  := @PROJECT_CAL_CLASS@
-
 PROJECT_DESKTOP_GROUPID    := @PROJECT_DESKTOP_GROUPID@
 PROJECT_ANDROID_GROUPID    := @PROJECT_ANDROID_GROUPID@
 PROJECT_ANDROID_VERSIONCODE := @PROJECT_ANDROID_VERSIONCODE@
@@ -132,6 +130,12 @@ ta-force: ta-clean ta
 
 ta-clean:
 	rm -f desktop/assets/pack.{atlas,png}
+
+# TODO: ↓はうっかり忘れる事多数の為、可能ならleinに組み込みたい
+update-resources:
+	rm -rf desktop/target/resources
+	mkdir -p desktop/target/resources
+	cp -a desktop/assets desktop/target/resources
 
 
 # TODO: nekoコンパイル回りは一旦コメントアウト(可能ならleinでまとめてコンパイルしたい)

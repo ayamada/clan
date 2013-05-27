@@ -7,22 +7,35 @@
 
 ;; see https://github.com/technomancy/leiningen/blob/master/sample.project.clj
 
+(load-file "../project-common.clj")
+
+(def dependencies
+  `[~@dependencies-common
+    [com.badlogic.gdx/gdx-natives "@CLAN_LIBGDX_VERSION@"]
+    [com.badlogic.gdx/gdx-backend-lwjgl "@CLAN_LIBGDX_VERSION@"]
+    [com.badlogic.gdx/gdx-backend-lwjgl-natives "@CLAN_LIBGDX_VERSION@"]
+    ;[org.jclouds/jclouds "1.0" :scope "provided"]
+    ])
+
 (defproject
   @PROJECT_ARTIFACTID@ "@PROJECT_VERSION@"
   ;:description "FIXME: write description"
   ;:url "http://example.com/FIXME"
   ;:license {:name "Eclipse Public License"
   ;          :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[org.clojure/clojure "@CLAN_CLOJURE_VERSION@"]
-                 [com.badlogic.gdx/gdx "@CLAN_LIBGDX_VERSION@"]
-                 [com.badlogic.gdx/gdx-natives "@CLAN_LIBGDX_VERSION@"]
-                 [com.badlogic.gdx/gdx-backend-lwjgl "@CLAN_LIBGDX_VERSION@"]
-                 [com.badlogic.gdx/gdx-backend-lwjgl-natives "@CLAN_LIBGDX_VERSION@"]
-                 ;[org.jclouds/jclouds "1.0" :scope "provided"]
-                 ]
-  :profiles {:release {:global-vars {*warn-on-reflection* false
+  :dependencies ~dependencies
+  :profiles {
+             :repl {
+                    }
+             :dev {
+                   }
+             :packaged {
+                        }
+             :release {:global-vars {*warn-on-reflection* false
                                      *assert* false}
                        :omit-source true
+                       :aot :all
+                       ;; > Put a regex here to compile all namespaces whose names match.
                        ;:jar-name "sample.jar"
                        ;:uberjar-name "sample-standalone.jar"
                        ;:jar-exclusions [#"(?:^|/).svn/"]
@@ -30,19 +43,13 @@
                        }
              }
   ;; TODO: あとできちんと必要なものを全て指定する事
-  :aot [@PROJECT_CAL_CLASS@]
-
+  :aot [jp.ne.tir.clan.clanutil]
   :main @PROJECT_DESKTOP_GROUPID@.Desktop
 
-  ;; TODO: infoおよびutilの提供が必要。設置場所も考える事
-  :source-paths ["src" "../src"]
-
-  :java-source-paths ["src-java" "../src-java" "../clan/cbl/src/main/java"]
-
-  ;; TODO: あとで
-  :test-paths []
-
-  :resource-paths ["../assets" "../texture_atlas" "process_icon"]
+  :source-paths ["src" "../src" "../clan/cbl/src"]
+  :java-source-paths ["src-java" "../src-java" "../clan/cbl/src-java"]
+  :test-paths ["../test"]
+  :resource-paths ["target/resources"]
 
   :compile-path "target/classes" ; For .class files.
   :target-path "target/" ; Where to place the project's jar file.

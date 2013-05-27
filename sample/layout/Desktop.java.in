@@ -21,8 +21,8 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.badlogic.gdx.Files.FileType;
 
-//import clojure.lang.RT;
-//import clojure.lang.Symbol;
+import clojure.lang.RT;
+import clojure.lang.Symbol;
 
 public class Desktop {
 	public static void main(String[] args) {
@@ -36,18 +36,21 @@ public class Desktop {
 		config.addIcon("assets/process_icon/32x32.png", FileType.Internal);
 		config.addIcon("assets/process_icon/16x16.png", FileType.Internal);
 		// it is for disable boot-screen.
-		//new LwjglApplication(new @PROJECT_CAL_CLASS@(), config);
+		//new LwjglApplication(new @PROJECT_CAL_GENERATOR_CLASS@(), config);
 		new LwjglApplication(
 				new BootLoader(
 					null,
 					null,
 					new Callable<ApplicationListener>() {
 						@Override public ApplicationListener call() {
-							//return new @PROJECT_CAL_CLASS@();
+							//return new @PROJECT_CAL_GENERATOR_CLASS@();
 							try {
-								return (ApplicationListener)Class.forName("@PROJECT_CAL_CLASS@").newInstance();
+								//return (ApplicationListener)Class.forName("@PROJECT_CAL_GENERATOR_CLASS@").newInstance();
+								RT.var("clojure.core", "refer").invoke(Symbol.intern(null, "clojure.core"));
+								RT.var("clojure.core", "require").invoke(Symbol.intern("jp.ne.tir.clan.clanutil"));
+								return (ApplicationListener)RT.var("jp.ne.tir.clan.clanutil", "generate-cal").invoke("@PROJECT_CAL_GENERATOR_CLASS@", "@PROJECT_CAL_GENERATOR_FN@");
 							} catch (Exception e) {
-								throw e;
+								throw new RuntimeException(e.toString());
 							}
 						}
 					}), // NB: it must can to run another threads.

@@ -1,7 +1,7 @@
 (ns drop.main
   (:import
-    ;(jp.ne.tir.clan Info)
     (com.badlogic.gdx Gdx Preferences Input$Keys Net
+                      ApplicationListener
                       Application$ApplicationType)
     (com.badlogic.gdx.audio Music Sound)
     (com.badlogic.gdx.files FileHandle)
@@ -13,83 +13,66 @@
     (com.badlogic.gdx.utils TimeUtils Disposable)
     (java.lang.reflect Method)
     (java.util.concurrent RejectedExecutionException)
-    ))
+    )
+  (:use
+    (jp.ne.tir.clan clanutil)
+    )
+  )
 ;; this game is based on http://code.google.com/p/libgdx/wiki/SimpleApp .
 
-;
+;; (load-string (slurp "../src/drop/main.clj"))
+;; (.. Gdx app (exit))
+
 ;;; ----------------------------------------------------------------
 ;;; *** consts ***
-;
 ;(def eval-path "path/to/eval.clj")
 ;;(def eval-path "http://misc.tir.jp/proxy.cgi/eval.clj")
-;
-;
-;(def ^:const do-prof? false) ; see http://doc.intra.tir.ne.jp/devel/clan/memo
-;(def ^:const definline-is-fn? false) ; for stacktrace
-;
-;(def ^:const pref-name (str "PREF-" Info/projectGroupId
-;                            "-" Info/projectArtifactId
-;                            "-" Info/projectClassifier)) ; must be unique
-;
-;(def ^:const assets-dir "drop")
-;
-;(def min-screen-size [256 256])
-;(def max-screen-size [nil nil])
-;
-;(def speed-level 100)
-;(def player-locate-y 32)
-;
-;(def ^:const bgm-file "bgm.ogg")
-;(def ^:const player-img-file "tsubo.png")
-;
-;(def ^:const item-img-suffix ".png")
-;(def ^:const item-se-suffix ".wav")
-;(def ^:const item-table
-;  {:star {:type :score-a}
-;   :moon {:type :score-a}
-;   :fish {:type :score-b}
-;   :fruit {:type :score-b}
-;   :flower {:type :score-c}
-;   :rondel {:type :score-c}
-;   :hdd {:type :score-c}
-;   }) ; :star has assets/drop/star.png, assets/drop/star.wav
-;
-;(def item-spawn-interval 100000000000)
-;(def star-spawn-interval 10000000000)
-;(def console-update-interval-nsec 500000000)
-;
-;
+(def min-screen-size [256 256])
+(def speed-level 100)
+(def player-locate-y 32)
+(def ^:const bgm-file "bgm.ogg")
+(def ^:const player-img-name "tsubo")
+(def ^:const item-se-suffix ".wav")
+(def ^:const item-table
+  {:star {:type :score-a}
+   :moon {:type :score-a}
+   :fish {:type :score-b}
+   :fruit {:type :score-b}
+   :flower {:type :score-c}
+   :rondel {:type :score-c}
+   :hdd {:type :score-c}
+   }) ; :star has (.findRegion ta "star"), /assets/drop/star.wav
+(def item-spawn-interval 100000000000)
+(def star-spawn-interval 10000000000)
+(def console-update-interval-nsec 500000000)
+
 ;;; ----------------------------------------------------------------
-;;; *** misc utilities ***
-;;; definline as fn for profiler, cannot use & in args
-;(defmacro definline- [mname & mdecl]
-;  (if definline-is-fn?
-;    (let [tmp-mname (gensym mname)]
-;      `(do
-;         (definline ~tmp-mname ~@mdecl)
-;         (defn ~mname [& args#] (apply ~tmp-mname args#))))
-;    `(definline ~mname ~@mdecl)))
-;
-;;; replacement of dorun
-;(defmacro do-each [targets [match-arg] & bodies]
-;  `(loop [left# ~targets]
-;     (when-not (empty? left#)
-;       (let [~match-arg (first left#)]
-;         ~@bodies
-;         (recur (rest left#))))))
-;
-;;; all asset files are in "assets/ASSETS-DIR/" for safety.
-;(defn assets-file ^FileHandle [path]
-;  (.. Gdx files (internal (str assets-dir "/" path))))
-;
-;(definline- get-delta [] `(* (.. Gdx graphics (getDeltaTime)) speed-level))
-;
-;(definline- clamp-num [min-n n max-n]
-;  `(let [min-n# ~min-n n# ~n max-n# ~max-n
-;         n2# (if min-n# (max min-n# n#) n#)]
-;     (if max-n# (min n2# max-n#) n2#)))
-;
-;
+;;; auto objects
+;; TODO: この辺りはutil02から持ってくる。最新の状態できちんと動くようにする
+
+
+;; ----------------------------------------------------------------
+;; replacement of dorun
+(defmacro do-each [targets [match-arg] & bodies]
+  `(loop [left# ~targets]
+     (when-not (empty? left#)
+       (let [~match-arg (first left#)]
+         ~@bodies
+         (recur (rest left#))))))
+
+(defn assets-file ^FileHandle [path]
+  (.. Gdx files (internal (str "assets/" path))))
+
+(defmacro get-delta [] `(* (.. Gdx graphics (getDeltaTime)) speed-level))
+
+(defmacro clamp-num [min-n n max-n]
+  `(let [min-n# ~min-n
+         n# ~n
+         max-n# ~max-n
+         n2# (if min-n# (max min-n# n#) n#)]
+     (if max-n# (min n2# max-n#) n2#)))
+
+
 ;;; ----------------------------------------------------------------
 ;;; *** disposables ***
 ;;; all objs with need .dispose, those must registered
@@ -1170,30 +1153,44 @@
 ;  (dispose-all!))
 ;
 ;
-(defn drop-create []
+(defn main-create []
   nil)
 
 
-(defn drop-resize [w-orig h-orig]
+(defn main-resize [w-orig h-orig]
   nil)
 
 
-(defn drop-pause []
+(defn main-pause []
   nil)
 
 
-(defn drop-resume []
+(defn main-resume []
   nil)
 
 
-(defn drop-render []
+(defn main-render []
   ;(.. Gdx gl (glClearColor 0.0 0.0 0.2 1.0)) ; R G B A
   (.. Gdx gl (glClearColor (rand) (rand) (rand) 1.0))
   (.. Gdx gl (glClear (. GL10 GL_COLOR_BUFFER_BIT)))
   nil)
 
 
-(defn drop-dispose []
+(defn main-dispose []
   nil)
 
 
+;;; ----------------------------------------------------------------
+
+(defn generate-al []
+  (proxy [ApplicationListener] []
+    (create [] (main-create))
+    (resume [] (main-resume))
+    (resize [w h] (main-resize w h))
+    (render [] (main-render))
+    (pause [] (main-pause))
+    (dispose [] (main-dispose))
+    ))
+
+
+;; 日本語コードはutf-8

@@ -14,8 +14,6 @@ package @PROJECT_ANDROID_GROUPID@;
 import java.util.concurrent.Callable;
 import jp.ne.tir.clan.BootLoader;
 
-import @PROJECT_CAL_CLASS@;
-
 import android.os.Bundle;
 import android.content.Context;
 
@@ -36,7 +34,7 @@ public class MainActivity extends AndroidApplication {
 		// it is for disable boot-screen.
 		//RT.var("clojure.core", "require").invoke(Symbol.intern("neko.compilation"));
 		//RT.var("neko.compilation", "init").invoke(context);
-		//initialize(new @PROJECT_CAL_CLASS@(), config);
+		//initialize(new @PROJECT_CAL_GENERATOR_CLASS@(), config);
 		initialize(
 				new BootLoader(
 					new Runnable() {
@@ -63,7 +61,16 @@ public class MainActivity extends AndroidApplication {
 						}
 					}, // NB: it is certified to run main thread.
 					new Callable<ApplicationListener>() {
-						@Override public ApplicationListener call() { return new @PROJECT_CAL_CLASS@(); }
+						@Override public ApplicationListener call() {
+							//return new @PROJECT_CAL_GENERATOR_CLASS@();
+							try {
+								//return (ApplicationListener)Class.forName("@PROJECT_CAL_GENERATOR_CLASS@").newInstance();
+								RT.var("clojure.core", "require").invoke(Symbol.intern("jp.ne.tir.clan.clanutil"));
+								return (ApplicationListener)RT.var("jp.ne.tir.clan.clanutil", "generate-cal").invoke("@PROJECT_CAL_GENERATOR_CLASS@", "@PROJECT_CAL_GENERATOR_FN@");
+							} catch (Exception e) {
+								throw new RuntimeException(e.toString());
+							}
+						}
 					}), // NB: it must can to run another threads.
 				config);
 	}

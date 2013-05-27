@@ -1,0 +1,16 @@
+;; @AC_MSG_1@
+;; @AC_MSG_2@
+;; @AC_MSG_3@
+;; @AC_MSG_4@
+;; @AC_MSG_5@
+;; @AC_MSG_6@
+
+;; this file is loaded by desktop/project.clj and android/project.clj
+
+(def dependencies-common
+  '[[org.clojure/clojure "@CLAN_CLOJURE_VERSION@"]
+    [com.badlogic.gdx/gdx "@CLAN_LIBGDX_VERSION@"]
+    [clj-time "0.5.1"]
+    ;[org.jclouds/jclouds "1.0" :scope "provided"]
+    ])
+
