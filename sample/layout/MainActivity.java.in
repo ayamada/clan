@@ -68,6 +68,7 @@ public class MainActivity extends AndroidApplication {
 								RT.var("clojure.core", "require").invoke(Symbol.intern("jp.ne.tir.clan.clanutil"));
 								return (ApplicationListener)RT.var("jp.ne.tir.clan.clanutil", "generate-cal").invoke("@PROJECT_CAL_GENERATOR_CLASS@", "@PROJECT_CAL_GENERATOR_FN@");
 							} catch (Exception e) {
+								e.printStackTrace();
 								throw new RuntimeException(e.toString());
 							}
 						}

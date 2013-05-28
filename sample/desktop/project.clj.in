@@ -18,7 +18,7 @@
     ])
 
 (defproject
-  @PROJECT_DESKTOP_ARTIFACTID@ "@PROJECT_VERSION@"
+  @PROJECT_ARTIFACTID@ "@PROJECT_VERSION@"
   ;:description "FIXME: write description"
   ;:url "http://example.com/FIXME"
   ;:license {:name "Eclipse Public License"
@@ -44,13 +44,13 @@
                        :source-paths ["../clan/cbl/src" "src"] ; "../src" はjar起動時に明示的に渡す
                        ;:aot [jp.ne.tir.clan.clanutil]
                        :aot :all
-                       :jar-name "@PROJECT_DESKTOP_ARTIFACTID@-devpack-without-dep.jar"
-                       :uberjar-name "@PROJECT_DESKTOP_ARTIFACTID@-devpack.jar"
+                       :jar-name "@PROJECT_ARTIFACTID@-devpack-without-dep.jar"
+                       :uberjar-name "@PROJECT_ARTIFACTID@-devpack.jar"
                        }
              :pack {:source-paths ["../clan/cbl/src" "src" "../src"]
                     :aot :all
-                    :jar-name "@PROJECT_DESKTOP_ARTIFACTID@-without-dep.jar"
-                    :uberjar-name "@PROJECT_DESKTOP_ARTIFACTID@.jar"
+                    :jar-name "@PROJECT_ARTIFACTID@-without-dep.jar"
+                    :uberjar-name "@PROJECT_ARTIFACTID@.jar"
                     }
              :release {:global-vars {*warn-on-reflection* false
                                      *assert* false}

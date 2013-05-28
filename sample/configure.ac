@@ -22,6 +22,7 @@ dnl TODO: 自動的に増えるようにしたい(しかも安全に)が…ど�
 dnl class of ApplicationListener by clojure
 PROJECT_CAL_GENERATOR_CLASS=drop.main
 AC_SUBST(PROJECT_CAL_GENERATOR_CLASS)
+dnl generator of ApplicationListener by clojure
 PROJECT_CAL_GENERATOR_FN=generate-al
 AC_SUBST(PROJECT_CAL_GENERATOR_FN)
 

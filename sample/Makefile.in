@@ -64,7 +64,7 @@ LIBGDX_URL := http://libgdx.googlecode.com/files/$(LIBGDX_ZIP)
 
 
 
-.PHONY: help clean dep jar apk force layout clan assets res release desktop android
+.PHONY: help clean dep jar apk force layout clan assets res release desktop android run
 
 help:
 	@echo "sorry, see clan/README.rst"
@@ -113,7 +113,7 @@ ta-force: ta-clean ta
 ta-clean:
 	rm -f desktop/assets/pack.{atlas,png}
 
-# TODO: â†“ã¯ã†ã£ã‹ã‚Šå¿˜ã‚Œã‚‹äº‹å¤šæ•°ã®ç‚ºã€å¯èƒ½ãªã‚‰leinã«çµ„ã¿è¾¼ã¿ãŸã„
+# TODO: «‚Í‚¤‚Á‚©‚è–Y‚ê‚é–‘½”‚Ìˆ×A‰Â”\‚È‚çlein‚É‘g‚İ‚İ‚½‚¢
 update-resources:
 	rm -rf desktop/target/resources
 	mkdir -p desktop/target/resources
@@ -149,48 +149,50 @@ layout-clean:
 
 
 
-repl:
-	@echo "sorry, not implemented, yet"
+repl: .dep-libgdx-done .layout-done
+	export CLAN_TARGET=desktop && cd desktop && $(LEIN) with-profile repl repl
 
-desktop/target/$(PROJECT_DESKTOP_ARTIFACTID)-devpack.jar: .layout-done
+desktop/target/$(PROJECT_ARTIFACTID)-devpack.jar: .dep-libgdx-done .layout-done
 	export CLAN_TARGET=desktop && cd desktop && $(LEIN) with-profile devpack uberjar
 
-devpack: desktop/target/$(PROJECT_DESKTOP_ARTIFACTID)-devpack.jar
+devpack: desktop/target/$(PROJECT_ARTIFACTID)-devpack.jar
 
-# NB: javaã®classpathåŒºåˆ‡ã‚Šæ–‡å­—ã®ç‚ºã«ã‚¤ãƒ³ãƒã‚­ã‚’ã—ã¦ã„ã‚‹
-run: desktop/target/$(PROJECT_DESKTOP_ARTIFACTID)-devpack.jar
-	cd desktop && $(JAVA) -cp '../src:target/$(PROJECT_DESKTOP_ARTIFACTID)-devpack.jar:;../src;target/$(PROJECT_DESKTOP_ARTIFACTID)-devpack.jar' $(PROJECT_DESKTOP_GROUPID).Desktop
+# NB: ‘f‘‚¢“®ìŠm”F‚Ìˆ×‚ÉAÄƒRƒ“ƒpƒCƒ‹–³‚µ‚ÉÀs‚Å‚«‚éƒoƒCƒiƒŠ‚ğ¶¬‚µ‚Ä‚¢‚é
+#     (cal•”‚ğƒRƒ“ƒpƒCƒ‹‘ÎÛ‚ÉŠÜ‚ß‚¸‚ÉƒRƒ“ƒpƒCƒ‹‚µA‚ ‚Æ‚Å-cp‚Å“Ç‚İ‚Ş)
+# NB: java‚Ìclasspath‹æØ‚è•¶š‚Ìˆ×‚ÉƒCƒ“ƒ`ƒL‚ğ‚µ‚Ä‚¢‚é
+run: desktop/target/$(PROJECT_ARTIFACTID)-devpack.jar
+	cd desktop && $(JAVA) -cp '../src:target/$(PROJECT_ARTIFACTID)-devpack.jar:;../src;target/$(PROJECT_ARTIFACTID)-devpack.jar' $(PROJECT_DESKTOP_GROUPID).Desktop
 
 
 
-desktop/target/$(PROJECT_DESKTOP_ARTIFACTID).jar: .layout-done
+desktop/target/$(PROJECT_ARTIFACTID).jar: .dep-libgdx-done .layout-done
 	export CLAN_TARGET=desktop && cd desktop && $(LEIN) with-profile pack uberjar
 
-pack: desktop/target/$(PROJECT_DESKTOP_ARTIFACTID).jar
+pack: desktop/target/$(PROJECT_ARTIFACTID).jar
 
 
 
-target/$(PROJECT_DESKTOP_ARTIFACTID).jar: .layout-done ta desktop-clean update-resources
+target/$(PROJECT_ARTIFACTID).jar: .dep-libgdx-done .layout-done ta desktop-clean update-resources
 	export CLAN_TARGET=desktop CLAN_RELEASE=1 && cd desktop && $(LEIN) with-profile pack,release uberjar
 	mkdir -p target
-	cp desktop/target/$(PROJECT_DESKTOP_ARTIFACTID).jar target
+	cp desktop/target/$(PROJECT_ARTIFACTID).jar target
 	cd desktop && $(LEIN) clean
 
-release-jar: target/$(PROJECT_DESKTOP_ARTIFACTID).jar
+release-jar: target/$(PROJECT_ARTIFACTID).jar
 
-release-exe: target/$(PROJECT_DESKTOP_ARTIFACTID).jar
+release-exe: target/$(PROJECT_ARTIFACTID).jar
 	cd target && if [ x != x$(L4J) ]; then \
 		ln -sf $(L4J_DIR)bin $(L4J_DIR)head $(L4J_DIR)w32api . && \
 		$(JAVA) -jar $(L4J_JAR) ../l4j/l4j.xml; \
 	fi
 
-# TODO: â†‘ã®launch4jã¯å¤±æ•—ã—ã¦ã‚‚çµ‚äº†ã‚³ãƒ¼ãƒ‰0ã‚’è¿”ã™ã€‚stdoutã®å‡ºåŠ›ã‚’è¦‹ã¦åˆ¤å®šã™ã‚‹ã‚ˆã†ã«ç›´ã™
-# æˆåŠŸæ™‚
+# TODO: ª‚Ìlaunch4j‚Í¸”s‚µ‚Ä‚àI—¹ƒR[ƒh0‚ğ•Ô‚·Bstdout‚Ìo—Í‚ğŒ©‚Ä”»’è‚·‚é‚æ‚¤‚É’¼‚·
+# ¬Œ÷
 # launch4j: Compiling resources
 # launch4j: Linking
 # launch4j: Wrapping
 # launch4j: Successfully created path/to/hoge.exe
-# å¤±æ•—æ™‚(ã“ã‚Œä»¥å¤–ã«ã‚‚ã‚ã‚‹)
+# ¸”s(‚±‚êˆÈŠO‚É‚à‚ ‚é)
 # launch4j: java.io.FileNotFoundException: hoge (No such file or directory)
 
 
@@ -202,26 +204,26 @@ desktop-clean:
 
 
 
-# TODO: nekoã‚³ãƒ³ãƒ‘ã‚¤ãƒ«å›ã‚Šã¯ä¸€æ—¦ã‚³ãƒ¡ãƒ³ãƒˆã‚¢ã‚¦ãƒˆ(å¯èƒ½ãªã‚‰leinã§ã¾ã¨ã‚ã¦ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ã—ãŸã„)
+# TODO: nekoƒRƒ“ƒpƒCƒ‹‰ñ‚è‚Íˆê’UƒRƒƒ“ƒgƒAƒEƒg(‰Â”\‚È‚çlein‚Å‚Ü‚Æ‚ß‚ÄƒRƒ“ƒpƒCƒ‹‚µ‚½‚¢)
 #NEKO_COMPILE_JARS := clan/neko/target/dependency/*.jar
-# NB: â†“ã¯å³åº§ã«ã¯è©•ä¾¡ã•ã‚Œãªã„ã‚‰ã—ã„ã€‚
-#       (å³åº§ã«è©•ä¾¡ã•ã‚Œã¦ã—ã¾ã†ã¨NEKO_COMPILE_JARSãŒç©ºã«ãªã£ã¦ã—ã¾ã†)
-#       è©³ç´°ã¯ä»¥ä¸‹ã‚’å‚ç…§ http://d.hatena.ne.jp/m-hiyama/20071024/1193202017
+# NB: «‚Í‘¦À‚É‚Í•]‰¿‚³‚ê‚È‚¢‚ç‚µ‚¢B
+#       (‘¦À‚É•]‰¿‚³‚ê‚Ä‚µ‚Ü‚¤‚ÆNEKO_COMPILE_JARS‚ª‹ó‚É‚È‚Á‚Ä‚µ‚Ü‚¤)
+#       Ú×‚ÍˆÈ‰º‚ğQÆ http://d.hatena.ne.jp/m-hiyama/20071024/1193202017
 #DEP_COMPILE_CPS_NEKO = ../../$(subst $(SPACE),:../../,$(wildcard $(NEKO_COMPILE_JARS)))
 
-# nekoä¸­ã§ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ãŒå¿…è¦ãªã‚‚ã®ã‚’åˆ—æŒ™
+# neko’†‚ÅƒRƒ“ƒpƒCƒ‹‚ª•K—v‚È‚à‚Ì‚ğ—ñ‹“
 #NEKO_COMPILE_TARGETS := neko.compilation
 #NEKO_COMPILE_TARGETS = $(shell find tmp/neko/orig/neko | grep '\.clj$$' | $(PERL) -ne 'chomp; s|^tmp/neko/orig/(.*)\.clj$$|$$1|; s|/|.|g; s|_|-|g; print "$$_ "' && echo)
 
 
-# NB: .dep-neko-src-doneãŒåˆ†é›¢ã—ã¦ã„ã‚‹ã®ã¯ã€â†“ã§å‚ç…§ã—ã¦ã„ã‚‹NEKO_COMPILE_*å¤‰æ•°ã®åˆ¤å®šã‚¿ã‚¤ãƒŸãƒ³ã‚°ãŒã€makeã‚¿ãƒ¼ã‚²ãƒƒãƒˆå®Ÿè¡Œä¸­ã«ã¯å­˜åœ¨ã—ãªã„ç‚ºã€‚ã“ã‚Œã‚’ä¸€ç·’ã«ã—ã¦ã—ã¾ã†ã¨NEKO_COMPILE_*ãŒç©ºã«ãªã‚‹ã€‚
+# NB: .dep-neko-src-done‚ª•ª—£‚µ‚Ä‚¢‚é‚Ì‚ÍA«‚ÅQÆ‚µ‚Ä‚¢‚éNEKO_COMPILE_*•Ï”‚Ì”»’èƒ^ƒCƒ~ƒ“ƒO‚ªAmakeƒ^[ƒQƒbƒgÀs’†‚É‚Í‘¶İ‚µ‚È‚¢ˆ×B‚±‚ê‚ğˆê‚É‚µ‚Ä‚µ‚Ü‚¤‚ÆNEKO_COMPILE_*‚ª‹ó‚É‚È‚éB
 #.dep-neko-src-done:
 #	mkdir -p tmp/neko/classes/neko/ui/adapters tmp/neko/orig
 #	cd clan/neko && $(MVN) dependency:copy-dependencies
 #	cd tmp/neko/orig && $(JAR) xf ../../../clan/neko/target/dependency/neko-$(CLAN_NEKO_VERSION).jar
 #	cp tmp/neko/orig/neko/ui/adapters/*.class tmp/neko/classes/neko/ui/adapters
 #	touch .dep-neko-src-done
-# TODO: â†‘ã®*.classã®ã‚³ãƒ”ãƒ¼ã¯ã€nekoã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³ãŒä¸ŠãŒã£ãŸã‚‰ã‚‚ã£ã¨å¢—ã‚„ã•ãªã„ã¨ã„ã‘ãªããªã‚‹ã€‚å¯¾ç­–ãŒå¿…è¦ã€‚
+# TODO: ª‚Ì*.class‚ÌƒRƒs[‚ÍAneko‚Ìƒo[ƒWƒ‡ƒ“‚ªã‚ª‚Á‚½‚ç‚à‚Á‚Æ‘‚â‚³‚È‚¢‚Æ‚¢‚¯‚È‚­‚È‚éB‘Îô‚ª•K—vB
 
 #.dep-neko-done: .dep-neko-src-done
 #	cd tmp/neko && for x in $(NEKO_COMPILE_TARGETS); do \

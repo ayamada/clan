@@ -14,9 +14,9 @@
       android:installLocation="auto">
     <uses-sdk android:minSdkVersion="9" android:targetSdkVersion="17" />
     <!-- see http://developer.android.com/reference/android/Manifest.permission.html -->
+    <!--
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <!--
     -->
     <application android:icon="@drawable/icon" android:label="@PROJECT_NAME@">
         <activity android:name="@PROJECT_ANDROID_GROUPID@.MainActivity"

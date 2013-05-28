@@ -29,7 +29,8 @@
               :desktop :desktop
               :android :android
               nil)]
-      (assert k build-target))))
+      (assert k build-target)
+      k)))
 (def ^:const clan-info-release?
   (eager (boolean (System/getenv "CLAN_RELEASE"))))
 (def ^:const clan-info-build-number

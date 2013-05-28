@@ -210,7 +210,7 @@ public class BootLoader implements ApplicationListener {
 	private Callable<ApplicationListener> spawner;
 	private ApplicationListener cal;
 	private boolean nowPreparing;
-	private Exception lastError;
+	private Throwable lastError;
 	private boolean fadeinFlag;
 
 	/* 引数は以下の通り。実行順もこの順。
@@ -511,7 +511,7 @@ public class BootLoader implements ApplicationListener {
 					cal = spawner.call();
 					nowPreparing = false;
 				}
-				catch (Exception e) {
+				catch (Throwable e) {
 					lastError = e;
 					cal = null;
 					nowPreparing = false;

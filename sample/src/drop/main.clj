@@ -8,29 +8,32 @@
     (com.badlogic.gdx.graphics GL10 Camera OrthographicCamera Texture Color
                                Pixmap Pixmap$Format)
     (com.badlogic.gdx.graphics.g2d SpriteBatch BitmapFont BitmapFontCache
+                                   TextureAtlas TextureAtlas$AtlasRegion
                                    NinePatch)
     (com.badlogic.gdx.math Vector2 Vector3 Rectangle Matrix4)
     (com.badlogic.gdx.utils TimeUtils Disposable)
     (java.lang.reflect Method)
     (java.util.concurrent RejectedExecutionException)
+    (java.util.zip Deflater DeflaterOutputStream InflaterInputStream)
+    (java.io File OutputStream ByteArrayOutputStream)
     )
   (:use
-    (jp.ne.tir.clan clanutil)
+    [jp.ne.tir.clan.clanutil]
+    [clojure.edn :only []]
     )
   )
 ;; this game is based on http://code.google.com/p/libgdx/wiki/SimpleApp .
 
-;; (load-string (slurp "../src/drop/main.clj"))
-;; (.. Gdx app (exit))
 
 ;;; ----------------------------------------------------------------
 ;;; *** consts ***
 ;(def eval-path "path/to/eval.clj")
 ;;(def eval-path "http://misc.tir.jp/proxy.cgi/eval.clj")
-(def min-screen-size [256 256])
+(def ^:const min-width 256)
+(def ^:const min-height 256)
 (def speed-level 100)
 (def player-locate-y 32)
-(def ^:const bgm-file "bgm.ogg")
+(def ^:const bgm-file "drop/bgm.ogg")
 (def ^:const player-img-name "tsubo")
 (def ^:const item-se-suffix ".wav")
 (def ^:const item-table
@@ -46,13 +49,12 @@
 (def star-spawn-interval 10000000000)
 (def console-update-interval-nsec 500000000)
 
+
 ;;; ----------------------------------------------------------------
-;;; auto objects
-;; TODO: この辺りはutil02から持ってくる。最新の状態できちんと動くようにする
+;;; came from util02
 
+(defmacro eval-in-ns [a-ns form] `(binding [*ns* ~a-ns] (eval ~form)))
 
-;; ----------------------------------------------------------------
-;; replacement of dorun
 (defmacro do-each [targets [match-arg] & bodies]
   `(loop [left# ~targets]
      (when-not (empty? left#)
@@ -72,198 +74,388 @@
          n2# (if min-n# (max min-n# n#) n#)]
      (if max-n# (min n2# max-n#) n2#)))
 
+(defn open-url [url] (.openURI ^Net (.. Gdx app (getNet)) url))
+
+(defn get-local-path [filename]
+  (if (= (get-os-type) :android)
+    (.path (.. Gdx files (local filename)))
+    (if-release
+      (str (.getParent (File. (System/getProperty "java.class.path")))
+           ;; TODO: ↑のjava.class.pathからの取得は問題がある、要他手段
+           (System/getProperty "file.separator")
+           filename)
+      filename)))
+
+;; NB: YOU MUST CATCH EXCEPTION
+(defn deflate-write-to-file [^String edn-str ^String file]
+  (let [^bytes input-bytes (.getBytes edn-str "UTF-8")
+        ^FileHandle fh (FileHandle. file)
+        ^OutputStream o (.write fh false)
+        ^Deflater d (Deflater.)
+        ^DeflaterOutputStream dout (DeflaterOutputStream. o d) ]
+    (.write dout input-bytes)
+    (.close dout)
+    (.close o)))
+
+;; NB: YOU MUST CATCH EXCEPTION
+(defn inflate-read-from-file [^String file]
+  (let [^FileHandle fh (FileHandle. file)
+        ^InputStream is (.read fh)
+        ^InflaterInputStream iis (InflaterInputStream. is)
+        ^ByteArrayOutputStream bout (ByteArrayOutputStream. 512) ]
+    (loop [] (let [b (.read iis)] (when (not= b -1) (.write bout b) (recur))))
+    (.close iis)
+    (.close bout)
+    (let [ba (.toByteArray bout), edn-str (String. ba 0 (count ba) "UTF-8")]
+      edn-str)))
+
+(defmacro with-spritebatch [batch & bodies]
+  `(let [^SpriteBatch batch# ~batch] (.begin batch#) ~@bodies (.end batch#)))
 
 ;;; ----------------------------------------------------------------
-;;; *** disposables ***
-;;; all objs with need .dispose, those must registered
-;(def a-disposables (atom nil))
-;
-;(defn register-disposer! [obj]
-;  (let [can-dispose? (some #(= "dispose" (.getName ^Method %))
-;                           (.getMethods (class obj)))]
-;    (when-not can-dispose?
-;      (throw (Exception. (str obj " cannot dispose"))))
-;    (swap! a-disposables conj obj)))
-;
-;(defn dispose-all! []
-;  (dorun (map #(.dispose ^Disposable %) @a-disposables))
-;  (reset! a-disposables nil))
-;
-;
+;;; *** AOLA2: Auto Object in LibGDX's Application #2 ***
+(def ae-symbol '_aola2-entries)
+
+(defmacro aola2-entries-init! []
+  ;; NB: _aola2-entriesはutil02の外に作られる
+  (list 'def ae-symbol '(atom nil)))
+(defmacro aola2-entries-term! []
+  ;; 以下の基準でコンパクト化を行う。
+  ;; - map内の、keyが:***-bodyのエントリを消去
+  ;; - map内の、valがnilのエントリを消去
+  (let [a-entries (eval ae-symbol)
+        new-entries (map #(reduce
+                            merge
+                            {}
+                            (map (fn [[k v]]
+                                   (if (or (nil? v)
+                                           (#{:draw-body
+                                              :sense-body
+                                              :update-body} k))
+                                     {}
+                                     {k v})) %)) @a-entries)]
+    (reset! a-entries new-entries)
+    ;; そして最後に、ae-symbolの再定義を行うコードを出力
+    (list 'def ae-symbol (list 'atom (list 'quote new-entries)))
+    ))
+
+(defn order-aola2-entries [entries]
+  ;; TODO: 並び換え順をもう少し熟考する必要があるかも
+  (loop [pre-entries '()
+         normal-entries '()
+         post-entries '()
+         left-entries entries]
+    (if (empty? left-entries)
+      (reverse (concat post-entries normal-entries pre-entries))
+      (let [entry (first left-entries)
+            {order :order} entry
+            r (rest left-entries)
+            ]
+        (case order
+          :first (recur (cons entry pre-entries) normal-entries post-entries r)
+          nil (recur pre-entries (cons entry normal-entries) post-entries r)
+          :last (recur pre-entries normal-entries (cons entry post-entries) r)
+          )))))
+
+(defmacro defaola2 [a-name & keywords]
+  (assert (symbol? a-name))
+  (eval (list 'declare a-name))
+  (let [param (apply array-map keywords)
+        entry (array-map :name a-name
+                         :ns *ns* ; 呼出元の名前空間を保存する
+                         :order (:order param) ; 順序情報
+                         :create (let [e (eval (:create param))]
+                                   (cond
+                                     (nil? e) nil
+                                     (ifn? e) e
+                                     :else (fn [] e)))
+                         :dispose (eval (:dispose param))
+                         :resume (eval (:resume param))
+                         :pause (eval (:pause param))
+                         :resize (eval (:resize param))
+                         :draw-body (:draw-body param)
+                         :sense-body (:sense-body param)
+                         :update-body (:update-body param)
+                         )]
+    (assert (zero? (count (filter (fn [[k v]]
+                                    (not (#{:order :create :dispose :resume
+                                            :pause :resize :draw-body
+                                            :sense-body :update-body} k)))
+                                  param))) keywords)
+    (assert (let [t (:create entry)] (or (nil? t) (ifn? t))))
+    (assert (let [t (:dispose entry)] (or (nil? t) (ifn? t))))
+    (assert (let [t (:resume entry)] (or (nil? t) (ifn? t))))
+    (assert (let [t (:pause entry)] (or (nil? t) (ifn? t))))
+    (assert (let [t (:resize entry)] (or (nil? t) (ifn? t))))
+    (assert (let [t (:draw-body entry)]
+              (or (not (coll? t)) (not= 'fn* (first t)))))
+    (assert (let [t (:sense-body entry)]
+              (or (not (coll? t)) (not= 'fn* (first t)))))
+    (assert (let [t (:update-body entry)]
+              (or (not (coll? t)) (not= 'fn* (first t)))))
+    (let [a-entries (eval ae-symbol)
+          old-entries (remove #(= a-name (:name %)) @a-entries)
+          new-entries (order-aola2-entries (concat old-entries (list entry)))
+          ]
+      (reset! a-entries new-entries)
+      `(def ~a-name nil))))
+
+(defmacro aola2-update! [aola-symbol new-aola]
+  (assert (symbol? aola-symbol))
+  `(let [entries# (deref ~ae-symbol)
+         entry# (some (fn [%#] (when (= '~aola-symbol (:name %#)) %#))
+                      entries#)]
+     (assert entry#)
+     (eval-in-ns (:ns entry#)
+                 (list 'def (:name entry#) (list 'quote ~new-aola)))))
+
+(defmacro aola2-handler-create! []
+  `(do-each
+     (deref ~ae-symbol)
+     [entry#]
+     (let [{a-name# :name handle# :create a-ns# :ns} entry#]
+       (when handle#
+         (eval-in-ns a-ns# (list 'def a-name# (list 'quote (handle#))))))))
+
+(defmacro aola2-handler-dispose! []
+  `(do-each
+     (reverse (deref ~ae-symbol))
+     [entry#]
+     (let [{a-name# :name handle# :dispose} entry#]
+       (when handle# (handle#)))))
+
+(defmacro aola2-handler-resume! []
+  `(do-each
+     (deref ~ae-symbol)
+     [entry#]
+     (let [{a-name# :name handle# :resume} entry#]
+       (when handle# (handle#)))))
+
+(defmacro aola2-handler-pause! []
+  `(do-each
+     (reverse (deref ~ae-symbol))
+     [entry#]
+     (let [{a-name# :name handle# :pause} entry#]
+       (when handle# (handle#)))))
+
+(defmacro aola2-handler-resize! [w h batch camera]
+  `(let [w# ~w, h# ~h, batch# ~batch, camera# ~camera]
+     (.setToOrtho camera# false w# h#)
+     (.update camera#)
+     (.setProjectionMatrix batch# (.combined camera#))
+     (do-each
+       (deref ~ae-symbol)
+       [entry#]
+       (let [{a-name# :name handle# :resize} entry#]
+         (when handle#
+           ;(when-debug (prn handle#))
+           (handle# w# h#))))))
+
+(defmacro aola2-handler-render! [batch]
+  ;; NB: これのみ、インライン展開を行う(速度稼ぎの為)
+  (let [entries @(eval ae-symbol)
+        draw-bodies (map #(:draw-body %) entries)
+        sense-bodies (map #(:sense-body %) entries)
+        update-bodies (map #(:update-body %) entries)
+        ]
+    `(do
+       (with-spritebatch ~batch ~@draw-bodies)
+       ~@sense-bodies
+       ~@update-bodies
+       nil)))
+
+
 ;;; ----------------------------------------------------------------
-;;; *** gdx's preferences ***
-;;; a capacity of pref is very small.
-;;; http://developer.android.com/reference/java/util/prefs/Preferences.html#MAX_VALUE_LENGTH
-;;; but it may limited to use only about 1-2k for safety.
-;(def a-prefs (atom {}))
-;
-;(definline- pref [kwd] `^Preferences(~kwd @a-prefs))
-;
-;(definline- pref! [kwd new-val] `(swap! a-prefs merge {~kwd ~new-val}))
-;
-;(definline- get-gdx-pref [] `(.. Gdx app (getPreferences pref-name)))
-;
-;(defn load-pref-from-storage! []
-;  (let [^Preferences gdx-pref (get-gdx-pref)
-;        loaded {:volume-off? (.getBoolean gdx-pref "volume-off?" false)
-;                :score-a (long (.getInteger gdx-pref "score-a" 0))
-;                :score-b (long (.getInteger gdx-pref "score-b" 0))
-;                :score-c (long (.getInteger gdx-pref "score-c" 0))
-;                }]
-;    (swap! a-prefs merge loaded)))
-;
-;(defn save-pref-to-storage! []
-;  (let [^Preferences gdx-pref (get-gdx-pref)]
-;    (.putBoolean gdx-pref "volume-off?" (pref :volume-off?))
-;    (.putInteger gdx-pref "score-a" (int (pref :score-a)))
-;    (.putInteger gdx-pref "score-b" (int (pref :score-b)))
-;    (.putInteger gdx-pref "score-c" (int (pref :score-c)))
-;    (.flush gdx-pref)))
-;
-;
+;;; nano clock
+(definline get-nanodelta [^"[J" nc] `(aget ~nc 0))
+(definline get-nanotime [^"[J" nc] `(aget ~nc 1))
+(defmacro defnanoclock [a-name & [threshold]]
+  (assert (symbol? a-name))
+  (let [e-threshold (or (eval threshold) 50000000)
+        name-with-meta (vary-meta a-name assoc :tag "[J")]
+    (assert (number? e-threshold))
+    `(defaola2 ~name-with-meta
+       :create #(doto (long-array 3) (aset-long 2 ~e-threshold))
+       :sense-body (let [now# (TimeUtils/nanoTime)
+                         old-nanotime# (get-nanotime ~name-with-meta)
+                         new-delta# (min (- now# old-nanotime#)
+                                         (aget ~name-with-meta 2))]
+                     (aset-long ~name-with-meta 0 new-delta#)
+                     (aset-long ~name-with-meta 1 now#)))))
+
+
 ;;; ----------------------------------------------------------------
-;;; *** music ***
-;(def a-music (atom nil))
-;
-;(defn init-music! []
-;  (let [bgm (.. Gdx audio (newMusic (assets-file bgm-file)))]
-;    (.setLooping bgm true)
-;    (if (pref :volume-off?) (.stop bgm) (.play bgm))
-;    (register-disposer! bgm)
-;    (reset! a-music bgm)))
-;
-;(defn change-volume! [on-off]
-;  ;(doto (.. Gdx app (getPreferences (str "CBL-" Info/projectGroupId
-;  ;                                       "-" Info/projectArtifactId
-;  ;                                       "-" Info/projectClassifier)))
-;  ;  (.putBoolean "PLAY_JINGLE" on-off)
-;  ;  (.flush)) ; see BootLoader.java
-;  (pref! :volume-off? (not on-off))
-;  (if on-off (.play ^Music @a-music) (.stop ^Music @a-music)))
-;
-;
+
+(aola2-entries-init!)
+(defnanoclock the-nc 50000000)
+
+(defaola2 ^SpriteBatch the-batch
+  :create #(SpriteBatch.)
+  :dispose #(.dispose the-batch))
+
+(defaola2 ^OrthographicCamera the-camera :create #(OrthographicCamera.))
+
+(defaola2 ^TextureAtlas the-ta
+  :create #(TextureAtlas. (assets-file "pack.atlas"))
+  :dispose #(.dispose the-ta))
+
+(defaola2 ^BitmapFont the-font
+  :create #(doto (BitmapFont.)
+             (.setFixedWidthGlyphs "0123456789"))
+  :dispose #(.dispose the-font))
+
+(defaola2 ^Vector2 screen-size
+  :create #(Vector2. (float min-width) (float min-height))
+  :resize (fn [w h] (.set screen-size (float w) (float h))))
+(defaola2 ^Vector2 screen-center
+  :create #(Vector2. (float min-width) (float min-height))
+  :resize (fn [w h] (.set screen-center (float (/ w 2)) (float (/ h 2)))))
+
+
 ;;; ----------------------------------------------------------------
-;;; *** gdx's batch ***
-;(def a-batch (atom nil))
-;
-;(definline- batch [] `^SpriteBatch@a-batch)
-;
-;(defn init-batch! []
-;  (let [b (SpriteBatch.)] (register-disposer! b) (reset! a-batch b)))
-;
-;(defmacro with-batch [& bodies]
-;  `(do
-;     (.begin ^SpriteBatch (batch))
-;     (try
-;       ~@bodies
-;       (finally (.end ^SpriteBatch (batch))))))
-;
-;
+;;; touches (for single only)
+
+(def ^:const _old-touch-index 0)
+(def ^:const _cur-touch-index 1)
+(defaola2 ^Vector3 touch-pos :create #(Vector3.))
+(defaola2 ^"[Z" a-touch-history
+  :create #(boolean-array 2)
+  :sense-body (let [input Gdx/input
+                    is-touched (.isTouched input)]
+                (aset-boolean a-touch-history _old-touch-index
+                              (aget a-touch-history _cur-touch-index))
+                (aset-boolean a-touch-history _cur-touch-index is-touched)
+                (when is-touched
+                  (.set touch-pos (.getX input) (.getY input) 0)
+                  (.unproject the-camera touch-pos))))
+(definline is-touched? [] `(aget a-touch-history _cur-touch-index))
+(definline was-touched? [] `(aget a-touch-history _old-touch-index))
+(definline just-touched? [] `(and (not (was-touched?)) (is-touched?)))
+(definline just-released? [] `(and (was-touched?) (not (is-touched?))))
+
 ;;; ----------------------------------------------------------------
-;;; *** gdx's camera ***
-;(def a-camera (atom nil))
-;(def ^Vector2 screen-rect (Vector2.))
-;(def ^Vector3 touch-pos (Vector3.))
-;
-;(definline- camera [] `^OrthographicCamera@a-camera)
-;
-;(defn init-camera! [] (reset! a-camera (OrthographicCamera.)))
-;
-;(definline- get-screen-width [] `(.x screen-rect))
-;(definline- get-screen-height [] `(.y screen-rect))
-;(definline- update-screen-rect! [w h]
-;  `(do (set! (.x screen-rect) ~w) (set! (.y screen-rect) ~h)))
-;
-;(definline- update-touch-pos! []
-;  `(do
-;     (.. touch-pos (set (.. Gdx input (getX)) (.. Gdx input (getY)) 0))
-;     (.. ^OrthographicCamera (camera) (unproject touch-pos))
-;     nil))
-;
-;
-;;; ----------------------------------------------------------------
-;;; *** gdx's font ***
-;(def a-font (atom nil))
-;(def a-font-line-height (atom nil))
-;
-;(definline- font [] `^BitmapFont@a-font)
-;
-;(defn init-font! []
-;  (let [f (BitmapFont.)]
-;    ;(.setFixedWidthGlyphs f (apply str (map char (range 32 127))))
-;    (.setFixedWidthGlyphs f "0123456789")
-;    (reset! a-font-line-height (.getLineHeight f))
-;    (register-disposer! f)
-;    (reset! a-font f)))
-;
-;
+;;; save data manipulation
+
+(defaola2 a-sound-off? :create #(atom false))
+(defaola2 a-scores :create #(atom [0 0 0]))
+(defn get-score [idx] (nth @a-scores idx))
+(def ^:const save-file "save.dat")
+
+
+(defn load-data! []
+  (let [edn-str (or
+                  (keep-code-when-desktop
+                    (let [^String f (get-local-path save-file)]
+                      (when (.exists (FileHandle. f))
+                        (inflate-read-from-file f))))
+                  (keep-code-when-android
+                    (doto (.. Gdx app (getPreferences "drop"))
+                      (.getString pref "edn" "")))
+                  "")]
+    (when-not (= edn-str "")
+      (try
+        (let [edn-expr (clojure.edn/read-string edn-str)]
+          (reset! a-sound-off? (:sound-off? edn-expr))
+          (reset! a-scores (:scores edn-expr))
+          )
+        (catch Exception _ nil)))))
+(defn save-data! []
+  (let [edn-expr {:sound-off? @a-sound-off?
+                  :scores @a-scores}
+        edn-str (pr-str edn-expr)]
+    (or
+      (keep-code-when-desktop
+        (deflate-write-to-file edn-str (get-local-path save-file)))
+      (keep-code-when-android
+        (doto (.. Gdx app (getPreferences "drop"))
+          (.putString "edn" edn-str)
+          (.flush)))
+      )))
+
+
+;; ----------------------------------------------------------------
+;; *** music ***
+(defaola2 ^Music bgm
+  :create #(doto (.. Gdx audio (newMusic (assets-file bgm-file)))
+             (.setLooping true))
+  :dispose #(.dispose bgm))
+ 
+(defn update-music! []
+  (if @a-sound-off? (.stop bgm) (.play bgm)))
+
+(defn change-volume! [on-off]
+  (reset! a-sound-off? (not on-off))
+  (save-data!)
+  (update-music!))
+
+
 ;;; ----------------------------------------------------------------
 ;;; *** dialog (by NinePatch) ***
-;(def a-dialog-tex (atom nil))
-;(def a-dialog-np (atom nil))
-;(def a-dialog-nothing? (atom true))
-;(def a-dialog-title (atom ""))
-;(def a-dialog-url (atom ""))
-;(def ^Rectangle dialog-url-rect (Rectangle.))
-;(def ^Rectangle dialog-close-rect (Rectangle.))
-;(def ^:const dialog-close-label "[CLOSE]")
-;
-;(defn init-dialog! []
-;  (let [tex (Texture. (assets-file "dialog.png"))
-;        np (NinePatch. tex 16 16 16 16)
-;        ]
-;    (register-disposer! tex)
-;    (reset! a-dialog-tex tex)
-;    (reset! a-dialog-np np)))
-;
-;(defn open-dialog! [title url]
-;  (reset! a-dialog-nothing? false)
-;  (reset! a-dialog-title title)
-;  (reset! a-dialog-url url))
-;
-;(defn draw-dialog! []
-;  (when-not @a-dialog-nothing?
-;    (let [^NinePatch np @a-dialog-np
-;          url @a-dialog-url
-;          sc-w (get-screen-width)
-;          sc-h (get-screen-height)
-;          np-w 256
-;          np-h 128
-;          np-x (/ (- sc-w np-w) 2)
-;          np-y (/ (- sc-h np-h) 2)
-;          line-height @a-font-line-height
-;          label-x (+ np-x (.getPadLeft np))
-;          label-y (- (+ np-y np-h) (.getPadTop np))
-;          close-w (.width (.getBounds ^BitmapFont (font) dialog-close-label))
-;          close-h line-height
-;          close-x (- (+ np-x np-w) (.getPadRight np) close-w)
-;          close-y label-y
-;          np-inner-w (- np-w (.getPadLeft np) (.getPadRight np))
-;          url-b (.getWrappedBounds ^BitmapFont (font) url np-inner-w)
-;          url-w (.width url-b)
-;          url-h (.height url-b)
-;          url-x (/ (- sc-w url-w) 2)
-;          url-y (+ np-y (.getPadBottom np) url-h)
-;          ]
-;      (.set dialog-close-rect
-;            close-x (- close-y close-h 8) close-w (+ close-h 16))
-;      (.set dialog-url-rect url-x (- url-y url-h 8) url-w (+ url-h 16))
-;      (.draw np (batch) np-x np-y np-w np-h)
-;      (.setColor ^BitmapFont (font) Color/BLACK)
-;      (.draw ^BitmapFont (font) (batch) @a-dialog-title label-x label-y)
-;      (.setColor ^BitmapFont (font) Color/BLUE)
-;      (.draw ^BitmapFont (font) (batch) dialog-close-label close-x close-y)
-;      (.drawWrapped ^BitmapFont (font) (batch) url url-x url-y np-inner-w))))
-;
-;(defn process-dialog! [x y]
-;  (let [pressed-url? (.contains ^Rectangle dialog-url-rect x y)
-;        pressed-close? (.contains ^Rectangle dialog-close-rect x y)]
-;    (when pressed-url?
-;      (.openURI ^Net (.. Gdx app (getNet)) @a-dialog-url))
-;    (when pressed-close?
-;      (reset! a-dialog-nothing? true))))
-;
-;
+(def ^:const dialog-close-label "[CLOSE]")
+
+(defaola2 a-dialog-nothing?
+  :create #(atom true))
+(defaola2 a-dialog-title
+  :create #(atom ""))
+(defaola2 a-dialog-url
+  :create #(atom ""))
+(defaola2 ^Rectangle dialog-url-rect
+  :create #(Rectangle.))
+(defaola2 ^Rectangle dialog-close-rect
+  :create #(Rectangle.))
+
+(defn open-dialog! [title url]
+  (reset! a-dialog-nothing? false)
+  (reset! a-dialog-title title)
+  (reset! a-dialog-url url))
+
+(defaola2 ^NinePatch dialog-np
+  :create #(NinePatch. (.findRegion the-ta "dialog") 16 16 16 16)
+  :draw-body (when-not @a-dialog-nothing?
+               (let [sc-w (.x screen-size)
+                     sc-h (.y screen-size)
+                     np-w 256
+                     np-h 128
+                     np-x (/ (- sc-w np-w) 2)
+                     np-y (/ (- sc-h np-h) 2)
+                     line-height (.getLineHeight the-font)
+                     label-x (+ np-x (.getPadLeft dialog-np))
+                     label-y (- (+ np-y np-h) (.getPadTop dialog-np))
+                     close-w (.width (.getBounds the-font dialog-close-label))
+                     close-h line-height
+                     close-x (- (+ np-x np-w) (.getPadRight dialog-np) close-w)
+                     close-y label-y
+                     np-inner-w (- np-w
+                                   (.getPadLeft dialog-np)
+                                   (.getPadRight dialog-np))
+                     url-b (.getWrappedBounds the-font @a-dialog-url np-inner-w)
+                     url-w (.width url-b)
+                     url-h (.height url-b)
+                     url-x (/ (- sc-w url-w) 2)
+                     url-y (+ np-y (.getPadBottom dialog-np) url-h)
+                     ]
+                 (.set dialog-close-rect
+                       close-x (- close-y close-h 8) close-w (+ close-h 16))
+                 (.set dialog-url-rect
+                       url-x (- url-y url-h 8) url-w (+ url-h 16))
+                 (.draw dialog-np the-batch np-x np-y np-w np-h)
+                 (.setColor the-font Color/BLACK)
+                 (.draw the-font the-batch @a-dialog-title label-x label-y)
+                 (.setColor the-font Color/BLUE)
+                 (.draw the-font the-batch dialog-close-label close-x close-y)
+                 (.drawWrapped
+                   the-font the-batch @a-dialog-url url-x url-y np-inner-w)
+                 ))
+  :update-body (when (and (not @a-dialog-nothing?) (just-released?))
+                 (let [x (.x touch-pos)
+                       y (.y touch-pos)]
+                   (cond
+                     (.contains dialog-url-rect x y) (open-url @a-dialog-url)
+                     (.contains
+                       dialog-close-rect x y) (reset! a-dialog-nothing? true)
+                     :else nil)))
+  )
+
 ;; ----------------------------------------------------------------
 ;;; *** generalized button ***
 ;(def a-buttons (atom nil))
@@ -1063,8 +1255,6 @@
 ;(defn drop-create []
 ;  (when do-prof? (println "!!! do-prof? is true (slow) !!!"))
 ;  (when definline-is-fn? (println "!!! definline-is-fn? is true (slow) !!!"))
-;  (load-pref-from-storage!)
-;  (init-music!)
 ;  (init-batch!)
 ;  (init-camera!)
 ;  (init-font!)
@@ -1102,20 +1292,6 @@
 ;    ))
 ;
 ;
-;(defn drop-pause []
-;  (save-pref-to-storage!)
-;  ;; dynamic-generated-texture was reset by pause->resume,
-;  ;; that must be dispose.
-;  (pause-buttons!)
-;  (dispose-background!))
-;
-;
-;(defn drop-resume []
-;  ;; dynamic-generated-texture was reset by pause->resume,
-;  ;; that must be reconstruct.
-;  (resume-buttons!)
-;  (init-background!)
-;  )
 ;
 ;
 ;(defn drop-render []
@@ -1146,39 +1322,47 @@
 ;      (when (and just-touched? (not dialog-nothing?))
 ;        (process-dialog! touch-x touch-y)))
 ;    (catch Exception e (drop-pause) (throw e))))
-;
-;
-;(defn drop-dispose []
-;  (when do-prof? (eval '(android.os.Debug/startMethodTracing)))
-;  (dispose-all!))
-;
-;
+
+
+(declare main-resume)
+
 (defn main-create []
-  nil)
+  (aola2-handler-create!)
+  (load-data!)
+  (update-music!)
+  (main-resume))
 
 
-(defn main-resize [w-orig h-orig]
-  nil)
+(defn main-resize [real-w real-h]
+  (let [w (max min-width real-w)
+        h (max min-height real-h)]
+    (aola2-handler-resize! w h the-batch the-camera)))
+
 
 
 (defn main-pause []
-  nil)
+  (save-data!)
+  (aola2-handler-pause!))
 
 
 (defn main-resume []
-  nil)
+  (aola2-handler-resume!))
 
 
 (defn main-render []
-  ;(.. Gdx gl (glClearColor 0.0 0.0 0.2 1.0)) ; R G B A
-  (.. Gdx gl (glClearColor (rand) (rand) (rand) 1.0))
-  (.. Gdx gl (glClear (. GL10 GL_COLOR_BUFFER_BIT)))
-  nil)
+  (try
+    ;(.. Gdx gl (glClearColor (rand) (rand) (rand) 1.0))
+    ;(.. Gdx gl (glClear (. GL10 GL_COLOR_BUFFER_BIT)))
+    (aola2-handler-render! the-batch)
+    (catch Exception e
+      (main-pause)
+      (throw e))))
 
 
 (defn main-dispose []
-  nil)
+  (aola2-handler-dispose!))
 
+(aola2-entries-term!)
 
 ;;; ----------------------------------------------------------------
 
@@ -1191,6 +1375,20 @@
     (pause [] (main-pause))
     (dispose [] (main-dispose))
     ))
+
+;(defn generate-al []
+;  (proxy [ApplicationListener] []
+;    (create [] nil)
+;    (resume [] nil)
+;    (resize [w h] nil)
+;    (render []
+;      (.. Gdx gl (glClearColor (rand) (rand) (rand) 1.0))
+;      (.. Gdx gl (glClear (. GL10 GL_COLOR_BUFFER_BIT))))
+;    (pause [] nil)
+;    (dispose [] nil)
+;    ))
+
+;;; ----------------------------------------------------------------
 
 
 ;; 日本語コードはutf-8

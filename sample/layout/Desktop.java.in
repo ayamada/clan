@@ -42,15 +42,16 @@ public class Desktop {
 					null,
 					null,
 					new Callable<ApplicationListener>() {
-						@Override public ApplicationListener call() {
+						@Override public ApplicationListener call() throws Exception {
 							//return new @PROJECT_CAL_GENERATOR_CLASS@();
 							try {
 								//return (ApplicationListener)Class.forName("@PROJECT_CAL_GENERATOR_CLASS@").newInstance();
 								RT.var("clojure.core", "refer").invoke(Symbol.intern(null, "clojure.core"));
 								RT.var("clojure.core", "require").invoke(Symbol.intern("jp.ne.tir.clan.clanutil"));
 								return (ApplicationListener)RT.var("jp.ne.tir.clan.clanutil", "generate-cal").invoke("@PROJECT_CAL_GENERATOR_CLASS@", "@PROJECT_CAL_GENERATOR_FN@");
-							} catch (Exception e) {
-								throw new RuntimeException(e.toString());
+							} catch (Throwable e) {
+								//e.printStackTrace();
+								throw new Exception(e);
 							}
 						}
 					}), // NB: it must can to run another threads.
