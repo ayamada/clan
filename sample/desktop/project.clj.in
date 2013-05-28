@@ -18,36 +18,16 @@
     ])
 
 (defproject
-  @PROJECT_ARTIFACTID@ "@PROJECT_VERSION@"
+  @PROJECT_DESKTOP_ARTIFACTID@ "@PROJECT_VERSION@"
   ;:description "FIXME: write description"
   ;:url "http://example.com/FIXME"
   ;:license {:name "Eclipse Public License"
   ;          :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies ~dependencies
-  :profiles {
-             :repl {
-                    }
-             :dev {
-                   }
-             :packaged {
-                        }
-             :release {:global-vars {*warn-on-reflection* false
-                                     *assert* false}
-                       :omit-source true
-                       :aot :all
-                       ;; > Put a regex here to compile all namespaces whose names match.
-                       ;:jar-name "sample.jar"
-                       ;:uberjar-name "sample-standalone.jar"
-                       ;:jar-exclusions [#"(?:^|/).svn/"]
-                       ;:uberjar-exclusions [#"META-INF/DUMMY.SF"]
-                       }
-             }
-  ;; TODO: あとできちんと必要なものを全て指定する事
-  :aot [jp.ne.tir.clan.clanutil]
   :main @PROJECT_DESKTOP_GROUPID@.Desktop
 
-  :source-paths ["src" "../src" "../clan/cbl/src"]
-  :java-source-paths ["src-java" "../src-java" "../clan/cbl/src-java"]
+  ;:source-paths ["../clan/cbl/src" "src" "../src"]
+  :java-source-paths ["../clan/cbl/src-java" "src-java" "../src-java"]
   :test-paths ["../test"]
   :resource-paths ["target/resources"]
 
@@ -56,4 +36,28 @@
   ;:native-path "src/native" ; Where to extract native dependencies.
   :global-vars {*warn-on-reflection* true
                 *assert* true}
+  :profiles {
+             :repl {
+                    :source-paths ["../clan/cbl/src" "src" "../src"]
+                    }
+             :devpack {
+                       :source-paths ["../clan/cbl/src" "src"] ; "../src" はjar起動時に明示的に渡す
+                       ;:aot [jp.ne.tir.clan.clanutil]
+                       :aot :all
+                       :jar-name "@PROJECT_DESKTOP_ARTIFACTID@-devpack-without-dep.jar"
+                       :uberjar-name "@PROJECT_DESKTOP_ARTIFACTID@-devpack.jar"
+                       }
+             :pack {:source-paths ["../clan/cbl/src" "src" "../src"]
+                    :aot :all
+                    :jar-name "@PROJECT_DESKTOP_ARTIFACTID@-without-dep.jar"
+                    :uberjar-name "@PROJECT_DESKTOP_ARTIFACTID@.jar"
+                    }
+             :release {:global-vars {*warn-on-reflection* false
+                                     *assert* false}
+                       ;; > Put a regex here to compile all namespaces whose names match.
+                       :omit-source true
+                       ;:jar-exclusions [#"(?:^|/).svn/"]
+                       ;:uberjar-exclusions [#"META-INF/DUMMY.SF"]
+                       }
+             }
   )

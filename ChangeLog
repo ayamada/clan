@@ -1,8 +1,8 @@
 2013-XX-XX  ayamada
 	* release 0.1.0: まだリリース準備中
-	  - 起動速度が大幅向上
-	  - 一部をlein化
+	  - configure.ac定義項目の全体的な見直し
 	  - ディレクトリ構造を全体的に変更
+	  - 一部をlein化
 	  - Info.javaの廃止
 	  - clanutil.cljの提供
 	  - gdx-tools.jarを利用可能に

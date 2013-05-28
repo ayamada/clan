@@ -60,23 +60,11 @@ LIBGDX_ZIP := libgdx-$(CLAN_LIBGDX_VERSION).zip
 LIBGDX_URL := http://libgdx.googlecode.com/files/$(LIBGDX_ZIP)
 
 
-# TODO: nekoコンパイル回りは一旦コメントアウト(可能ならleinでまとめてコンパイルしたい)
-#NEKO_COMPILE_JARS := clan/neko/target/dependency/*.jar
-# NB: ↓は即座には評価されないらしい。
-#       (即座に評価されてしまうとNEKO_COMPILE_JARSが空になってしまう)
-#       詳細は以下を参照 http://d.hatena.ne.jp/m-hiyama/20071024/1193202017
-#DEP_COMPILE_CPS_NEKO = ../../$(subst $(SPACE),:../../,$(wildcard $(NEKO_COMPILE_JARS)))
-
-# neko中でコンパイルが必要なものを列挙
-#NEKO_COMPILE_TARGETS := neko.compilation
-#NEKO_COMPILE_TARGETS = $(shell find tmp/neko/orig/neko | grep '\.clj$$' | $(PERL) -ne 'chomp; s|^tmp/neko/orig/(.*)\.clj$$|$$1|; s|/|.|g; s|_|-|g; print "$$_ "' && echo)
 
 
 
 
-
-
-.PHONY: help clean dep cal cbl jar apk force layout info clan assets res release
+.PHONY: help clean dep jar apk force layout clan assets res release desktop android
 
 help:
 	@echo "sorry, see clan/README.rst"
@@ -106,12 +94,6 @@ android/libs/armeabi/libgdx.so: tmp/libgdx/gdx.jar
 	cd clan/depinst && lein localrepo install ../../tmp/libgdx/extensions/gdx-tools/gdx-tools.jar com.badlogic.gdx/gdx-tools $(CLAN_LIBGDX_VERSION)
 	touch .dep-libgdx-done
 
-#	cd tmp/libgdx && for f in *.jar; do \
-#		$(MVN) install:install-file -Dfile=$$f -DgroupId=com.badlogic.gdx -DartifactId=$${f%%.jar} -Dversion=$(CLAN_LIBGDX_VERSION) -Dpackaging=jar -DgeneratePom=true -DcreateChecksum=true || break 0; \
-#	done
-#	cd tmp/libgdx/extensions/gdx-tools && $(MVN) install:install-file -Dfile=gdx-tools.jar -DgroupId=com.badlogic.gdx -DartifactId=gdx-tools -Dversion=$(CLAN_LIBGDX_VERSION) -Dpackaging=jar -DgeneratePom=true -DcreateChecksum=true
-#	touch .dep-libgdx-done
-
 dep-libgdx: .dep-libgdx-done
 
 dep-libgdx-clean:
@@ -136,33 +118,6 @@ update-resources:
 	rm -rf desktop/target/resources
 	mkdir -p desktop/target/resources
 	cp -a desktop/assets desktop/target/resources
-
-
-# TODO: nekoコンパイル回りは一旦コメントアウト(可能ならleinでまとめてコンパイルしたい)
-# NB: .dep-neko-src-doneが分離しているのは、↓で参照しているNEKO_COMPILE_*変数の判定タイミングが、makeターゲット実行中には存在しない為。これを一緒にしてしまうとNEKO_COMPILE_*が空になる。
-#.dep-neko-src-done:
-#	mkdir -p tmp/neko/classes/neko/ui/adapters tmp/neko/orig
-#	cd clan/neko && $(MVN) dependency:copy-dependencies
-#	cd tmp/neko/orig && $(JAR) xf ../../../clan/neko/target/dependency/neko-$(CLAN_NEKO_VERSION).jar
-#	cp tmp/neko/orig/neko/ui/adapters/*.class tmp/neko/classes/neko/ui/adapters
-#	touch .dep-neko-src-done
-# TODO: ↑の*.classのコピーは、nekoのバージョンが上がったらもっと増やさないといけなくなる。対策が必要。
-
-#.dep-neko-done: .dep-neko-src-done
-#	cd tmp/neko && for x in $(NEKO_COMPILE_TARGETS); do \
-#		$(JAVA) -cp ./classes:$(DEP_COMPILE_CPS_NEKO) clojure.main -e "(compile '$$x)" || break 0; \
-#	done
-#	cd tmp/neko && $(JAR) cvf neko.jar -C classes .
-#	cd tmp/neko && $(MVN) install:install-file -Dfile=neko.jar -DgroupId=neko -DartifactId=neko -Dclassifier=compiled -Dversion=$(CLAN_NEKO_VERSION) -Dpackaging=jar -DgeneratePom=true -DcreateChecksum=true
-#	touch .dep-neko-done
-
-#dep-neko: .dep-neko-done
-
-#dep-neko-clean:
-#	cd clan/neko && $(MVN) clean
-#	rm -rf tmp/neko
-#	rm -f .dep-neko-src-done
-#	rm -f .dep-neko-done
 
 
 
@@ -192,49 +147,100 @@ layout-clean:
 	rm -f .layout-done
 
 
-#.cal-done: .info-exists .dep-libgdx-done .dep-neko-done
-#	cd cal && $(MVN) install
-#	touch .cal-done
-
-#cal: .cal-done
-
-#cal-clean:
-#	cd cal && $(MVN) clean
-#	rm -f .cal-done
 
 
+repl:
+	@echo "sorry, not implemented, yet"
 
+desktop/target/$(PROJECT_DESKTOP_ARTIFACTID)-devpack.jar: .layout-done
+	export CLAN_TARGET=desktop && cd desktop && $(LEIN) with-profile devpack uberjar
 
+devpack: desktop/target/$(PROJECT_DESKTOP_ARTIFACTID)-devpack.jar
 
-
-#.cbl-done: .info-exists .dep-libgdx-done
-#	cd clan/cbl && $(MVN) install
-#	touch .cbl-done
-
-#cbl: .cbl-done
-
-#cbl-clean:
-#	cd clan/cbl && $(MVN) clean
-#	rm -f .cbl-done
+# NB: javaのclasspath区切り文字の為にインチキをしている
+run: desktop/target/$(PROJECT_DESKTOP_ARTIFACTID)-devpack.jar
+	cd desktop && $(JAVA) -cp '../src:target/$(PROJECT_DESKTOP_ARTIFACTID)-devpack.jar:;../src;target/$(PROJECT_DESKTOP_ARTIFACTID)-devpack.jar' $(PROJECT_DESKTOP_GROUPID).Desktop
 
 
 
+desktop/target/$(PROJECT_DESKTOP_ARTIFACTID).jar: .layout-done
+	export CLAN_TARGET=desktop && cd desktop && $(LEIN) with-profile pack uberjar
+
+pack: desktop/target/$(PROJECT_DESKTOP_ARTIFACTID).jar
 
 
 
-desktop/target/$(PROJECT_DESKTOP_ARTIFACTID)-$(PROJECT_DESKTOP_VERSION)-jar-with-dependencies.jar: .layout-done .cal-done .cbl-done
-	cd desktop && $(MVN) uberjar
-
-jar: desktop/target/$(PROJECT_DESKTOP_ARTIFACTID)-$(PROJECT_DESKTOP_VERSION)-jar-with-dependencies.jar
-
-# TODO: lein run じゃなく、jarから起動するようにする
-jar-exec: desktop/target/$(PROJECT_DESKTOP_ARTIFACTID)-$(PROJECT_DESKTOP_VERSION)-jar-with-dependencies.jar
-	cd desktop && $(LEIN) run
-
-#	cd desktop && $(JAVA) -jar target/$(PROJECT_DESKTOP_ARTIFACTID)-$(PROJECT_DESKTOP_VERSION)-jar-with-dependencies.jar
-
-jar-clean:
+target/$(PROJECT_DESKTOP_ARTIFACTID).jar: .layout-done ta desktop-clean update-resources
+	export CLAN_TARGET=desktop CLAN_RELEASE=1 && cd desktop && $(LEIN) with-profile pack,release uberjar
+	mkdir -p target
+	cp desktop/target/$(PROJECT_DESKTOP_ARTIFACTID).jar target
 	cd desktop && $(LEIN) clean
+
+release-jar: target/$(PROJECT_DESKTOP_ARTIFACTID).jar
+
+release-exe: target/$(PROJECT_DESKTOP_ARTIFACTID).jar
+	cd target && if [ x != x$(L4J) ]; then \
+		ln -sf $(L4J_DIR)bin $(L4J_DIR)head $(L4J_DIR)w32api . && \
+		$(JAVA) -jar $(L4J_JAR) ../l4j/l4j.xml; \
+	fi
+
+# TODO: ↑のlaunch4jは失敗しても終了コード0を返す。stdoutの出力を見て判定するように直す
+# 成功時
+# launch4j: Compiling resources
+# launch4j: Linking
+# launch4j: Wrapping
+# launch4j: Successfully created path/to/hoge.exe
+# 失敗時(これ以外にもある)
+# launch4j: java.io.FileNotFoundException: hoge (No such file or directory)
+
+
+desktop-clean:
+	cd desktop && $(LEIN) clean
+
+
+
+
+
+
+# TODO: nekoコンパイル回りは一旦コメントアウト(可能ならleinでまとめてコンパイルしたい)
+#NEKO_COMPILE_JARS := clan/neko/target/dependency/*.jar
+# NB: ↓は即座には評価されないらしい。
+#       (即座に評価されてしまうとNEKO_COMPILE_JARSが空になってしまう)
+#       詳細は以下を参照 http://d.hatena.ne.jp/m-hiyama/20071024/1193202017
+#DEP_COMPILE_CPS_NEKO = ../../$(subst $(SPACE),:../../,$(wildcard $(NEKO_COMPILE_JARS)))
+
+# neko中でコンパイルが必要なものを列挙
+#NEKO_COMPILE_TARGETS := neko.compilation
+#NEKO_COMPILE_TARGETS = $(shell find tmp/neko/orig/neko | grep '\.clj$$' | $(PERL) -ne 'chomp; s|^tmp/neko/orig/(.*)\.clj$$|$$1|; s|/|.|g; s|_|-|g; print "$$_ "' && echo)
+
+
+# NB: .dep-neko-src-doneが分離しているのは、↓で参照しているNEKO_COMPILE_*変数の判定タイミングが、makeターゲット実行中には存在しない為。これを一緒にしてしまうとNEKO_COMPILE_*が空になる。
+#.dep-neko-src-done:
+#	mkdir -p tmp/neko/classes/neko/ui/adapters tmp/neko/orig
+#	cd clan/neko && $(MVN) dependency:copy-dependencies
+#	cd tmp/neko/orig && $(JAR) xf ../../../clan/neko/target/dependency/neko-$(CLAN_NEKO_VERSION).jar
+#	cp tmp/neko/orig/neko/ui/adapters/*.class tmp/neko/classes/neko/ui/adapters
+#	touch .dep-neko-src-done
+# TODO: ↑の*.classのコピーは、nekoのバージョンが上がったらもっと増やさないといけなくなる。対策が必要。
+
+#.dep-neko-done: .dep-neko-src-done
+#	cd tmp/neko && for x in $(NEKO_COMPILE_TARGETS); do \
+#		$(JAVA) -cp ./classes:$(DEP_COMPILE_CPS_NEKO) clojure.main -e "(compile '$$x)" || break 0; \
+#	done
+#	cd tmp/neko && $(JAR) cvf neko.jar -C classes .
+#	cd tmp/neko && $(MVN) install:install-file -Dfile=neko.jar -DgroupId=neko -DartifactId=neko -Dclassifier=compiled -Dversion=$(CLAN_NEKO_VERSION) -Dpackaging=jar -DgeneratePom=true -DcreateChecksum=true
+#	touch .dep-neko-done
+
+#dep-neko: .dep-neko-done
+
+#dep-neko-clean:
+#	cd clan/neko && $(MVN) clean
+#	rm -rf tmp/neko
+#	rm -f .dep-neko-src-done
+#	rm -f .dep-neko-done
+
+
+
 
 
 
@@ -253,41 +259,13 @@ android/target/$(PROJECT_ANDROID_ARTIFACTID)-signed-aligned.apk: .layout-done .c
 		cd android && $(MVN) -Prelease package || (echo "you dont edit settings.xml yet? please see README.rst and grep 'settings.xml'." && false); \
 	fi
 
-apk-clean:
+android-clean:
 	cd android && $(MVN) clean
 
 
 
 
 
-# 以下の三つは直に実行しない事！
-inner-release-jar: RELEASE_FLAG := 1
-inner-release-jar: desktop/target/$(PROJECT_DESKTOP_ARTIFACTID)-$(PROJECT_DESKTOP_VERSION)-jar-with-dependencies.jar
-	mkdir -p target
-	cp desktop/target/$(PROJECT_DESKTOP_ARTIFACTID)-$(PROJECT_DESKTOP_VERSION)-jar-with-dependencies.jar target/$(PROJECT_DESKTOP_ARTIFACTID).jar
-
-inner-release-exe: RELEASE_FLAG := 1
-inner-release-exe: desktop/target/$(PROJECT_DESKTOP_ARTIFACTID)-$(PROJECT_DESKTOP_VERSION)-jar-with-dependencies.jar
-	mkdir -p target
-	cd target && if [ x != x$(L4J) ]; then \
-		ln -sf $(L4J_DIR)bin $(L4J_DIR)head $(L4J_DIR)w32api . && \
-		$(JAVA) -jar $(L4J_JAR) ../l4j/l4j.xml; \
-	fi
-
-# TODO: ↑のlaunch4jは失敗しても終了コード0を返す。stdoutの出力を見て判定するように直す
-# 成功時
-# launch4j: Compiling resources
-# launch4j: Linking
-# launch4j: Wrapping
-# launch4j: Successfully created path/to/hoge.exe
-# 失敗時(これ以外にもある)
-# launch4j: java.io.FileNotFoundException: hoge (No such file or directory)
-
-# for exewrap
-#	if [ x != x$(EXEWRAP) ]; then \
-#		mkdir -p target; \
-#		$(EXEWRAP) -g -t 1.6 -e SINGLE -i l4j/windows.ico -j desktop/target/$(PROJECT_DESKTOP_ARTIFACTID)-$(PROJECT_DESKTOP_VERSION)-jar-with-dependencies.jar -o target/$(PROJECT_DESKTOP_ARTIFACTID).exe; \
-#	fi
 
 inner-release-apk: RELEASE_FLAG := 1
 inner-release-apk: android/target/$(PROJECT_ANDROID_ARTIFACTID)-signed-aligned.apk
@@ -295,21 +273,10 @@ inner-release-apk: android/target/$(PROJECT_ANDROID_ARTIFACTID)-signed-aligned.a
 	cp android/target/$(PROJECT_ANDROID_ARTIFACTID)-signed-aligned.apk target/$(PROJECT_ANDROID_ARTIFACTID).apk
 
 
-# release-*系はcleanupが重要なので、依存関係を気にせずに毎回cleanして生成する
-# (ただしmake releaseのみ三種類全部同時に作るようにする)
-# また、処理が終わった後にinfoが再利用されてしまわないように、
-# 明示的にcleanしておく(compile時info判定の為、info依存物も消す)
-release-jar: clean release-clean inner-release-jar
-	$(MAKE) clean
 
-release-exe: clean release-clean inner-release-exe
-	$(MAKE) clean
 
-release-apk: clean release-clean inner-release-apk
-	$(MAKE) clean
 
-release: clean release-clean inner-release-jar inner-release-exe inner-release-apk
-	$(MAKE) clean
+release: release-jar release-exe release-apk
 
 release-clean:
 	rm -rf target
@@ -319,8 +286,8 @@ release-clean:
 
 
 
-#clean: cal-clean cbl-clean jar-clean apk-clean layout-clean info-clean
-clean: jar-clean apk-clean layout-clean ta-clean
+#clean: cal-clean cbl-clean desktop-clean android-clean layout-clean info-clean
+clean: desktop-clean android-clean layout-clean ta-clean
 
 ac-clean:
 	rm -f config.log config.status
