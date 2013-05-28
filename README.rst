@@ -104,7 +104,7 @@ I will append to this list.
 
    -  A short game that the cat want to return to home from
       empire of underworld.
-      Wrote by ayamada.
+      This was made by ayamada.
       (sorry, this app is required to read japanese.)
 
    -  猫を操作して地底帝国からの脱出を目指す、ぬるいRPGです。
@@ -112,8 +112,8 @@ I will append to this list.
 
 -  http://vnctst.tir.jp/ja/games/space_drop.html
 
-   -  Packaged version of bundled sample app 'space drop'
-      Wrote by ayamada.
+   -  Packaged version of bundled sample app 'space drop'.
+      This was made by ayamada.
       (sorry, this page written in japanese.)
 
    -  同梱のサンプルアプリ'space drop'のパッケージ版です。
