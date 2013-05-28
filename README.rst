@@ -87,16 +87,6 @@ Which can be found in the file `LICENSE <LICENSE>`_.
 and see http://doc.tir.ne.jp/devel/clan/license .
 
 
-WANTED
-------
-
-Please give me(ayamada) a work.
-
-ayamadaは現在お仕事募集中です。
-
-- http://tir.jp/RSM
-
-
 Apps built with CLAN
 --------------------
 
@@ -105,7 +95,7 @@ I'm glad, if you made apps by CLAN, and inform that to
 I will append to this list.
 
 (もしあなたがCLANを使って何かアプリを作ったら、
-`@rnkv(=ayamada) <https://twitter.com/rnkv>`_
+`@rnkv <https://twitter.com/rnkv>`_
 まで教えてもらえると嬉しいです。このリストに追加します。)
 
 --------------
