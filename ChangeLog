@@ -7,8 +7,10 @@
 	  - clanutil.cljの提供
 	  - gdx-tools.jarを利用可能に
 	  - make taによりtexture atlasを生成する
+	  - ビルド手順改善による開発サイクルの高速化
 	  - BootLoader.javaの簡略化および将来拡張の為の準備
 	  - サンプルアプリspace dropの改善、pref不使用化
+	    lein化に伴いreplが使えるようになった為、eval機能を除去
 
 2013-04-14  ayamada
 	* release 0.0.6:

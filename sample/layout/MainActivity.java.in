@@ -43,7 +43,7 @@ public class MainActivity extends AndroidApplication {
 							try {
 								RT.var("clojure.core", "refer").invoke(Symbol.intern(null, "clojure.core"));
 							}
-							catch (Exception e) {
+							catch (Throwable e) {
 								throw new RuntimeException("failed to initialize at clojure");
 							}
 						}
@@ -55,21 +55,21 @@ public class MainActivity extends AndroidApplication {
 								RT.var("clojure.core", "require").invoke(Symbol.intern("neko.compilation"));
 								RT.var("neko.compilation", "init").invoke(context);
 							}
-							catch (Exception e) {
+							catch (Throwable e) {
 								throw new RuntimeException("failed to initialize at neko");
 							}
 						}
 					}, // NB: it is certified to run main thread.
 					new Callable<ApplicationListener>() {
-						@Override public ApplicationListener call() {
+						@Override public ApplicationListener call() throws Exception {
 							//return new @PROJECT_CAL_GENERATOR_CLASS@();
 							try {
 								//return (ApplicationListener)Class.forName("@PROJECT_CAL_GENERATOR_CLASS@").newInstance();
 								RT.var("clojure.core", "require").invoke(Symbol.intern("jp.ne.tir.clan.clanutil"));
 								return (ApplicationListener)RT.var("jp.ne.tir.clan.clanutil", "generate-cal").invoke("@PROJECT_CAL_GENERATOR_CLASS@", "@PROJECT_CAL_GENERATOR_FN@");
-							} catch (Exception e) {
-								e.printStackTrace();
-								throw new RuntimeException(e.toString());
+							} catch (Throwable e) {
+								//e.printStackTrace();
+								throw new Exception(e);
 							}
 						}
 					}), // NB: it must can to run another threads.

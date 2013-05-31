@@ -86,9 +86,8 @@
 (defn generate-cal [class-str fn-str]
   (let [class-symbol (symbol class-str)
         fn-symbol (symbol (str class-str "/" fn-str))]
-    (eval `(do
-             (require '~class-symbol)
-             (~fn-symbol)))))
+    (eval `(do (require '~class-symbol) (~fn-symbol)))
+    ))
 
 
 ;;; ----------------------------------------------------------------
