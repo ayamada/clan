@@ -58,7 +58,7 @@ Link
 
    -  `libgdx API <http://libgdx.badlogicgames.com/nightlies/docs/api/overview-summary.html>`_
    -  `Wiki <http://code.google.com/p/libgdx/wiki/TableOfContents>`_
-   -  `Androidゲームプログラミング A to Z <http://www.impressjapan.jp/books/3113>`_\ (`amazon <http://www.amazon.co.jp/dp/4844331132>`_): `Beginning Android Games <http://www.apress.com/9781430230427>`_\ の日本語訳版。良書。ただし本家の方は\ `2nd Edition <http://www.apress.com/9781430246770>`_\ が出てるが日本語訳版は初版ベース。
+   -  `Androidゲームプログラミング A to Z <http://www.impressjapan.jp/books/3113>`_\ (`amazon <http://www.amazon.co.jp/o/ASIN/4844331132/tirnejp-22>`_): `Beginning Android Games <http://www.apress.com/9781430230427>`_\ の日本語訳版。良書。ただし本家の方は\ `2nd Edition <http://www.apress.com/9781430246770>`_\ が出てるが日本語訳版は初版ベース。
    -  `libgdxメモ <http://doc.tir.ne.jp/devel/clan/libgdx>`_: ayamadaがメモしたlibgdxのノウハウ集。
 
 -  `Android <http://developer.android.com/index.html>`_
