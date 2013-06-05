@@ -106,7 +106,7 @@ dnl ----------------------------------------------------------------
 dnl Outputs
 
 dnl 自動生成ファイルの一覧を作成する
-IN_TARGET_DIRS="clan/cbl clan/depinst clan/tpack layout desktop android src src-java project-common.clj.in"
+IN_TARGET_DIRS="clan/cbl clan/depinst clan/tpack layout desktop android src src-java project-common.clj.in l4j"
 IN_TARGET_DIRS_EXCLUDE="desktop/assets"
 IN_FILES=`find ${IN_TARGET_DIRS} | grep '\.in$' | grep -v ${IN_TARGET_DIRS_EXCLUDE} | perl -ne 'chomp $_ && ($_ =~ s|^(.*)\.in$|$1|) && print "$_ "' && echo Makefile`
 AC_GENERATED_FILES="autom4te.cache configure VERSION $IN_FILES"

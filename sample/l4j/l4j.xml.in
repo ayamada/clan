@@ -6,9 +6,9 @@
 <launch4jConfig>
   <dontWrapJar>false</dontWrapJar>
   <headerType>gui</headerType>
-  <jar>../desktop/target/@PROJECT_DESKTOP_ARTIFACTID@-@PROJECT_DESKTOP_VERSION@-jar-with-dependencies.jar</jar>
-  <outfile>../target/@PROJECT_DESKTOP_ARTIFACTID@.exe</outfile>
-  <errTitle>@PROJECT_DESKTOP_ARTIFACTID@</errTitle>
+  <jar>../target/@PROJECT_ARTIFACTID@.jar</jar>
+  <outfile>../target/@PROJECT_ARTIFACTID@.exe</outfile>
+  <errTitle>@PROJECT_ARTIFACTID@</errTitle>
   <cmdLine></cmdLine>
   <chdir>.</chdir>
   <priority>normal</priority>
@@ -19,8 +19,8 @@
   <manifest></manifest>
   <icon>../l4j/windows.ico</icon>
   <singleInstance>
-    <mutexName>@PROJECT_DESKTOP_ARTIFACTID@</mutexName>
-    <windowTitle>@PROJECT_DESKTOP_ARTIFACTID@</windowTitle>
+    <mutexName>@PROJECT_GROUPID@.@PROJECT_ARTIFACTID@</mutexName>
+    <windowTitle>@PROJECT_NAME@</windowTitle>
   </singleInstance>
   <jre>
     <path></path>
