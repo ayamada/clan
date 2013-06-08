@@ -37,6 +37,8 @@ import java.util.*;
 import java.util.concurrent.Callable;
 import java.lang.StringBuilder;
 
+import jp.ne.tir.clan.Config;
+
 // ApplicationListenerCache
 class ALC {
 	static ApplicationListener al = null;
@@ -44,10 +46,6 @@ class ALC {
 }
 
 public class BootLoader implements ApplicationListener {
-	static final float fadeSec = 1.0f; // fadein/fadeoutにかける秒数
-	static final float[] bgColorRGB = {0f, 0f, 0f}; // 背景色
-	static final float[] fgColorRGB = {0.5f, 0.5f, 0.5f}; // 文字色
-
 	public enum Phase {
 		NONE, // 初期状態
 		JINGLE, // jingle.oggを再生する
@@ -133,46 +131,47 @@ public class BootLoader implements ApplicationListener {
 					updateLast = true;
 				}
 			}
-			/* コンソール内容はログにのみ表示し、表には"loading ... "しか出さない
-			if (updateLast || updateAll) {
-				int max = updateAll ? bufs.size() : 1;
-				int x = 8;
-				int y = 8;
+			if (config.isDisplayLog) {
+				if (updateLast || updateAll) {
+					int max = updateAll ? bufs.size() : 1;
+					int x = 8;
+					int y = 8;
+					for (int i = 0; i < max; i++) {
+						StringBuilder line = bufs.get(i);
+						BitmapFontCache fc = fontCaches.get(i);
+						// 古い行ほど色を薄くする
+						float cVal = (float)Math.pow(0.85, i);
+						fc.setColor(config.fgColorRGB[0], config.fgColorRGB[1], config.fgColorRGB[2], cVal);
+						y += lineHeight;
+						fc.setText(line, x, y);
+					}
+					updateLast = false;
+					updateAll = false;
+				}
+				int max = fontCaches.size();
 				for (int i = 0; i < max; i++) {
-					StringBuilder line = bufs.get(i);
-					BitmapFontCache fc = fontCaches.get(i);
-					// 古い行ほど色を薄くする
-					float cVal = (float)Math.pow(0.85, i);
-					fc.setColor(fgColorRGB[0], fgColorRGB[1], fgColorRGB[2], cVal);
+					fontCaches.get(i).draw(batch);
+				}
+			}
+			else {
+				if (updateLast || updateAll) {
+					BitmapFontCache fc = fontCaches.get(0);
+					fc.setColor(config.fgColorRGB[0], config.fgColorRGB[1], config.fgColorRGB[2], 1);
+					int x = 8;
+					int y = 8;
 					y += lineHeight;
+					String line;
+					// TODO: 20%とか現在の状況をパーセント表示できないか考える
+					if (enableCursor) {
+						line = config.loadingStr + cursor;
+					}
+					else {
+						line = config.loadingStr + config.doneStr;
+					}
 					fc.setText(line, x, y);
 				}
-				updateLast = false;
-				updateAll = false;
+				fontCaches.get(0).draw(batch);
 			}
-			int max = fontCaches.size();
-			for (int i = 0; i < max; i++) {
-				fontCaches.get(i).draw(batch);
-			}
-			*/
-			if (updateLast || updateAll) {
-				BitmapFontCache fc = fontCaches.get(0);
-				fc.setColor(fgColorRGB[0], fgColorRGB[1], fgColorRGB[2], 1);
-				int x = 8;
-				int y = 8;
-				y += lineHeight;
-				String line;
-				// TODO: あとでカスタマイズしやすいようにしておく事
-				// TODO: 20%とか現在の状況をパーセント表示できないか考える
-				if (enableCursor) {
-					line = "loading ..." + cursor;
-				}
-				else {
-					line = "loading ... done.";
-				}
-				fc.setText(line, x, y);
-			}
-			fontCaches.get(0).draw(batch);
 		}
 		public void dump () {
 			// it is destractive!
@@ -191,7 +190,7 @@ public class BootLoader implements ApplicationListener {
 		}
 	}
 
-	private static final String assetDir = "assets"; // logo.png se.wav 等のあるdir
+	private Config config;
 	private SpriteBatch batch;
 	private Texture logo; // これは動的生成の為、pause()→resume()の度にdispose()と再生成を行わなくてはならない
 	private float logoFade;
@@ -219,22 +218,23 @@ public class BootLoader implements ApplicationListener {
 	 * 「メインスレッドでしか実行できない(軽い)初期化処理(neko初期化を想定)」
 	 * 「別スレッドで new CAL() し、その結果を返り値とする」
 	 */
-	public BootLoader (Runnable cljInitAnotherThread, Runnable nekoInitMainThread, Callable<ApplicationListener> spawn) {
+	public BootLoader (Config c) {
+		config = c;
 		jingle = null;
 		phase = Phase.NONE;
 		phaseStep = 0;
 		phaseSec = 0.0F;
 		logoFade = 0.0F;
-		cljInit = cljInitAnotherThread;
-		nekoInit = nekoInitMainThread;
-		spawner = spawn;
+		cljInit = config.cljInit;
+		nekoInit = config.nekoInit;
+		spawner = config.spawner;
 		cal = null;
 		nowPreparing = false;
 		fadeinFlag = false;
 	}
 	
 	private FileHandle solveFileHandle (String file) {
-		return Gdx.files.internal(assetDir+"/"+file);
+		return Gdx.files.internal(file);
 	}
 	private int liftPowerOfTwo (int n) {
 		int result = 1;
@@ -244,7 +244,7 @@ public class BootLoader implements ApplicationListener {
 		return result;
 	}
 	private Pixmap solveLogoPixmap () {
-		FileHandle fh = solveFileHandle("cbl_logo.png");
+		FileHandle fh = solveFileHandle(config.logoPath);
 		Pixmap result;
 		if (fh.exists()) {
 			Pixmap p = new Pixmap(fh);
@@ -270,11 +270,10 @@ public class BootLoader implements ApplicationListener {
 		return t;
 	}
 	private BitmapFont solveLogoFont () {
-		FileHandle fntFh = solveFileHandle("cbl_font.fnt");
-		FileHandle pngFh = solveFileHandle("cbl_font.png");
+		FileHandle fntFh = solveFileHandle(config.fontPath);
 		BitmapFont font;
-		if (fntFh.exists() && pngFh.exists()) {
-			font = new BitmapFont(fntFh, pngFh, false);
+		if (fntFh.exists()) {
+			font = new BitmapFont(fntFh, false);
 		}
 		else {
 			font = new BitmapFont();
@@ -283,7 +282,7 @@ public class BootLoader implements ApplicationListener {
 	}
 
 	private Music solveJingle () {
-		FileHandle jingleFh = solveFileHandle("cbl_jingle.ogg");
+		FileHandle jingleFh = solveFileHandle(config.jinglePath);
 		Music jingle;
 		if (jingleFh.exists()) {
 			jingle = Gdx.audio.newMusic(jingleFh);
@@ -348,14 +347,14 @@ public class BootLoader implements ApplicationListener {
 			float delta = Gdx.graphics.getDeltaTime();
 			phaseSec += delta;
 
-			Gdx.gl.glClearColor(bgColorRGB[0], bgColorRGB[1], bgColorRGB[2], 1f);
+			Gdx.gl.glClearColor(config.bgColorRGB[0], config.bgColorRGB[1], config.bgColorRGB[2], 1f);
 			Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 			batch.begin();
 			console.draw();
 			// フェードイン/アウト色設定
 			if (fadeinFlag) {
-				if (phaseSec < fadeSec) {
-					logoFade = phaseSec / fadeSec;
+				if (phaseSec < config.fadeSec) {
+					logoFade = phaseSec / config.fadeSec;
 				}
 				else {
 					logoFade = 1.0F;
@@ -556,8 +555,8 @@ public class BootLoader implements ApplicationListener {
 			phaseSec = 0.0F;
 			console.hideCursor(); // was changed by display log timing
 		}
-		else if (phaseSec < fadeSec) {
-			logoFade = 1.0F - phaseSec / fadeSec;
+		else if (phaseSec < config.fadeSec) {
+			logoFade = 1.0F - phaseSec / config.fadeSec;
 		}
 		else {
 			logoFade = 0.0F;
