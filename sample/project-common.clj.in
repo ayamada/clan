@@ -7,77 +7,150 @@
 
 ;; this file is loaded by desktop/project.clj and android/project.clj
 
-(def dependencies-common
-  '[[org.clojure/clojure "@CLAN_CLOJURE_VERSION@"]
-    [com.badlogic.gdx/gdx "@CLAN_LIBGDX_VERSION@"]
-    [clj-time "0.5.1"]
-    ;[org.jclouds/jclouds "1.0" :scope "provided"]
-    ])
-
-(def dependencies
-  `[~@dependencies-common
-    [com.badlogic.gdx/gdx-natives "@CLAN_LIBGDX_VERSION@"]
-    [com.badlogic.gdx/gdx-backend-lwjgl "@CLAN_LIBGDX_VERSION@"]
-    [com.badlogic.gdx/gdx-backend-lwjgl-natives "@CLAN_LIBGDX_VERSION@"]
-    ;[org.jclouds/jclouds "1.0" :scope "provided"]
-    ])
-
 ;;; ----------------------------------------------------------------
+;;; common
 
-;; this macro is expanded in desktop/project.clj
-(defmacro defproject-desktop []
+(def dependencies-common
+  `[
+    [com.badlogic.gdx/gdx "@CLAN_LIBGDX_VERSION@"]
+    [clj-time/clj-time "0.5.1"]
+    ;[org.jclouds/jclouds "1.0" :scope "provided"]
+    ])
+
+(def profiles-common
+  `{
+    ;; TODO: あとで
+    })
+
+(defmacro defproject-common [& args]
   `(defproject
      @PROJECT_ARTIFACTID@ "@PROJECT_VERSION@"
      ;:description "FIXME: write description"
      ;:url "http://example.com/FIXME"
      ;:license {:name "Eclipse Public License"
      ;          :url "http://www.eclipse.org/legal/epl-v10.html"}
-     :dependencies ~dependencies
-     :main @PROJECT_DESKTOP_GROUPID@.Desktop
-
      :min-lein-version "2.1.0"
      ;:source-paths ["../clan/cbl/src" "src" "../src"]
-     :java-source-paths ["../clan/cbl/src-java" "src-java" "../src-java"]
-     :test-paths ["../test"]
-     :resource-paths ["target/resources"]
-
-     :compile-path "target/classes" ; For .class files.
+     :java-source-paths ["../clan/cbl/src-java" "src-java" "../src-java" "gen"] ; "gen" for android
      :target-path "target/" ; Where to place the project's jar file.
-     ;:native-path "src/native" ; Where to extract native dependencies.
+     :compile-path "target/classes" ; For .class files.
+     :resource-paths ["target/resources"]
+     :test-paths ["../test"]
      :global-vars {*warn-on-reflection* true
                    *assert* true}
-     :profiles {
-                :repl {
-                       :source-paths ["../clan/cbl/src" "src" "../src"]
-                       }
-                :devpack {
-                          :source-paths ["../clan/cbl/src" "src"] ; "../src" はjar起動時に明示的に渡す
-                          ;:aot [jp.ne.tir.clan.clanutil]
-                          :aot :all
-                          :jar-name "@PROJECT_ARTIFACTID@-devpack-without-dep.jar"
-                          :uberjar-name "@PROJECT_ARTIFACTID@-devpack.jar"
-                          }
-                :pack {:source-paths ["../clan/cbl/src" "src" "../src"]
-                       :aot :all
-                       :jar-name "@PROJECT_ARTIFACTID@-without-dep.jar"
-                       :uberjar-name "@PROJECT_ARTIFACTID@.jar"
-                       }
-                :release {:global-vars {*warn-on-reflection* false
-                                        *assert* false}
-                          ;; > Put a regex here to compile all namespaces whose names match.
-                          :omit-source true
-                          ;:jar-exclusions [#"(?:^|/).svn/"]
-                          ;:uberjar-exclusions [#"META-INF/DUMMY.SF"]
-                          }
+     ~@args))
+
+;;; ----------------------------------------------------------------
+;;; for desktop
+
+(def dependencies-desktop
+  `[~@dependencies-common
+    [org.clojure/clojure "@CLAN_CLOJURE_VERSION@"]
+    [com.badlogic.gdx/gdx-natives "@CLAN_LIBGDX_VERSION@"]
+    [com.badlogic.gdx/gdx-backend-lwjgl "@CLAN_LIBGDX_VERSION@"]
+    [com.badlogic.gdx/gdx-backend-lwjgl-natives "@CLAN_LIBGDX_VERSION@"]
+    ])
+
+(def profiles-desktop
+  (merge
+    profiles-common
+    `{
+      :repl {
+             :source-paths ["../clan/cbl/src" "src" "../src"]
+             }
+      :devpack {
+                :source-paths ["../clan/cbl/src" "src"] ; "../src" はjar起動時に明示的に渡す
+                ;:aot [jp.ne.tir.clan.clanutil]
+                :aot :all
+                :jar-name "@PROJECT_ARTIFACTID@-devpack-without-dep.jar"
+                :uberjar-name "@PROJECT_ARTIFACTID@-devpack.jar"
                 }
+      :pack {:source-paths ["../clan/cbl/src" "src" "../src"]
+             :aot :all
+             :jar-name "@PROJECT_ARTIFACTID@-without-dep.jar"
+             :uberjar-name "@PROJECT_ARTIFACTID@.jar"
+             }
+      :release {:global-vars {*warn-on-reflection* false
+                              *assert* false}
+                ;; > Put a regex here to compile all namespaces whose names match.
+                :omit-source true
+                ;:jar-exclusions [#"(?:^|/).svn/"]
+                ;:uberjar-exclusions [#"META-INF/DUMMY.SF"]
+                }
+      }))
+
+;; this macro is expanded in desktop/project.clj
+(defmacro defproject-desktop []
+  `(defproject-common
+     :dependencies ~dependencies-desktop
+     :main @PROJECT_DESKTOP_GROUPID@.Desktop
+     :profiles ~profiles-desktop
      ))
 
 ;;; ----------------------------------------------------------------
+;;; for android
+
+(def dependencies-android
+  `[~@dependencies-common
+    [android/clojure "@CLAN_CLOJURE_VERSION@"]
+    [neko/neko "@CLAN_NEKO_VERSION@"] ; TODO: neko.compilation/init のAOTコンパイルが必要
+    [com.badlogic.gdx/gdx-backend-android "@CLAN_LIBGDX_VERSION@"]
+    ;; TODO: android/libs/armeabi*/* を含める必要あり、どこで指定すればよい？
+    ;[com.google.android/android "@CLAN_ANDROID_VERSION@" :scope "system"]
+    ;[org.codehaus.jsr166-mirror/jsr166y "1.7.0"] ; see http://tnoda-clojure.tumblr.com/post/48710608069/classnotfoundexception-jsr166y-forkjoinpool
+    ])
+
+(def profiles-android
+  (merge
+    profiles-common
+    `{
+      ;:repl {
+      ;       :source-paths ["../clan/cbl/src" "src" "../src"]
+      ;       }
+      :devpack {
+                :source-paths ["../clan/cbl/src" "src"] ; "../src" はjar起動時に明示的に渡す
+                ;:aot [jp.ne.tir.clan.clanutil]
+                :aot :all
+                :jar-name "@PROJECT_ARTIFACTID@-devpack-without-dep.jar"
+                :uberjar-name "@PROJECT_ARTIFACTID@-devpack.jar"
+                :dependencies [[android/tools.nrepl "0.2.0-bigstack"]]
+                :android {:aot :all-with-unused}
+                }
+      :pack {:source-paths ["../clan/cbl/src" "src" "../src"]
+             :aot :all
+             :jar-name "@PROJECT_ARTIFACTID@-without-dep.jar"
+             :uberjar-name "@PROJECT_ARTIFACTID@.jar"
+             }
+      :release {:global-vars {*warn-on-reflection* false
+                              *assert* false}
+                :omit-source true
+                :android {
+                          :aot :all
+                          :out-apk-path "target/@PROJECT_ARTIFACTID@.apk"
+                          :keystore-path "d:/home/.android/ayamada2.keystore"
+                          :key-alias "ayamada"
+                          }
+                }
+      }))
 
 ;; this macro is expanded in android/project.clj
 (defmacro defproject-android []
-  `(defproject
-     ...
+  `(defproject-common
+     :dependencies ~dependencies-android
+     ;:main @PROJECT_DESKTOP_GROUPID@.MainActivity ; android hasnt :main
+     :profiles ~profiles-android
+     :plugins [[lein-droid/lein-droid "0.1.0-preview5"]]
+     :android {:sdk-path "d:/prog/Android/android-sdk" ; TODO: autoconfから自動的に算出するようにする
+               :target-version "17"
+               ;:min-version "10"
+               :aot-exclude-ns ["clojure.parallel"]
+               :assets-path "target/resources/assets"
+               :native-libraries-paths ["target/resources/lib"]
+               ;; Uncomment this line to be able to use Google API.
+               ;; :use-google-api true
+               ;; Uncomment this if dexer fails with OutOfMemoryException
+               ;; :force-dex-optimize true
+               }
      ))
 
 

@@ -250,7 +250,7 @@
        [entry#]
        (let [{a-name# :name handle# :resize} entry#]
          (when handle#
-           ;(when-debug (prn handle#))
+           ;(purge-code-when-release (prn handle#))
            (handle# w# h#))))))
 
 (defmacro aola2-handler-render! [batch]
@@ -354,7 +354,7 @@
                         (inflate-read-from-file f))))
                   (keep-code-when-android
                     (doto (.. Gdx app (getPreferences "drop"))
-                      (.getString pref "edn" "")))
+                      (.getString "edn" "")))
                   "")]
     (when-not (= edn-str "")
       (try
@@ -1074,6 +1074,11 @@
 (declare main-resume)
 
 (defn main-create []
+  ;; NB: androidでclan-info-build-targetがおかしい問題の調査用
+  (purge-code-when-release
+    (prn 'clan-info-build-target clan-info-build-target)
+    (prn 'clan-info-build-date clan-info-build-date)
+    )
   (aola2-handler-create!)
   (update-music!)
   (main-resume))

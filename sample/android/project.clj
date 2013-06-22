@@ -6,5 +6,5 @@
 ;; @AC_MSG_6@
 
 (load-file "../project-common.clj")
-(defproject-desktop)
+(defproject-android)
 
