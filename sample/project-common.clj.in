@@ -19,7 +19,6 @@
 
 (def profiles-common
   `{
-    ;; TODO: あとで
     })
 
 (defmacro defproject-common [& args]
@@ -93,9 +92,8 @@
 (def dependencies-android
   `[~@dependencies-common
     [android/clojure "@CLAN_CLOJURE_VERSION@"]
-    [neko/neko "@CLAN_NEKO_VERSION@"] ; TODO: neko.compilation/init のAOTコンパイルが必要
+    [neko/neko "@CLAN_NEKO_VERSION@"]
     [com.badlogic.gdx/gdx-backend-android "@CLAN_LIBGDX_VERSION@"]
-    ;; TODO: android/libs/armeabi*/* を含める必要あり、どこで指定すればよい？
     ;[com.google.android/android "@CLAN_ANDROID_VERSION@" :scope "system"]
     ;[org.codehaus.jsr166-mirror/jsr166y "1.7.0"] ; see http://tnoda-clojure.tumblr.com/post/48710608069/classnotfoundexception-jsr166y-forkjoinpool
     ])
@@ -125,10 +123,10 @@
                               *assert* false}
                 :omit-source true
                 :android {
-                          :aot :all
+                          :aot :all ; TODO: neko.compilation/init のAOTコンパイルが必要、 :all-with-unused にすべき筈、要確認
                           :out-apk-path "target/@PROJECT_ARTIFACTID@.apk"
-                          :keystore-path "d:/home/.android/ayamada2.keystore"
-                          :key-alias "ayamada"
+                          :keystore-path "@ANDROID_KEYSTORE_PATH@"
+                          :key-alias "@ANDROID_KEY_ALIAS@"
                           }
                 }
       }))
@@ -140,7 +138,8 @@
      ;:main @PROJECT_DESKTOP_GROUPID@.MainActivity ; android hasnt :main
      :profiles ~profiles-android
      :plugins [[lein-droid/lein-droid "0.1.0-preview5"]]
-     :android {:sdk-path "d:/prog/Android/android-sdk" ; TODO: autoconfから自動的に算出するようにする
+     :android {
+               :sdk-path "@ANDROID_SDK_PATH@"
                :target-version "17"
                ;:min-version "10"
                :aot-exclude-ns ["clojure.parallel"]

@@ -190,6 +190,37 @@ public class BootLoader implements ApplicationListener {
 		}
 	}
 
+	private boolean getJingleOffByPref () {
+		// TODO: うまくうごいてない、とにかくdebug-print入れまくる
+		try {
+			if (Gdx.app.getType().equals(Application.ApplicationType.Android)) {
+				// androidなら、prefから取る
+				String prefKey = "CBL";
+				Preferences prefs = Gdx.app.getPreferences(prefKey);
+				return ! prefs.getBoolean("PLAY_JINGLE", true);
+			}
+			else {
+				/* desktopではjingle.muteファイルの有無から判別する。
+				 * またリリース版/開発版で見るべきディレクトリを変更する必要がある。
+				 * リリース版かどうかの判定は、java.class.pathとsun.java.commandが
+				 * 同一かどうかで行う(この段階ではまだclaninfo.cljは参照できない)。
+				 */
+				String jcp = System.getProperty("java.class.path");
+				String sjc = System.getProperty("sun.java.command");
+				boolean isReleased = false;
+				if (jcp.equals(sjc)) { isReleased = true; }
+				String dir = ".";
+				if (isReleased) { dir = Gdx.files.local(jcp).parent().path(); }
+				String path = dir + "/jingle.mute";
+				return Gdx.files.local(path).exists();
+			}
+		}
+		catch (RuntimeException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
 	private Config config;
 	private SpriteBatch batch;
 	private Texture logo; // これは動的生成の為、pause()→resume()の度にdispose()と再生成を行わなくてはならない
@@ -211,6 +242,7 @@ public class BootLoader implements ApplicationListener {
 	private boolean nowPreparing;
 	private Throwable lastError;
 	private boolean fadeinFlag;
+	private boolean isJingleOffByPref;
 
 	/* 引数は以下の通り。実行順もこの順。
 	 * cal.create(), cal.resize()の実行はこの後(というかフェードアウト後)。
@@ -232,7 +264,7 @@ public class BootLoader implements ApplicationListener {
 		nowPreparing = false;
 		fadeinFlag = false;
 	}
-	
+
 	private FileHandle solveFileHandle (String file) {
 		return Gdx.files.internal(file);
 	}
@@ -304,6 +336,7 @@ public class BootLoader implements ApplicationListener {
 			ALC.al = null;
 		}
 		if (null != ALC.al) { ALC.al.create(); return; }
+		isJingleOffByPref = getJingleOffByPref();
 		//if (Info.debug) Gdx.app.setLogLevel(Application.LOG_DEBUG);
 		logo = solveLogoTexture();
 		font = solveLogoFont();
@@ -449,13 +482,12 @@ public class BootLoader implements ApplicationListener {
 			if (jingle == null) {
 				console.appendLatest(" jingle not found, skipped.");
 			}
-			//else if (prefs.getBoolean("PLAY_JINGLE", true)) {
-			else if (true) {
-				jingle.play();
-				console.appendLatest(" start.");
+			else if (isJingleOffByPref) {
+				console.appendLatest(" muted by preferences.");
 			}
 			else {
-				console.appendLatest(" muted by preferences.");
+				jingle.play();
+				console.appendLatest(" start.");
 			}
 			phase = Phase.CLJINIT; phaseStep = 0;
 		}
@@ -537,6 +569,10 @@ public class BootLoader implements ApplicationListener {
 		else {
 			if (jingle == null) {
 				console.appendLatest(" jingle not found, skipped.");
+				phase = Phase.FADEOUT; phaseStep = 0;
+			}
+			else if (isJingleOffByPref) {
+				console.appendLatest(" jingle was muted, skipped.");
 				phase = Phase.FADEOUT; phaseStep = 0;
 			}
 			else if (!jingle.isPlaying()) {

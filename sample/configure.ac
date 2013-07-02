@@ -25,6 +25,15 @@ AC_SUBST(PROJECT_CAL_GENERATOR_CLASS)
 dnl generator of ApplicationListener by clojure
 PROJECT_CAL_GENERATOR_FN=generate-al
 AC_SUBST(PROJECT_CAL_GENERATOR_FN)
+dnl 上記の例では、 (drop.main/generate-al) が実行されるので、そこからproxyを使ってApplicationListenerのインスタンスを返す事
+
+dnl TODO: 本当は ~/.lein/profiles.clj で設定したい項目(project.clj側にも :android {...} があると、mergeではなく上書きされてしまうので、今のところ仕方なくautoconfで設定するようにしている)
+ANDROID_SDK_PATH="d:/prog/Android/android-sdk"
+AC_SUBST(ANDROID_SDK_PATH)
+ANDROID_KEYSTORE_PATH="d:/home/.android/ayamada2.keystore"
+AC_SUBST(ANDROID_KEYSTORE_PATH)
+ANDROID_KEY_ALIAS="ayamada"
+AC_SUBST(ANDROID_KEY_ALIAS)
 
 
 dnl ----------------------------------------------------------------
@@ -81,25 +90,33 @@ AC_PATH_PROG([JAVA_PATH], [java])
 AS_IF(test x"$JAVA_PATH" = x, AC_MSG_ERROR([java not found]))
 AC_PATH_PROG([JAVAC_PATH], [javac])
 AS_IF(test x"$JAVAC_PATH" = x, AC_MSG_ERROR([javac not found]))
-AC_PATH_PROG([JAR_PATH], [jar])
-AS_IF(test x"$JAR_PATH" = x, AC_MSG_ERROR([jar not found]))
+dnl AC_PATH_PROG([JAR_PATH], [jar])
+dnl AS_IF(test x"$JAR_PATH" = x, AC_MSG_ERROR([jar not found]))
 AC_PATH_PROG([LEIN_PATH], [lein])
 AS_IF(test x"$LEIN_PATH" = x, AC_MSG_ERROR([lein not found]))
 AC_PATH_PROG([MVN_PATH], [mvn])
-AS_IF(test x"$MVN_PATH" = x, AC_MSG_ERROR([mvn not found]))
-AC_PATH_PROG([ADB_PATH], [adb])
+dnl AS_IF(test x"$MVN_PATH" = x, AC_MSG_ERROR([mvn not found]))
+dnl AC_PATH_PROG([ADB_PATH], [adb])
 dnl AS_IF(test x"$ADB_PATH" = x, AC_MSG_ERROR([adb not found]))
 AC_PATH_PROG([WGET_PATH], [wget])
 AS_IF(test x"$WGET_PATH" = x, AC_MSG_ERROR([wget not found]))
 AC_PATH_PROG([UNZIP_PATH], [unzip])
 AS_IF(test x"$UNZIP_PATH" = x, AC_MSG_ERROR([unzip not found]))
-AC_PATH_PROG([PERL_PATH], [perl])
-AS_IF(test x"$PERL_PATH" = x, AC_MSG_ERROR([perl not found]))
+dnl AC_PATH_PROG([PERL_PATH], [perl])
+dnl AS_IF(test x"$PERL_PATH" = x, AC_MSG_ERROR([perl not found]))
 dnl AC_PATH_PROG([EXEWRAP_PATH], [exewrap])
 AC_PATH_PROGS([L4J_PATH], [launch4jc launch4j])
 dnl AS_IF(test x"$L4J_PATH" = x, AC_MSG_ERROR([launch4j not found]))
 
 
+
+
+dnl ----------------------------------------------------------------
+dnl for claninfo.clj.in
+BUILD_ENV=`uname -a`
+AC_SUBST(BUILD_ENV)
+BUILD_JAVAC=`javac -version 2>&1`
+AC_SUBST(BUILD_JAVAC)
 
 
 dnl ----------------------------------------------------------------

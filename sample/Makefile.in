@@ -1,4 +1,3 @@
-
 # @AC_MSG_1@
 # @AC_MSG_2@
 # @AC_MSG_3@
@@ -7,6 +6,7 @@
 # @AC_MSG_6@
 
 # (TODO: translate explain from japanese to english)
+# (TODO: 日本語のコメントを英語に直してまわる)
 
 EMPTY :=
 SPACE := $(EMPTY) $(EMPTY)
@@ -14,13 +14,13 @@ SPACE := $(EMPTY) $(EMPTY)
 
 JAVA    := @JAVA_PATH@
 JAVAC   := @JAVAC_PATH@
-JAR     := @JAR_PATH@
+#JAR     := @JAR_PATH@
 LEIN    := @LEIN_PATH@
-MVN     := @MVN_PATH@
+#MVN     := @MVN_PATH@
 ADB     := @ADB_PATH@
 WGET    := @WGET_PATH@
 UNZIP   := @UNZIP_PATH@
-PERL    := @PERL_PATH@
+#PERL    := @PERL_PATH@
 #EXEWRAP := @EXEWRAP_PATH@
 L4J     := @L4J_PATH@
 L4J_DIR = $(dir $(L4J))
@@ -130,7 +130,6 @@ depclean: dep-libgdx-clean
 
 
 
-#.layout-done: .info-exists
 .layout-done:
 	mkdir -p $(LAYOUT_MAINACTIVITY_DIR)
 	cp layout/MainActivity.java $(LAYOUT_MAINACTIVITY_DIR)
@@ -149,6 +148,7 @@ layout-clean:
 
 
 repl: .dep-libgdx-done .layout-done
+	$(MAKE) ta
 	export CLAN_TARGET=desktop && cd desktop && $(LEIN) with-profile repl repl
 
 desktop/target/$(PROJECT_ARTIFACTID)-devpack.jar: .dep-libgdx-done .layout-done
@@ -282,6 +282,7 @@ android-repl: .droid-install-done
 
 android-clean:
 	cd android && $(LEIN) clean
+	rm -rf android/gen
 	rm -f .droid-*-done
 
 release-apk: .dep-libgdx-done .layout-done
@@ -292,8 +293,12 @@ release-apk: .dep-libgdx-done .layout-done
 	cp android/target/$(PROJECT_ARTIFACTID).apk target
 	#cd android && $(LEIN) clean
 
+release-apk-if-exists:
+	if [ x != x$(ADB) ]; then \
+		$(MAKE) release-apk; \
+	fi
 
-release: release-jar release-exe release-apk
+release: release-jar release-exe release-apk-if-exists
 
 release-clean:
 	rm -rf target
@@ -303,7 +308,6 @@ release-clean:
 
 
 
-#clean: cal-clean cbl-clean desktop-clean android-clean layout-clean info-clean
 clean: desktop-clean android-clean layout-clean ta-clean
 
 ac-clean:

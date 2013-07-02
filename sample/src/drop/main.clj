@@ -20,6 +20,7 @@
     )
   (:use
     [jp.ne.tir.clan.clanutil]
+    [jp.ne.tir.clan.claninfo :as claninfo]
     [clojure.edn :only []]
     )
   )
@@ -83,7 +84,7 @@
     (.path (.. Gdx files (local filename)))
     (if-release
       (str (.getParent (File. (System/getProperty "java.class.path")))
-           ;; TODO: ↑のjava.class.pathからの取得は問題がある、要他手段
+           ;; TODO: ↑のjava.class.pathからの取得はrepl実行時に問題がある、要他手段。今のところはdebug時はcwd固定にする事で逃げている
            (System/getProperty "file.separator")
            filename)
       filename)))
@@ -392,6 +393,7 @@
 (defn change-volume! [on-off]
   (reset! a-sound-off? (not on-off))
   (save-data!)
+  (set-jingle-off-by-pref! (not on-off))
   (update-music!))
 
 
@@ -732,7 +734,7 @@
 ;;; ----------------------------------------------------------------
 ;;; *** license button ***
 (def ^:const url-license-prefix
-  "https://github.com/ayamada/clan/raw/0.0.3-EXPERIMENTAL/doc/drop/")
+  "https://github.com/ayamada/clan/raw/0.1.0/doc/drop/")
 (def ^:const url-license-apk (str url-license-prefix "license_apk.txt"))
 (def ^:const url-license-jar (str url-license-prefix "license_jar.txt"))
 (def ^:const url-license-exe (str url-license-prefix "license_exe.txt"))
@@ -950,8 +952,8 @@
   (str
     (if-release "RELEASE: " "DEBUG: ") (comment "TODO: バージョン表示") "\n"
     (purge-code-when-release
-      (str "BDT: " clan-info-build-date "\n"))
-    (str "BNM: " clan-info-build-number "\n")
+      (str "BDT: " claninfo/build-date "\n"))
+    (str "BNM: " claninfo/build-number "\n")
     (purge-code-when-release
       (str "SYS: " (.. Gdx app (getType)) "\n"))
     (purge-code-when-release
@@ -977,108 +979,14 @@
 
 
 ;;; ----------------------------------------------------------------
-;;; *** process dispatch ***
-;(def a-touched? (atom false))
-;
-;(defn process-draw! []
-;  (with-batch
-;    (draw-background!)
-;    (when @a-game-mode?
-;      (draw-player!)
-;      (draw-items!))
-;    (draw-buttons!)
-;    (when @a-game-mode?
-;      (draw-score!)
-;      (draw-simple-console!))
-;    (draw-dialog!)
-;    (draw-eval-console!)
-;    ))
-;
-;
-;;; ----------------------------------------------------------------
-;;; *** main ***
-;
-;
-;(defn drop-create []
-;  (when do-prof? (println "!!! do-prof? is true (slow) !!!"))
-;  (when definline-is-fn? (println "!!! definline-is-fn? is true (slow) !!!"))
-;  (init-batch!)
-;  (init-camera!)
-;  (init-font!)
-;  (init-score!)
-;  (init-dialog!)
-;  (unregister-all-button!)
-;  (register-volume-button!)
-;  (register-clan-button!)
-;  (register-license-button!)
-;  (register-space-button!)
-;  (init-buttons!)
-;  (init-player!)
-;  (init-items!)
-;  (init-background!)
-;  (init-eval-console!)
-;  (when do-prof? (eval '(android.os.Debug/startMethodTracing "drop"))))
-;
-;
-;(defn drop-resize [w-orig h-orig]
-;  (let [w (clamp-num (first min-screen-size) w-orig (first max-screen-size))
-;        h (clamp-num (second min-screen-size) h-orig (second max-screen-size))]
-;    (update-screen-rect! w h)
-;    (.setToOrtho ^OrthographicCamera (camera) false w h)
-;    (.update ^Camera (camera))
-;    (.setProjectionMatrix ^SpriteBatch (batch)
-;                          (.combined ^OrthographicCamera (camera)))
-;    (update-buttons! w h)
-;    (update-player-max-x!)
-;    (clamp-player-locate-x!)
-;    (update-all-score!)
-;    (update-items-delete-rect!)
-;    (update-background-info!)
-;    (update-simple-console!)
-;    (update-eval-console-text!)
-;    ))
-;
-;
-;
-;
-;(defn drop-render []
-;  (try
-;    (process-draw!)
-;    (update-touch-pos!)
-;    (let [delta (get-delta)
-;          prev-touched? @a-touched?
-;          is-touched? (.. Gdx input (isTouched))
-;          just-touched? (.. Gdx input (justTouched))
-;          _ (and (or is-touched? just-touched?) (update-touch-pos!))
-;          touch-x (.x touch-pos)
-;          touch-y (.y touch-pos)
-;          game-mode? @a-game-mode?
-;          dialog-nothing? @a-dialog-nothing?
-;          ]
-;      (when dialog-nothing?
-;        (process-buttons! just-touched? touch-x touch-y))
-;      (when (and game-mode? dialog-nothing?)
-;        (process-player! delta prev-touched? is-touched? touch-x touch-y)
-;        (process-item! delta))
-;      (process-background! delta)
-;      (when game-mode?
-;        (process-simple-console!))
-;      (process-eval-console!)
-;      (when (not= prev-touched? is-touched?)
-;        (reset! a-touched? is-touched?))
-;      (when (and just-touched? (not dialog-nothing?))
-;        (process-dialog! touch-x touch-y)))
-;    (catch Exception e (drop-pause) (throw e))))
-
 
 (declare main-resume)
 
 (defn main-create []
-  ;; NB: androidでclan-info-build-targetがおかしい問題の調査用
-  (purge-code-when-release
-    (prn 'clan-info-build-target clan-info-build-target)
-    (prn 'clan-info-build-date clan-info-build-date)
-    )
+  (prn 'is-release? claninfo/is-release?)
+  (prn 'build-target claninfo/build-target)
+  (prn 'java.class.path (System/getProperty "java.class.path"))
+  (prn 'sun.java.command (System/getProperty "sun.java.command"))
   (aola2-handler-create!)
   (update-music!)
   (main-resume))

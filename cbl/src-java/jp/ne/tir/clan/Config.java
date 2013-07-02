@@ -7,7 +7,7 @@ import java.util.concurrent.Callable;
 /*
  * TODO:
  * BootLoaderのコンストラクタの引数で以下を設定/変更できるようにする事
- * - ロゴファイルの表示処理
+ * - ロゴファイルの表示手続き(Runnable？)
  */
 
 public class Config {
