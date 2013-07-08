@@ -87,8 +87,8 @@ Which can be found in the file `LICENSE <LICENSE>`_.
 and see http://doc.tir.ne.jp/devel/clan/license .
 
 
-Apps built with CLAN
---------------------
+Apps were built on CLAN
+-----------------------
 
 I'm glad, if you made apps by CLAN, and inform that to
 `@rnkv(=ayamada) <https://twitter.com/rnkv>`_.
