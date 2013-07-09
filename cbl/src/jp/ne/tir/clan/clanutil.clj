@@ -36,6 +36,7 @@
 ;;; BootLoader.java utitities
 
 ;; android実機にて、次回起動時にまたブートロゴを出すフラグを設定する
+;; TODO: 先にevalでimportする必要があるのでは？動作確認が必要
 (defmacro set-display-bootlogo-in-android! []
   `(set! (. jp.ne.tir.clan.ALC reserveNextAlClear) true))
 
