@@ -105,7 +105,6 @@ ta: ta-clean desktop/assets/pack.png
 ta-clean:
 	rm -f desktop/assets/pack.{atlas,png}
 
-# TODO: ↓はうっかり忘れる事多数の為、可能ならleinに組み込みたい
 update-resources-for-release:
 	rm -rf desktop/target/resources
 	mkdir -p desktop/target/resources
@@ -158,7 +157,7 @@ desktop/target/$(PROJECT_ARTIFACTID)-devpack.jar: .dep-libgdx-done .layout-done
 devpack: desktop/target/$(PROJECT_ARTIFACTID)-devpack.jar
 
 # NB: 素早い動作確認の為に、再コンパイル無しに実行できるバイナリを生成している
-#     (cal部をコンパイル対象に含めずにコンパイルし、あとで-cpで読み込む)
+#     (src部をコンパイル対象に含めずにコンパイルし、あとで-cpで読み込む)
 # NB: javaのclasspath区切り文字の為にインチキをしている
 run: desktop/target/$(PROJECT_ARTIFACTID)-devpack.jar
 	cd desktop && $(JAVA) -cp '../src:target/$(PROJECT_ARTIFACTID)-devpack.jar:;../src;target/$(PROJECT_ARTIFACTID)-devpack.jar' $(PROJECT_DESKTOP_GROUPID).Desktop
@@ -287,7 +286,7 @@ android-clean:
 
 release-apk: .dep-libgdx-done .layout-done
 	cd android && $(LEIN) clean
-	$(MAKE) ta add-lib-to-resources
+	#$(MAKE) ta add-lib-to-resources
 	export CLAN_TARGET=android CLAN_RELEASE=1 && cd android && $(LEIN) with-profile pack,release do droid release build, droid release apk
 	mkdir -p target
 	cp android/target/$(PROJECT_ARTIFACTID).apk target

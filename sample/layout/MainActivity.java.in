@@ -37,7 +37,7 @@ public class MainActivity extends AndroidApplication {
 		clanConf.logoPath = "assets/cbl_logo.png";
 		//clanConf.fontPath = "assets/cbl_font.fnt";
 		clanConf.jinglePath = "assets/cbl_jingle.ogg";
-		clanConf.isDisplayLog = true;
+		clanConf.isDisplayLog = false;
 		clanConf.cljInit = new Runnable() {
 			// NB: it must can to run another threads.
 			@Override

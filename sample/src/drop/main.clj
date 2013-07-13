@@ -84,7 +84,6 @@
     (.path (.. Gdx files (local filename)))
     (if-release
       (str (.getParent (File. (System/getProperty "java.class.path")))
-           ;; TODO: ↑のjava.class.pathからの取得はrepl実行時に問題がある、要他手段。今のところはdebug時はcwd固定にする事で逃げている
            (System/getProperty "file.separator")
            filename)
       filename)))
@@ -120,12 +119,8 @@
 (def ae-symbol '_aola2-entries)
 
 (defmacro aola2-entries-init! []
-  ;; NB: _aola2-entriesはutil02の外に作られる
   (list 'def ae-symbol '(atom nil)))
 (defmacro aola2-entries-term! []
-  ;; 以下の基準でコンパクト化を行う。
-  ;; - map内の、keyが:***-bodyのエントリを消去
-  ;; - map内の、valがnilのエントリを消去
   (let [a-entries (eval ae-symbol)
         new-entries (map #(reduce
                             merge
@@ -138,12 +133,10 @@
                                      {}
                                      {k v})) %)) @a-entries)]
     (reset! a-entries new-entries)
-    ;; そして最後に、ae-symbolの再定義を行うコードを出力
     (list 'def ae-symbol (list 'atom (list 'quote new-entries)))
     ))
 
 (defn order-aola2-entries [entries]
-  ;; TODO: 並び換え順をもう少し熟考する必要があるかも
   (loop [pre-entries '()
          normal-entries '()
          post-entries '()
@@ -165,8 +158,8 @@
   (eval (list 'declare a-name))
   (let [param (apply array-map keywords)
         entry (array-map :name a-name
-                         :ns *ns* ; 呼出元の名前空間を保存する
-                         :order (:order param) ; 順序情報
+                         :ns *ns*
+                         :order (:order param)
                          :create (let [e (eval (:create param))]
                                    (cond
                                      (nil? e) nil
@@ -255,7 +248,6 @@
            (handle# w# h#))))))
 
 (defmacro aola2-handler-render! [batch]
-  ;; NB: これのみ、インライン展開を行う(速度稼ぎの為)
   (let [entries @(eval ae-symbol)
         draw-bodies (map #(:draw-body %) entries)
         sense-bodies (map #(:sense-body %) entries)
@@ -478,7 +470,6 @@
                  x 0
                  y player-locate-y
                  ]
-             ;(.setOrigin sprite (/ (.getWidth sprite) 2) 0) ; なんか動かない
              (.setPosition sprite x y)
              (.set player-hit-rect
                    (float (+ x (/ (.getWidth sprite) 2))) ; x
@@ -487,7 +478,6 @@
                    (float 1)) ; height
              sprite)
   :draw-body (when @a-game-mode? (.draw player-sprite the-batch))
-  ;:sense-body (when @a-game-mode? ...) ; 今回はupdateと一緒にしてしまう
   :update-body (when (and @a-game-mode? @a-dialog-nothing?)
                  ;; move by touch
                  (when (is-touched?)
@@ -948,9 +938,8 @@
   )
 
 (defn construct-simple-console-str []
-  ;; TODO: 一部の変化しない部分はキャッシュする事
   (str
-    (if-release "RELEASE: " "DEBUG: ") (comment "TODO: バージョン表示") "\n"
+    (if-release "RELEASE: " "DEBUG: ") claninfo/project-version "\n"
     (purge-code-when-release
       (str "BDT: " claninfo/build-date "\n"))
     (str "BNM: " claninfo/build-number "\n")
@@ -1042,7 +1031,7 @@
 ;    (resize [w h] nil)
 ;    (render []
 ;      (.. Gdx gl (glClearColor (rand) (rand) (rand) 1.0))
-;      (.. Gdx gl (glClear (. GL10 GL_COLOR_BUFFER_BIT))))
+;      (.. Gdx gl (glClear GL10/GL_COLOR_BUFFER_BIT)))
 ;    (pause [] nil)
 ;    (dispose [] nil)
 ;    ))
@@ -1050,4 +1039,4 @@
 ;;; ----------------------------------------------------------------
 
 
-;; 日本語コードはutf-8
+;; ���{��R�[�h��utf-8

@@ -14,7 +14,6 @@
   `[
     [com.badlogic.gdx/gdx "@CLAN_LIBGDX_VERSION@"]
     [clj-time/clj-time "0.5.1"]
-    ;[org.jclouds/jclouds "1.0" :scope "provided"]
     ])
 
 (def profiles-common
@@ -58,8 +57,7 @@
              :source-paths ["../clan/cbl/src" "src" "../src"]
              }
       :devpack {
-                :source-paths ["../clan/cbl/src" "src"] ; "../src" はjar起動時に明示的に渡す
-                ;:aot [jp.ne.tir.clan.clanutil]
+                :source-paths ["../clan/cbl/src" "src"] ; "../src" はコンパイルしたくないので、jar起動時に明示的に渡す
                 :aot :all
                 :jar-name "@PROJECT_ARTIFACTID@-devpack-without-dep.jar"
                 :uberjar-name "@PROJECT_ARTIFACTID@-devpack.jar"
@@ -92,22 +90,18 @@
 (def dependencies-android
   `[~@dependencies-common
     [android/clojure "@CLAN_CLOJURE_VERSION@"]
-    [neko/neko "@CLAN_NEKO_VERSION@"]
     [com.badlogic.gdx/gdx-backend-android "@CLAN_LIBGDX_VERSION@"]
     ;[com.google.android/android "@CLAN_ANDROID_VERSION@" :scope "system"]
     ;[org.codehaus.jsr166-mirror/jsr166y "1.7.0"] ; see http://tnoda-clojure.tumblr.com/post/48710608069/classnotfoundexception-jsr166y-forkjoinpool
+    [neko/neko "@CLAN_NEKO_VERSION@"]
     ])
 
 (def profiles-android
   (merge
     profiles-common
     `{
-      ;:repl {
-      ;       :source-paths ["../clan/cbl/src" "src" "../src"]
-      ;       }
       :devpack {
-                :source-paths ["../clan/cbl/src" "src"] ; "../src" はjar起動時に明示的に渡す
-                ;:aot [jp.ne.tir.clan.clanutil]
+                :source-paths ["../clan/cbl/src" "src" "../src"]
                 :aot :all
                 :jar-name "@PROJECT_ARTIFACTID@-devpack-without-dep.jar"
                 :uberjar-name "@PROJECT_ARTIFACTID@-devpack.jar"
@@ -138,6 +132,7 @@
      ;:main @PROJECT_DESKTOP_GROUPID@.MainActivity ; android hasnt :main
      :profiles ~profiles-android
      :plugins [[lein-droid/lein-droid "0.1.0-preview5"]]
+     ;:plugins [[lein-droid/lein-droid "0.1.0-SNAPSHOT"]]
      :android {
                :sdk-path "@ANDROID_SDK_PATH@"
                :target-version "17"
@@ -153,4 +148,4 @@
      ))
 
 
-;; 日本語あいうえお
+;; 日本語コードはutf-8で

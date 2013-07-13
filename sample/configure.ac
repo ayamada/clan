@@ -6,7 +6,7 @@ dnl Defines
 dnl artifactId, version
 AC_INIT(drop, 1.0.5-SNAPSHOT)
 
-dnl application-name(for human reading)(マルチバイト指定可)
+dnl application-name(for human reading)(can use multibyte character)
 PROJECT_NAME="space drop"
 AC_SUBST(PROJECT_NAME)
 
@@ -17,7 +17,7 @@ AC_SUBST(PROJECT_GROUPID)
 dnl android version-code(for google play)
 PROJECT_ANDROID_VERSIONCODE=6
 AC_SUBST(PROJECT_ANDROID_VERSIONCODE)
-dnl TODO: 自動的に増えるようにしたい(しかも安全に)が…どうやればできる？
+dnl TODO: I want to automatically increment this, but I have no good idea
 
 dnl class of ApplicationListener by clojure
 PROJECT_CAL_GENERATOR_CLASS=drop.main
@@ -25,15 +25,19 @@ AC_SUBST(PROJECT_CAL_GENERATOR_CLASS)
 dnl generator of ApplicationListener by clojure
 PROJECT_CAL_GENERATOR_FN=generate-al
 AC_SUBST(PROJECT_CAL_GENERATOR_FN)
-dnl 上記の例では、 (drop.main/generate-al) が実行されるので、そこからproxyを使ってApplicationListenerのインスタンスを返す事
+dnl CLAN do `(~PROJECT_CAL_GENERATOR_CLASS/~PROJECT_CAL_GENERATOR_FN).
+dnl (Above is quasi-code)
+dnl Therefore you must provide a fn,
+dnl that fn must return an instance of ApplicationListener,
+dnl such a (proxy [ApplicationListener] [] ...)).
 
-dnl TODO: 本当は ~/.lein/profiles.clj で設定したい項目(project.clj側にも :android {...} があると、mergeではなく上書きされてしまうので、今のところ仕方なくautoconfで設定するようにしている)
 ANDROID_SDK_PATH="d:/prog/Android/android-sdk"
 AC_SUBST(ANDROID_SDK_PATH)
 ANDROID_KEYSTORE_PATH="d:/home/.android/ayamada2.keystore"
 AC_SUBST(ANDROID_KEYSTORE_PATH)
 ANDROID_KEY_ALIAS="ayamada"
 AC_SUBST(ANDROID_KEY_ALIAS)
+dnl TODO: ↑は、本当は ~/.lein/profiles.clj で設定したい項目(project.clj側にも :android {...} があると、mergeではなく上書きされてしまうので、今のところ仕方なくautoconfで設定するようにしている)。project.clj内から~/.lein/profiles.cljの:androidが参照できれば自分で合成する事はできるだろうが、参照する方法が分からない
 
 
 dnl ----------------------------------------------------------------

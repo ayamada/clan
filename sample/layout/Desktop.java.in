@@ -30,7 +30,7 @@ public class Desktop {
 		clanConf.logoPath = "assets/cbl_logo.png";
 		//clanConf.fontPath = "assets/cbl_font.fnt";
 		clanConf.jinglePath = "assets/cbl_jingle.ogg";
-		clanConf.isDisplayLog = true;
+		clanConf.isDisplayLog = false;
 		clanConf.cljInit = null;
 		clanConf.nekoInit = null;
 		clanConf.spawner = new Callable<ApplicationListener>() {
