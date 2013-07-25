@@ -12,10 +12,7 @@ windows and other desktop OS at a time
 
 See document http://doc.tir.ne.jp/devel/clan .
 
-Version `0.0.6 <https://github.com/ayamada/clan/tree/0.0.6>`_ is latest stable.
-
-Currently, `use_lein <https://github.com/ayamada/clan/tree/use_lein>`_
-branch is developed.
+Version `0.1.0 <https://github.com/ayamada/clan/tree/0.1.0>`_ is latest.
 
 --------------
 
@@ -30,10 +27,7 @@ androidアプリだけではなく、windowsとその他のデスクトップos�
 
 詳細は http://doc.tir.ne.jp/devel/clan のドキュメントを見てください。
 
-最新安定版は `0.0.6 <https://github.com/ayamada/clan/tree/0.0.6>`_ です。
-
-現在 `use_lein <https://github.com/ayamada/clan/tree/use_lein>`_
-ブランチにて大幅改変中です。
+最新版は `0.1.0 <https://github.com/ayamada/clan/tree/0.1.0>`_ です。
 
 
 ChangeLog
@@ -72,7 +66,7 @@ Link
 
 -  `launch4j <http://launch4j.sourceforge.net/>`_
 
--  `lein-droid <https://github.com/alexander-yakushev/lein-droid>`_: leinでandroidアプリを生成する為のleinプラグイン。開発中はapkにnREPLサーバ機能を自動で組み込んで、android実機の外からプロセスにREPL接続できるようにする機能あり。以前はwindowsでうまく動かなかったが対応されたようなのであとで組み込む。
+-  `lein-droid <https://github.com/alexander-yakushev/lein-droid>`_: leinでandroidアプリを生成する為のleinプラグイン。開発中はapkにnREPLサーバ機能を自動で組み込んで、android実機の外からプロセスにREPL接続できるようにする機能あり。
 
 -  `clojurelibgdx <https://github.com/thomas-villagers/clojurelibgdx>`_: 類似プロジェクト。
 

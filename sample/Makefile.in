@@ -84,9 +84,9 @@ tmp/libgdx/gdx.jar: $(LIBGDX_ZIP)
 
 .dep-libgdx-done: tmp/libgdx/gdx.jar
 	cd tmp/libgdx && for f in *.jar; do \
-		cd ../../clan/depinst && lein localrepo install ../../tmp/libgdx/$$f com.badlogic.gdx/$${f%%.jar} $(CLAN_LIBGDX_VERSION) || break 0; \
+		cd ../../clan/depinst && $(LEIN) localrepo install ../../tmp/libgdx/$$f com.badlogic.gdx/$${f%%.jar} $(CLAN_LIBGDX_VERSION) || break 0; \
 	done
-	cd clan/depinst && lein localrepo install ../../tmp/libgdx/extensions/gdx-tools/gdx-tools.jar com.badlogic.gdx/gdx-tools $(CLAN_LIBGDX_VERSION)
+	cd clan/depinst && $(LEIN) localrepo install ../../tmp/libgdx/extensions/gdx-tools/gdx-tools.jar com.badlogic.gdx/gdx-tools $(CLAN_LIBGDX_VERSION)
 	touch .dep-libgdx-done
 
 dep-libgdx: .dep-libgdx-done
@@ -98,7 +98,7 @@ dep-libgdx-clean:
 
 
 desktop/assets/pack.png: .dep-libgdx-done
-	cd clan/tpack && lein run -m com.badlogic.gdx.tools.imagepacker.TexturePacker2 ../../textures ../../desktop/assets
+	cd clan/tpack && $(LEIN) run -m com.badlogic.gdx.tools.imagepacker.TexturePacker2 ../../textures ../../desktop/assets
 
 ta: ta-clean desktop/assets/pack.png
 
@@ -116,6 +116,13 @@ add-lib-to-resources:
 	cp -a desktop/assets android/target/resources
 	cp -r tmp/libgdx/armeabi-v7a android/target/resources/lib
 	cp -r tmp/libgdx/armeabi android/target/resources/lib
+
+add-gdx-res:
+	#cd tmp && rm -rf com
+	#cd tmp && jar xf libgdx/gdx.jar
+	#mkdir -p android/target/gdx-res/com/badlogic/gdx/utils
+	#cp tmp/com/badlogic/gdx/utils/arial-15.* android/target/gdx-res/com/badlogic/gdx/utils
+	true
 
 
 
@@ -254,6 +261,7 @@ desktop-clean:
 # (echo "you dont edit settings.xml yet? please see README.rst and grep 'settings.xml'." && false)
 
 .droid-build-done: .dep-libgdx-done .layout-done
+	$(MAKE) ta add-lib-to-resources add-gdx-res
 	export CLAN_TARGET=android && cd android && $(LEIN) with-profile devpack droid build
 	touch .droid-build-done
 
@@ -286,7 +294,7 @@ android-clean:
 
 release-apk: .dep-libgdx-done .layout-done
 	cd android && $(LEIN) clean
-	#$(MAKE) ta add-lib-to-resources
+	$(MAKE) ta add-lib-to-resources add-gdx-res
 	export CLAN_TARGET=android CLAN_RELEASE=1 && cd android && $(LEIN) with-profile pack,release do droid release build, droid release apk
 	mkdir -p target
 	cp android/target/$(PROJECT_ARTIFACTID).apk target
