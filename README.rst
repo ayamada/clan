@@ -14,6 +14,8 @@ See document http://doc.tir.ne.jp/devel/clan .
 
 Version `0.1.0 <https://github.com/ayamada/clan/tree/0.1.0>`_ is latest.
 
+Version `0.0.6 <https://github.com/ayamada/clan/tree/0.0.6>`_ is old stable(use maven, without lein).
+
 --------------
 
 **CLAN : Clojure, LibGDX, Android, Neko アプリケーション構築キット**
@@ -27,7 +29,9 @@ androidアプリだけではなく、windowsとその他のデスクトップos�
 
 詳細は http://doc.tir.ne.jp/devel/clan のドキュメントを見てください。
 
-最新版は `0.1.0 <https://github.com/ayamada/clan/tree/0.1.0>`_ です。
+現在の最新版は `0.1.0 <https://github.com/ayamada/clan/tree/0.1.0>`_ です。
+
+古い安定版(maven使用、leinなし)は `0.0.6 <https://github.com/ayamada/clan/tree/0.0.6>`_ です。
 
 
 ChangeLog
