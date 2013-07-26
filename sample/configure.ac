@@ -10,6 +10,10 @@ dnl application-name(for human reading)(can use multibyte character)
 PROJECT_NAME="space drop"
 AC_SUBST(PROJECT_NAME)
 
+dnl application-name(for icon)(can use multibyte character)
+PROJECT_SHORT_NAME=${PROJECT_NAME}
+AC_SUBST(PROJECT_SHORT_NAME)
+
 dnl groupId
 PROJECT_GROUPID="jp.ne.tir.drop.android"
 AC_SUBST(PROJECT_GROUPID)
@@ -42,9 +46,9 @@ dnl TODO: ↑は、本当は ~/.lein/profiles.clj で設定したい項目(proje
 
 dnl ----------------------------------------------------------------
 dnl Aliases
-PROJECT_ARTIFACTID=$PACKAGE_NAME
+PROJECT_ARTIFACTID=${PACKAGE_NAME}
 AC_SUBST(PROJECT_ARTIFACTID)
-PROJECT_VERSION=$PACKAGE_VERSION
+PROJECT_VERSION=${PACKAGE_VERSION}
 AC_SUBST(PROJECT_VERSION)
 
 dnl もし必要なら以下を変更してもよい

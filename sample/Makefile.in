@@ -32,6 +32,7 @@ PROJECT_GROUPID    := @PROJECT_GROUPID@
 PROJECT_ARTIFACTID := @PROJECT_ARTIFACTID@
 PROJECT_VERSION    := @PROJECT_VERSION@
 PROJECT_NAME       := @PROJECT_NAME@
+PROJECT_SHORT_NAME := @PROJECT_SHORT_NAME@
 
 PROJECT_DESKTOP_GROUPID    := @PROJECT_DESKTOP_GROUPID@
 PROJECT_ANDROID_GROUPID    := @PROJECT_ANDROID_GROUPID@
@@ -155,11 +156,11 @@ layout-clean:
 
 repl: .dep-libgdx-done .layout-done
 	$(MAKE) ta
-	export CLAN_TARGET=desktop && cd desktop && $(LEIN) with-profile repl repl
+	export CLAN_TARGET=desktop CLAN_DEBUG=1 && cd desktop && $(LEIN) with-profile repl repl
 
 desktop/target/$(PROJECT_ARTIFACTID)-devpack.jar: .dep-libgdx-done .layout-done
 	$(MAKE) ta
-	export CLAN_TARGET=desktop && cd desktop && $(LEIN) with-profile devpack uberjar
+	export CLAN_TARGET=desktop CLAN_DEBUG=1 && cd desktop && $(LEIN) with-profile devpack uberjar
 
 devpack: desktop/target/$(PROJECT_ARTIFACTID)-devpack.jar
 
@@ -167,15 +168,7 @@ devpack: desktop/target/$(PROJECT_ARTIFACTID)-devpack.jar
 #     (src部をコンパイル対象に含めずにコンパイルし、あとで-cpで読み込む)
 # NB: javaのclasspath区切り文字の為にインチキをしている
 run: desktop/target/$(PROJECT_ARTIFACTID)-devpack.jar
-	cd desktop && $(JAVA) -cp '../src:target/$(PROJECT_ARTIFACTID)-devpack.jar:;../src;target/$(PROJECT_ARTIFACTID)-devpack.jar' $(PROJECT_DESKTOP_GROUPID).Desktop
-
-
-
-desktop/target/$(PROJECT_ARTIFACTID).jar: .dep-libgdx-done .layout-done
-	$(MAKE) ta
-	export CLAN_TARGET=desktop && cd desktop && $(LEIN) with-profile pack uberjar
-
-pack: desktop/target/$(PROJECT_ARTIFACTID).jar
+	export CLAN_TARGET=desktop CLAN_DEBUG=1 && cd desktop && $(JAVA) -cp '../src:target/$(PROJECT_ARTIFACTID)-devpack.jar:;../src;target/$(PROJECT_ARTIFACTID)-devpack.jar' $(PROJECT_DESKTOP_GROUPID).Desktop
 
 
 
@@ -190,10 +183,14 @@ target/$(PROJECT_ARTIFACTID).jar: .dep-libgdx-done .layout-done
 release-jar: target/$(PROJECT_ARTIFACTID).jar
 
 release-exe: target/$(PROJECT_ARTIFACTID).jar
-	cd target && if [ x != x$(L4J) ]; then \
-		ln -sf $(L4J_DIR)bin $(L4J_DIR)head $(L4J_DIR)w32api .; \
-		$(JAVA) -jar $(L4J_JAR) ../l4j/l4j.xml; \
+	cd target && ln -sf $(L4J_DIR)bin $(L4J_DIR)head $(L4J_DIR)w32api .
+	cd target && $(JAVA) -jar $(L4J_JAR) ../l4j/l4j.xml
+
+release-exe-if-exists:
+	if [ x != x$(L4J) ]; then \
+		$(MAKE) release-exe; \
 	fi
+	true
 
 # TODO: ↑のlaunch4jは失敗しても終了コード0を返す。stdoutの出力を見て判定するように直す
 # 成功時
@@ -262,15 +259,15 @@ desktop-clean:
 
 .droid-build-done: .dep-libgdx-done .layout-done
 	$(MAKE) ta add-lib-to-resources add-gdx-res
-	export CLAN_TARGET=android && cd android && $(LEIN) with-profile devpack droid build
+	export CLAN_TARGET=android CLAN_DEBUG=1 && cd android && $(LEIN) with-profile devpack droid build
 	touch .droid-build-done
 
 .droid-apk-done: .droid-build-done
-	export CLAN_TARGET=android && cd android && $(LEIN) with-profile devpack droid apk
+	export CLAN_TARGET=android CLAN_DEBUG=1 && cd android && $(LEIN) with-profile devpack droid apk
 	touch .droid-apk-done
 
 .droid-install-done: .droid-apk-done
-	export CLAN_TARGET=android && cd android && $(LEIN) with-profile devpack droid install
+	export CLAN_TARGET=android CLAN_DEBUG=1 && cd android && $(LEIN) with-profile devpack droid install
 	touch .droid-install-done
 
 # lein droid build
@@ -281,11 +278,11 @@ android-install: .droid-install-done
 
 # lein droid run
 android-run: .droid-install-done
-	export CLAN_TARGET=android && cd android && $(LEIN) with-profile devpack droid run
+	export CLAN_TARGET=android CLAN_DEBUG=1 && cd android && $(LEIN) with-profile devpack droid run
 
 # lein do droid forward-port, droid repl
 android-repl: .droid-install-done
-	export CLAN_TARGET=android && cd android && $(LEIN) with-profile devpack do droid run, droid forward-port, droid repl
+	export CLAN_TARGET=android CLAN_DEBUG=1 && cd android && $(LEIN) with-profile devpack do droid run, droid forward-port, droid repl
 
 android-clean:
 	cd android && $(LEIN) clean
@@ -298,14 +295,15 @@ release-apk: .dep-libgdx-done .layout-done
 	export CLAN_TARGET=android CLAN_RELEASE=1 && cd android && $(LEIN) with-profile pack,release do droid release build, droid release apk
 	mkdir -p target
 	cp android/target/$(PROJECT_ARTIFACTID).apk target
-	#cd android && $(LEIN) clean
+	cd android && $(LEIN) clean
 
 release-apk-if-exists:
 	if [ x != x$(ADB) ]; then \
 		$(MAKE) release-apk; \
 	fi
+	true
 
-release: release-jar release-exe release-apk-if-exists
+release: release-jar release-exe-if-exists release-apk-if-exists
 
 release-clean:
 	rm -rf target

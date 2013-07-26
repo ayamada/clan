@@ -35,7 +35,7 @@
       (assert k target)
       k)))
 (def ^:const is-release?
-  (eager (boolean (System/getenv "CLAN_RELEASE"))))
+  (eager (not (boolean (System/getenv "CLAN_DEBUG")))))
 
 
 ;;; --- project info ---
