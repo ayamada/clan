@@ -27,8 +27,10 @@
      ;:url "http://example.com/FIXME"
      ;:license {:name "Eclipse Public License"
      ;          :url "http://www.eclipse.org/legal/epl-v10.html"}
-     :min-lein-version "2.0.0"
-     :max-lein-version "2.0.0"
+     ;:min-lein-version "2.0.0"
+     ;:max-lein-version "2.0.0"
+     :min-lein-version "2.1.0"
+     :max-lein-version "2.1.0"
      ;:source-paths ["../clan/cbl/src" "src" "../src"]
      :java-source-paths ["../clan/cbl/src-java" "src-java" "../src-java" "gen"] ; "gen" for android
      :target-path "target/" ; Where to place the project's jar file.
@@ -90,11 +92,13 @@
 
 (def dependencies-android
   `[~@dependencies-common
-    [org.clojure-android/clojure "@CLAN_CLOJURE_VERSION@"]
+    ;[org.clojure-android/clojure "@CLAN_CLOJURE_VERSION@"]
+    [org.clojure-android/clojure "1.5.1-SNAPSHOT"]
     [com.badlogic.gdx/gdx-backend-android "@CLAN_LIBGDX_VERSION@"]
     ;[com.google.android/android "@CLAN_ANDROID_VERSION@" :scope "system"]
     ;[org.codehaus.jsr166-mirror/jsr166y "1.7.0"] ; see http://tnoda-clojure.tumblr.com/post/48710608069/classnotfoundexception-jsr166y-forkjoinpool
     [neko/neko "@CLAN_NEKO_VERSION@"]
+    ;[org.clojars.nakkaya/arduino-firmata "0.2.0"]
     ])
 
 (def profiles-android
@@ -106,8 +110,12 @@
                 :aot :all
                 :jar-name "@PROJECT_ARTIFACTID@-devpack-without-dep.jar"
                 :uberjar-name "@PROJECT_ARTIFACTID@-devpack.jar"
-                ;:dependencies [[android/tools.nrepl "0.2.0-bigstack"]]
-                :android {:aot :all-with-unused}
+                ;:dependencies [[android/tools.nrepl "0.2.0-bigstack"]
+                ;               [org.clojure-android/clojure-complete "0.3.0-SNAPSHOT"]]
+                :android {:aot :all-with-unused
+                          :enable-dynamic-compilation true
+                          :start-nrepl-server false
+                          }
                 }
       :pack {:source-paths ["../clan/cbl/src" "src" "../src"]
              :aot :all
@@ -118,16 +126,52 @@
                               *assert* false}
                 :omit-source true
                 :android {
-                          :aot :all ; TODO: neko.compilation/init のAOTコンパイルが通ってない場合は :all-with-unused にする必要がある、要確認
+                          :enable-dynamic-compilation true
+                          :start-nrepl-server false
+                          :aot :all-with-unused
                           :out-apk-path "target/@PROJECT_ARTIFACTID@.apk"
+                          :sigalg "@ANDROID_SIGALG@"
                           :keystore-path "@ANDROID_KEYSTORE_PATH@"
                           :key-alias "@ANDROID_KEY_ALIAS@"
-                          ;; WARNING: THIS IS DANGEROUS!
-                          ;:keypass "password"
-                          ;:storepass "password"
+                          ;:keypass "password1"
+                          ;:storepass "password2"
                           }
                 }
       }))
+
+(use '[leiningen.core [classpath :only [resolve-dependencies]]])
+(defn get-resource-jars-paths [dependencies]
+  (let [filtered-deps (filter
+                        (fn [entry]
+                          ;; entry = ;[com.google.android/android "@CLAN_ANDROID_VERSION@" :scope "system"]
+                          (let [package (nth entry 0)
+                                version (nth entry 1)
+                                scope (:scope (apply array-map
+                                                     (rest (rest entry))))]
+                            ;; remove by scope
+                            (or
+                              (nil? scope)
+                              (= scope "compile"))))
+                        dependencies)
+        _ (when (System/getenv "DEBUG")
+            (prn :included-deps filtered-deps))
+        all-paths (map str
+                       (resolve-dependencies
+                         :dependencies {:dependencies filtered-deps}))
+        ;; all-paths may include dup entries
+        uniq-paths (seq (set all-paths))
+        result (remove
+                 ;; remove by package (these are include by lein-droid)
+                 #(or 
+                    (re-find #"[/\\]neko[/\\]neko[/\\]" %)
+                    (re-find #"[/\\]org[/\\]clojure[/\\]clojure[/\\]" %)
+                    (re-find #"[/\\]org[/\\]clojure-android[/\\]clojure[/\\]" %)
+                    (re-find #"[/\\]android[/\\]clojure[/\\]" %))
+                 uniq-paths)
+        _ (when (System/getenv "DEBUG")
+            (prn :resource-jars-paths result))
+        ]
+    result))
 
 ;; this macro is expanded in android/project.clj
 (defmacro defproject-android []
@@ -135,23 +179,31 @@
      :dependencies ~dependencies-android
      ;:main @PROJECT_DESKTOP_GROUPID@.MainActivity ; android hasnt :main
      :profiles ~profiles-android
-     ;:plugins [[lein-droid/lein-droid "0.1.0"]]
-     :plugins [[lein-droid/lein-droid "0.2.0-SNAPSHOT"]]
-     ;:plugins [[lein-droid/lein-droid "0.2.0-LOCALTEST"]]
+     ;:plugins [[lein-droid/lein-droid "0.2.0-SNAPSHOT"]]
+     :plugins [[lein-droid/lein-droid "0.2.0-LOCALTEST"]]
      ;:resource-paths ["target/gdx-res"]
      :android {
                :sdk-path "@ANDROID_SDK_PATH@"
-               :target-version "17"
+               :target-version "18"
                ;:min-version "10"
                :aot-exclude-ns ["clojure.parallel" "clojure.core.reducers"]
                :assets-path "target/resources/assets"
                :native-libraries-paths ["target/resources/lib"]
                ;:library false
-               :resource-jars-paths ["../tmp/libgdx/gdx.jar"]
-               ;; Uncomment this line to be able to use Google API.
-               ;; :use-google-api true
+               ;:resource-jars-paths ["../tmp/libgdx/gdx.jar"]
+               :resource-jars-paths ~(if (System/getenv "CLAN_BUILD_APK")
+                                       (get-resource-jars-paths dependencies-android)
+                                       [])
                ;; Uncomment this if dexer fails with OutOfMemoryException
                ;; :force-dex-optimize true
+               ;; Options to pass to dx executable, former is for general
+               ;; java-related options and later is for 'dex task'-specific options.
+               ;; :dex-opts ["-JXmx4096M"]
+               ;; Proguard config for "droid create-obfuscated-dex" task.
+               ;; :proguard-conf-path "proguard.cfg"
+               ;; :proguard-opts ["-printseeds"]
+               ;; Uncomment this line to be able to use Google API.
+               ;; :use-google-api true
                }
      :install-releases? false
      ))

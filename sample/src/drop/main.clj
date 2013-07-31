@@ -339,6 +339,9 @@
 (defn get-score [idx] (nth @a-scores idx))
 (def ^:const save-file "save.dat")
 
+(defaola2 ^Preferences pref :create #(do (keep-code-when-android
+                              (.. Gdx app (getPreferences "drop")))))
+
 (defn load-data! []
   (let [edn-str (or
                   (keep-code-when-desktop
@@ -346,8 +349,7 @@
                       (when (.exists (FileHandle. f))
                         (inflate-read-from-file f))))
                   (keep-code-when-android
-                    (doto (.. Gdx app (getPreferences "drop"))
-                      (.getString "edn" "")))
+                    (.getString pref "edn" ""))
                   "")]
     (when-not (= edn-str "")
       (try
@@ -364,9 +366,8 @@
       (keep-code-when-desktop
         (deflate-write-to-file edn-str (get-local-path save-file)))
       (keep-code-when-android
-        (doto (.. Gdx app (getPreferences "drop"))
-          (.putString "edn" edn-str)
-          (.flush)))
+        (.putString pref "edn" edn-str)
+        (.flush pref))
       )))
 
 (defaola2 _loader :create #(do (load-data!) nil))
@@ -972,10 +973,16 @@
 (declare main-resume)
 
 (defn main-create []
-  (prn 'is-release? claninfo/is-release?)
-  (prn 'build-target claninfo/build-target)
-  (prn 'java.class.path (System/getProperty "java.class.path"))
-  (prn 'sun.java.command (System/getProperty "sun.java.command"))
+  ;(prn 'is-release? claninfo/is-release?)
+  ;(prn 'build-target claninfo/build-target)
+  ;(prn 'java.class.path (System/getProperty "java.class.path"))
+  ;(prn 'sun.java.command (System/getProperty "sun.java.command"))
+  ;(prn "./pack.atlas exists?"
+  ;     (.. Gdx files (internal "pack.atlas") (exists)))
+  ;(prn "assets/pack.atlas exists?"
+  ;     (.. Gdx files (internal "assets/pack.atlas") (exists)))
+  ;(prn "assets/assets/pack.atlas exists?"
+  ;     (.. Gdx files (internal "assets/assets/pack.atlas") (exists)))
   (aola2-handler-create!)
   (update-music!)
   (main-resume))

@@ -47,6 +47,16 @@
     (eval `(do (require '~class-symbol) (~fn-symbol)))
     ))
 
+(def _a-preferences (atom nil))
+(defn _get-pref []
+  ;; TODO: BootLoaderから取る必要がある
+  ;jp.ne.tir.clan.BootLoader/pref ; これでは取れない、どうにかする必要がある
+  (or
+    @_a-preferences
+    (let [pref (.. Gdx app (getPreferences "CBL"))]
+      (reset! _a-preferences pref)
+      pref)))
+
 ;; jingle無効のオンオフを取得/セット
 ;; NB: BootLoader.javaと完全に同期を取るなら、if-androidではなく、
 ;;     System/getProperty で java.class.path と sun.java.command が
@@ -59,13 +69,15 @@
 (defn is-jingle-off-by-pref? []
   (try
     (if-android
-      (.. Gdx app (getPreferences "CBL") (getBoolean "PLAY_JINGLE" true))
+      (.getBoolean (_get-pref) "PLAY_JINGLE" true)
       (.. Gdx files (local (_get-path-of-jingle-mute)) (exists)))
     (catch Exception e false)))
 (defn set-jingle-off-by-pref! [off?]
   (try
     (if-android
-      (.. Gdx app (getPreferences "CBL") (setBoolean "PLAY_JINGLE" off?))
+      (let [pref (_get-pref)]
+        (.setBoolean pref "PLAY_JINGLE" off?)
+        (.flush pref))
       (if off?
         (.. Gdx files (local (_get-path-of-jingle-mute)) (writeString "" true))
         (.. Gdx files (local (_get-path-of-jingle-mute)) (delete))))

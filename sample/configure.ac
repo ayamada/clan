@@ -37,6 +37,9 @@ dnl such a (proxy [ApplicationListener] [] ...)).
 
 ANDROID_SDK_PATH="d:/prog/Android/android-sdk"
 AC_SUBST(ANDROID_SDK_PATH)
+dnl "MD5withRSA", "SHA1withRSA", "SHA1withDSA" or etc...
+ANDROID_SIGALG="MD5withRSA"
+AC_SUBST(ANDROID_SIGALG)
 ANDROID_KEYSTORE_PATH="d:/home/.android/ayamada2.keystore"
 AC_SUBST(ANDROID_KEYSTORE_PATH)
 ANDROID_KEY_ALIAS="ayamada"
@@ -104,7 +107,7 @@ AC_PATH_PROG([LEIN_PATH], [lein])
 AS_IF(test x"$LEIN_PATH" = x, AC_MSG_ERROR([lein not found]))
 dnl AC_PATH_PROG([MVN_PATH], [mvn])
 dnl AS_IF(test x"$MVN_PATH" = x, AC_MSG_ERROR([mvn not found]))
-dnl AC_PATH_PROG([ADB_PATH], [adb])
+AC_PATH_PROG([ADB_PATH], [adb])
 dnl AS_IF(test x"$ADB_PATH" = x, AC_MSG_ERROR([adb not found]))
 AC_PATH_PROG([WGET_PATH], [wget])
 AS_IF(test x"$WGET_PATH" = x, AC_MSG_ERROR([wget not found]))

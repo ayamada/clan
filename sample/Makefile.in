@@ -111,26 +111,20 @@ update-resources-for-release:
 	mkdir -p desktop/target/resources
 	cp -a desktop/assets desktop/target/resources
 
+# NB: this makes assets/assets/*, it is correct.
 add-lib-to-resources:
 	rm -rf android/target/resources
+	mkdir -p android/target/resources/assets
+	cp -a desktop/assets android/target/resources/assets
 	mkdir -p android/target/resources/lib
-	cp -a desktop/assets android/target/resources
 	cp -r tmp/libgdx/armeabi-v7a android/target/resources/lib
 	cp -r tmp/libgdx/armeabi android/target/resources/lib
 
-add-gdx-res:
-	#cd tmp && rm -rf com
-	#cd tmp && jar xf libgdx/gdx.jar
-	#mkdir -p android/target/gdx-res/com/badlogic/gdx/utils
-	#cp tmp/com/badlogic/gdx/utils/arial-15.* android/target/gdx-res/com/badlogic/gdx/utils
-	true
 
 
 
-#dep: .dep-libgdx-done .dep-neko-done
 dep: .dep-libgdx-done
 
-#depclean: dep-libgdx-clean dep-neko-clean
 depclean: dep-libgdx-clean
 	rm -rf tmp
 
@@ -171,14 +165,17 @@ run: desktop/target/$(PROJECT_ARTIFACTID)-devpack.jar
 	export CLAN_TARGET=desktop CLAN_DEBUG=1 && cd desktop && $(JAVA) -cp '../src:target/$(PROJECT_ARTIFACTID)-devpack.jar:;../src;target/$(PROJECT_ARTIFACTID)-devpack.jar' $(PROJECT_DESKTOP_GROUPID).Desktop
 
 
+desktop-clean:
+	cd desktop && $(LEIN) clean
+
 
 target/$(PROJECT_ARTIFACTID).jar: .dep-libgdx-done .layout-done
-	cd desktop && $(LEIN) clean
+	$(MAKE) desktop-clean
 	$(MAKE) ta update-resources-for-release
 	export CLAN_TARGET=desktop CLAN_RELEASE=1 && cd desktop && $(LEIN) with-profile pack,release uberjar
 	mkdir -p target
 	cp desktop/target/$(PROJECT_ARTIFACTID).jar target
-	cd desktop && $(LEIN) clean
+	$(MAKE) desktop-clean
 
 release-jar: target/$(PROJECT_ARTIFACTID).jar
 
@@ -202,68 +199,20 @@ release-exe-if-exists:
 # launch4j: java.io.FileNotFoundException: hoge (No such file or directory)
 
 
-desktop-clean:
-	cd desktop && $(LEIN) clean
 
 
 
 
 
-
-# TODO: nekoコンパイル回りは一旦コメントアウト(可能ならleinでまとめてコンパイルしたい)
-#NEKO_COMPILE_JARS := clan/neko/target/dependency/*.jar
-# NB: ↓は即座には評価されないらしい。
-#       (即座に評価されてしまうとNEKO_COMPILE_JARSが空になってしまう)
-#       詳細は以下を参照 http://d.hatena.ne.jp/m-hiyama/20071024/1193202017
-#DEP_COMPILE_CPS_NEKO = ../../$(subst $(SPACE),:../../,$(wildcard $(NEKO_COMPILE_JARS)))
-
-# neko中でコンパイルが必要なものを列挙
-#NEKO_COMPILE_TARGETS := neko.compilation
-#NEKO_COMPILE_TARGETS = $(shell find tmp/neko/orig/neko | grep '\.clj$$' | $(PERL) -ne 'chomp; s|^tmp/neko/orig/(.*)\.clj$$|$$1|; s|/|.|g; s|_|-|g; print "$$_ "' && echo)
-
-
-# NB: .dep-neko-src-doneが分離しているのは、↓で参照しているNEKO_COMPILE_*変数の判定タイミングが、makeターゲット実行中には存在しない為。これを一緒にしてしまうとNEKO_COMPILE_*が空になる。
-#.dep-neko-src-done:
-#	mkdir -p tmp/neko/classes/neko/ui/adapters tmp/neko/orig
-#	cd clan/neko && $(MVN) dependency:copy-dependencies
-#	cd tmp/neko/orig && $(JAR) xf ../../../clan/neko/target/dependency/neko-$(CLAN_NEKO_VERSION).jar
-#	cp tmp/neko/orig/neko/ui/adapters/*.class tmp/neko/classes/neko/ui/adapters
-#	touch .dep-neko-src-done
-# TODO: ↑の*.classのコピーは、nekoのバージョンが上がったらもっと増やさないといけなくなる。対策が必要。
-
-#.dep-neko-done: .dep-neko-src-done
-#	cd tmp/neko && for x in $(NEKO_COMPILE_TARGETS); do \
-#		$(JAVA) -cp ./classes:$(DEP_COMPILE_CPS_NEKO) clojure.main -e "(compile '$$x)" || break 0; \
-#	done
-#	cd tmp/neko && $(JAR) cvf neko.jar -C classes .
-#	cd tmp/neko && $(MVN) install:install-file -Dfile=neko.jar -DgroupId=neko -DartifactId=neko -Dclassifier=compiled -Dversion=$(CLAN_NEKO_VERSION) -Dpackaging=jar -DgeneratePom=true -DcreateChecksum=true
-#	touch .dep-neko-done
-
-#dep-neko: .dep-neko-done
-
-#dep-neko-clean:
-#	cd clan/neko && $(MVN) clean
-#	rm -rf tmp/neko
-#	rm -f .dep-neko-src-done
-#	rm -f .dep-neko-done
-
-
-
-
-
-
-# NB: $(ADB) のチェックをしてもよい。しかし、なしでも問題ないと思う
-# TODO: ~/.lein/profiles.clj に、keystore等の設定がされているかのチェック。
-# 以前はmvn -Prelease packageに失敗した場合に以下の文章を出していた
-# (echo "you dont edit settings.xml yet? please see README.rst and grep 'settings.xml'." && false)
+# TODO: $(ADB) の有効チェックを追加。できれば既存の release-apk-if-exists 等を汎用化し、makeターゲット化して再利用する？しかしそれだとignore動作にはできないような…もう少し考える
 
 .droid-build-done: .dep-libgdx-done .layout-done
-	$(MAKE) ta add-lib-to-resources add-gdx-res
+	$(MAKE) ta add-lib-to-resources
 	export CLAN_TARGET=android CLAN_DEBUG=1 && cd android && $(LEIN) with-profile devpack droid build
 	touch .droid-build-done
 
 .droid-apk-done: .droid-build-done
-	export CLAN_TARGET=android CLAN_DEBUG=1 && cd android && $(LEIN) with-profile devpack droid apk
+	export CLAN_TARGET=android CLAN_DEBUG=1 CLAN_BUILD_APK=1 && cd android && $(LEIN) with-profile devpack droid apk
 	touch .droid-apk-done
 
 .droid-install-done: .droid-apk-done
@@ -290,12 +239,13 @@ android-clean:
 	rm -f .droid-*-done
 
 release-apk: .dep-libgdx-done .layout-done
-	cd android && $(LEIN) clean
-	$(MAKE) ta add-lib-to-resources add-gdx-res
-	export CLAN_TARGET=android CLAN_RELEASE=1 && cd android && $(LEIN) with-profile pack,release do droid release build, droid release apk
+	$(MAKE) android-clean
+	$(MAKE) ta add-lib-to-resources
+	export CLAN_TARGET=android CLAN_RELEASE=1 && cd android && $(LEIN) with-profile pack,release droid release build
+	export CLAN_TARGET=android CLAN_RELEASE=1 CLAN_BUILD_APK=1 && cd android && $(LEIN) with-profile pack,release droid release apk
 	mkdir -p target
 	cp android/target/$(PROJECT_ARTIFACTID).apk target
-	cd android && $(LEIN) clean
+	$(MAKE) android-clean
 
 release-apk-if-exists:
 	if [ x != x$(ADB) ]; then \
@@ -303,7 +253,16 @@ release-apk-if-exists:
 	fi
 	true
 
+release-apk-install:
+	$(ADB) uninstall $(PROJECT_ANDROID_GROUPID)
+	$(ADB) install target/$(PROJECT_ARTIFACTID).apk
+
+release-apk-run:
+	$(ADB) shell am start -n $(PROJECT_ANDROID_GROUPID)/.MainActivity
+
+
 release: release-jar release-exe-if-exists release-apk-if-exists
+
 
 release-clean:
 	rm -rf target

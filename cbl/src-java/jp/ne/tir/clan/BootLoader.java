@@ -191,7 +191,6 @@ public class BootLoader implements ApplicationListener {
 	}
 
 	private boolean getJingleOffByPref () {
-		// TODO: うまくうごいてない、とにかくdebug-print入れまくる
 		try {
 			if (Gdx.app.getType().equals(Application.ApplicationType.Android)) {
 				// androidなら、prefから取る
