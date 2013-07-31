@@ -47,30 +47,31 @@ Link
 
    -  `CheatSheet <http://clojure.org/cheatsheet>`_
    -  `ClojureDocs <http://clojuredocs.org/>`_
-   -  `Clojure for Android <https://github.com/sattvik/clojure>`_
+   -  `Clojure for Android <https://github.com/clojure-android/clojure>`_
 
       -  `Deep Blue Lambda <http://www.deepbluelambda.org/>`_: Clojure for Android のメンテナの人のサイト。nekoのオリジナル版もこの人が作った。
       -  `Clojure REPL <https://play.google.com/store/apps/details?id=com.sattvik.clojure_repl>`_: この人が作った、android用clojureのREPLコンソール。一行コンソールからだけではなく、Nailgun内蔵で外からVimClojure経由の操作もできる。android実機の環境で「○○クラスは標準で入ってるのか？」みたいな調べ物をするのに便利。
 
 -  `LibGDX <http://libgdx.badlogicgames.com/>`_
 
+   -  `github repository <https://github.com/libgdx/libgdx>`_
    -  `libgdx API <http://libgdx.badlogicgames.com/nightlies/docs/api/overview-summary.html>`_
    -  `Wiki <http://code.google.com/p/libgdx/wiki/TableOfContents>`_
    -  `Androidゲームプログラミング A to Z <http://www.impressjapan.jp/books/3113>`_\ (`amazon <http://www.amazon.co.jp/o/ASIN/4844331132/tirnejp-22>`_): `Beginning Android Games <http://www.apress.com/9781430230427>`_\ の日本語訳版。良書。ただし本家の方は\ `2nd Edition <http://www.apress.com/9781430246770>`_\ が出てるが日本語訳版は初版ベース。
    -  `libgdxメモ <http://doc.tir.ne.jp/devel/clan/libgdx>`_: ayamadaがメモしたlibgdxのノウハウ集。
 
--  `Android <http://developer.android.com/index.html>`_
+-  `Android <http://developer.android.com/>`_
 
    -  `ProGuard <http://proguard.sourceforge.net/>`_, `ProGuard(Android Developers) <http://developer.android.com/tools/help/proguard.html>`_\ (`日本語訳 <http://www.techdoctranslator.com/android/developing/tools/proguard>`_)
 
 -  `Neko(forked by Alexander Yakushev) <https://github.com/alexander-yakushev/neko>`_
 
    -  `reference <http://alexander-yakushev.github.com/neko/>`_
-   -  `Clojure Development on Android <http://clojure-android.blogspot.jp/>`_: nekoのメンテナの人の解説ブログ。
+   -  `Clojure Development on Android <http://clojure-android.blogspot.com/>`_: nekoのメンテナの人の解説ブログ。
 
 -  `launch4j <http://launch4j.sourceforge.net/>`_
 
--  `lein-droid <https://github.com/alexander-yakushev/lein-droid>`_: leinでandroidアプリを生成する為のleinプラグイン。開発中はapkにnREPLサーバ機能を自動で組み込んで、android実機の外からプロセスにREPL接続できるようにする機能あり。
+-  `lein-droid <https://github.com/clojure-android/lein-droid>`_: leinでandroidアプリを生成する為のleinプラグイン。開発中はapkにnREPLサーバ機能を自動で組み込んで、android実機の外からプロセスにREPL接続できるようにする機能あり。
 
 -  `clojurelibgdx <https://github.com/thomas-villagers/clojurelibgdx>`_: 類似プロジェクト。
 
