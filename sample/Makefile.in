@@ -172,7 +172,7 @@ desktop-clean:
 target/$(PROJECT_ARTIFACTID).jar: .dep-libgdx-done .layout-done
 	$(MAKE) desktop-clean
 	$(MAKE) ta update-resources-for-release
-	export CLAN_TARGET=desktop CLAN_RELEASE=1 && cd desktop && $(LEIN) with-profile pack,release uberjar
+	export CLAN_TARGET=desktop CLAN_RELEASE=1 && cd desktop && $(LEIN) with-profile release uberjar
 	mkdir -p target
 	cp desktop/target/$(PROJECT_ARTIFACTID).jar target
 	$(MAKE) desktop-clean
@@ -241,8 +241,8 @@ android-clean:
 release-apk: .dep-libgdx-done .layout-done
 	$(MAKE) android-clean
 	$(MAKE) ta add-lib-to-resources
-	export CLAN_TARGET=android CLAN_RELEASE=1 && cd android && $(LEIN) with-profile pack,release droid release build
-	export CLAN_TARGET=android CLAN_RELEASE=1 CLAN_BUILD_APK=1 && cd android && $(LEIN) with-profile pack,release droid release apk
+	export CLAN_TARGET=android CLAN_RELEASE=1 && cd android && $(LEIN) with-profile release droid release build
+	export CLAN_TARGET=android CLAN_RELEASE=1 CLAN_BUILD_APK=1 && cd android && $(LEIN) with-profile clan-sign,release droid release apk
 	mkdir -p target
 	cp android/target/$(PROJECT_ARTIFACTID).apk target
 	$(MAKE) android-clean

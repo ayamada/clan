@@ -31,6 +31,7 @@
      ;:max-lein-version "2.0.0"
      :min-lein-version "2.1.0"
      :max-lein-version "2.1.0"
+     ;:jvm-opts ["-Duser.language=en"]
      ;:source-paths ["../clan/cbl/src" "src" "../src"]
      :java-source-paths ["../clan/cbl/src-java" "src-java" "../src-java" "gen"] ; "gen" for android
      :target-path "target/" ; Where to place the project's jar file.
@@ -65,12 +66,12 @@
                 :jar-name "@PROJECT_ARTIFACTID@-devpack-without-dep.jar"
                 :uberjar-name "@PROJECT_ARTIFACTID@-devpack.jar"
                 }
-      :pack {:source-paths ["../clan/cbl/src" "src" "../src"]
-             :aot :all
-             :jar-name "@PROJECT_ARTIFACTID@-without-dep.jar"
-             :uberjar-name "@PROJECT_ARTIFACTID@.jar"
-             }
-      :release {:global-vars {*warn-on-reflection* false
+      :release {
+                :source-paths ["../clan/cbl/src" "src" "../src"]
+                :aot :all
+                :jar-name "@PROJECT_ARTIFACTID@-without-dep.jar"
+                :uberjar-name "@PROJECT_ARTIFACTID@.jar"
+                :global-vars {*warn-on-reflection* false
                               *assert* false}
                 ;; > Put a regex here to compile all namespaces whose names match.
                 :omit-source true
@@ -93,7 +94,8 @@
 (def dependencies-android
   `[~@dependencies-common
     ;[org.clojure-android/clojure "@CLAN_CLOJURE_VERSION@"]
-    [org.clojure-android/clojure "1.5.1-SNAPSHOT"]
+    [org.clojure-android/clojure "1.5.1-jb"]
+    ;[org.clojure-android/clojure "1.5.1-SNAPSHOT"]
     [com.badlogic.gdx/gdx-backend-android "@CLAN_LIBGDX_VERSION@"]
     ;[com.google.android/android "@CLAN_ANDROID_VERSION@" :scope "system"]
     ;[org.codehaus.jsr166-mirror/jsr166y "1.7.0"] ; see http://tnoda-clojure.tumblr.com/post/48710608069/classnotfoundexception-jsr166y-forkjoinpool
@@ -117,12 +119,12 @@
                           :start-nrepl-server false
                           }
                 }
-      :pack {:source-paths ["../clan/cbl/src" "src" "../src"]
-             :aot :all
-             :jar-name "@PROJECT_ARTIFACTID@-without-dep.jar"
-             :uberjar-name "@PROJECT_ARTIFACTID@.jar"
-             }
-      :release {:global-vars {*warn-on-reflection* false
+      :release {
+                :source-paths ["../clan/cbl/src" "src" "../src"]
+                :aot :all
+                :jar-name "@PROJECT_ARTIFACTID@-without-dep.jar"
+                :uberjar-name "@PROJECT_ARTIFACTID@.jar"
+                :global-vars {*warn-on-reflection* false
                               *assert* false}
                 :omit-source true
                 :android {
@@ -130,11 +132,6 @@
                           :start-nrepl-server false
                           :aot :all-with-unused
                           :out-apk-path "target/@PROJECT_ARTIFACTID@.apk"
-                          :sigalg "@ANDROID_SIGALG@"
-                          :keystore-path "@ANDROID_KEYSTORE_PATH@"
-                          :key-alias "@ANDROID_KEY_ALIAS@"
-                          ;:keypass "password1"
-                          ;:storepass "password2"
                           }
                 }
       }))
@@ -185,7 +182,7 @@
      :android {
                :sdk-path "@ANDROID_SDK_PATH@"
                :target-version "18"
-               ;:min-version "10"
+               :min-version "10"
                :aot-exclude-ns ["clojure.parallel" "clojure.core.reducers"]
                :assets-path "target/resources/assets"
                :native-libraries-paths ["target/resources/lib"]
@@ -198,7 +195,7 @@
                ;; :force-dex-optimize true
                ;; Options to pass to dx executable, former is for general
                ;; java-related options and later is for 'dex task'-specific options.
-               ;; :dex-opts ["-JXmx4096M"]
+               ;; :dex-opts ["-JXmx2048M"]
                ;; Proguard config for "droid create-obfuscated-dex" task.
                ;; :proguard-conf-path "proguard.cfg"
                ;; :proguard-opts ["-printseeds"]

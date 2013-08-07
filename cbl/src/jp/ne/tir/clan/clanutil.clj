@@ -1,6 +1,7 @@
 (ns jp.ne.tir.clan.clanutil
   (:import
-    (com.badlogic.gdx Gdx Application$ApplicationType ApplicationListener)
+    (com.badlogic.gdx Gdx Preferences
+                      Application$ApplicationType ApplicationListener)
     )
   (:use
     [jp.ne.tir.clan.claninfo :as claninfo]
@@ -32,13 +33,16 @@
   (if (= :android claninfo/build-target) then else))
 
 
+(purge-code-when-release (set! *warn-on-reflection* true))
+
 ;;; ----------------------------------------------------------------
 ;;; BootLoader.java utitities
 
 ;; android実機にて、次回起動時にまたブートロゴを出すフラグを設定する
-;; TODO: 先にevalでimportする必要があるのでは？動作確認が必要
 (defmacro set-display-bootlogo-in-android! []
-  `(set! (. jp.ne.tir.clan.ALC reserveNextAlClear) true))
+  '(eval '(do
+            (import '[jp.ne.tir.clan ALC])
+            (set! ALC/reserveNextAlClear true))))
 
 ;; BootLoader.javaがcalを取り出す為に使う
 (defn generate-cal [class-str fn-str]
@@ -49,39 +53,36 @@
 
 (def _a-preferences (atom nil))
 (defn _get-pref []
-  ;; TODO: BootLoaderから取る必要がある
-  ;jp.ne.tir.clan.BootLoader/pref ; これでは取れない、どうにかする必要がある
+  ;; NB: この内部関数はandroid時にしか呼ばれない
   (or
     @_a-preferences
     (let [pref (.. Gdx app (getPreferences "CBL"))]
       (reset! _a-preferences pref)
       pref)))
 
-;; jingle無効のオンオフを取得/セット
-;; NB: BootLoader.javaと完全に同期を取るなら、if-androidではなく、
-;;     System/getProperty で java.class.path と sun.java.command が
-;;     同一かどうかをチェックする必要がある
 (defn _get-path-of-jingle-mute []
   ;; NB: この内部関数はPC時にしか呼ばれない
   (let [jcp (System/getProperty "java.class.path")
         dir (if-release (.. Gdx files (local jcp) (parent) (path)) ".")]
     (str dir "/jingle.mute")))
+
+;; jingle無効のオンオフを取得/セット
 (defn is-jingle-off-by-pref? []
   (try
     (if-android
-      (.getBoolean (_get-pref) "PLAY_JINGLE" true)
+      (.getBoolean ^Preferences (_get-pref) "MUTE_JINGLE" false)
       (.. Gdx files (local (_get-path-of-jingle-mute)) (exists)))
-    (catch Exception e false)))
+    (catch Exception e (.printStackTrace e) nil)))
 (defn set-jingle-off-by-pref! [off?]
   (try
     (if-android
-      (let [pref (_get-pref)]
-        (.setBoolean pref "PLAY_JINGLE" off?)
+      (let [^Preferences pref (_get-pref)]
+        (.putBoolean pref "MUTE_JINGLE" off?)
         (.flush pref))
       (if off?
         (.. Gdx files (local (_get-path-of-jingle-mute)) (writeString "" true))
         (.. Gdx files (local (_get-path-of-jingle-mute)) (delete))))
-    (catch Exception e nil)))
+    (catch Exception e (.printStackTrace e) nil)))
 
 ;;; ----------------------------------------------------------------
 ;;; libgdx utilities

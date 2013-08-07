@@ -249,9 +249,9 @@
 
 (defmacro aola2-handler-render! [batch]
   (let [entries @(eval ae-symbol)
-        draw-bodies (map #(:draw-body %) entries)
-        sense-bodies (map #(:sense-body %) entries)
-        update-bodies (map #(:update-body %) entries)
+        draw-bodies (map :draw-body entries)
+        sense-bodies (map :sense-body entries)
+        update-bodies (map :update-body entries)
         ]
     `(do
        (with-spritebatch ~batch ~@draw-bodies)
@@ -339,8 +339,9 @@
 (defn get-score [idx] (nth @a-scores idx))
 (def ^:const save-file "save.dat")
 
-(defaola2 ^Preferences pref :create #(do (keep-code-when-android
-                              (.. Gdx app (getPreferences "drop")))))
+(defaola2 ^Preferences pref
+  :create #(do (keep-code-when-android
+                 (.. Gdx app (getPreferences "drop")))))
 
 (defn load-data! []
   (let [edn-str (or
@@ -412,6 +413,7 @@
 (defaola2 a-background-star-next-spawn-nsec
   :create #(atom 0))
 
+;; TODO: ここのreduceが重いようだ、a-background-starsはjava arrayにして、副作用更新する事を検討する(消滅はnil代入、生成はnilのところに適当に追加)
 (defaola2 a-background-stars
   :create #(atom nil)
   :draw-body (do
@@ -602,7 +604,7 @@
                                               (.play
                                                 ^Sound (id items-se-table)))
                                             false)
-                                    ;; check item erase
+                                    ;; check item to leave
                                     (< y-locate item-delete-bottom) false
                                     (and
                                       (< x-speed 0)
@@ -983,6 +985,7 @@
   ;     (.. Gdx files (internal "assets/pack.atlas") (exists)))
   ;(prn "assets/assets/pack.atlas exists?"
   ;     (.. Gdx files (internal "assets/assets/pack.atlas") (exists)))
+  (set-display-bootlogo-in-android!)
   (aola2-handler-create!)
   (update-music!)
   (main-resume))
@@ -1046,4 +1049,4 @@
 ;;; ----------------------------------------------------------------
 
 
-;; ���{��R�[�h��utf-8
+;; 日本語コードはutf-8

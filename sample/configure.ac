@@ -35,17 +35,6 @@ dnl Therefore you must provide a fn,
 dnl that fn must return an instance of ApplicationListener,
 dnl such a (proxy [ApplicationListener] [] ...)).
 
-ANDROID_SDK_PATH="d:/prog/Android/android-sdk"
-AC_SUBST(ANDROID_SDK_PATH)
-dnl "MD5withRSA", "SHA1withRSA", "SHA1withDSA" or etc...
-ANDROID_SIGALG="MD5withRSA"
-AC_SUBST(ANDROID_SIGALG)
-ANDROID_KEYSTORE_PATH="d:/home/.android/ayamada2.keystore"
-AC_SUBST(ANDROID_KEYSTORE_PATH)
-ANDROID_KEY_ALIAS="ayamada"
-AC_SUBST(ANDROID_KEY_ALIAS)
-dnl TODO: ↑は、本当は ~/.lein/profiles.clj で設定したい項目(project.clj側にも :android {...} があると、mergeではなく上書きされてしまうので、今のところ仕方なくautoconfで設定するようにしている)。project.clj内から~/.lein/profiles.cljの:androidが参照できれば自分で合成する事はできるだろうが、参照する方法が分からない
-
 
 dnl ----------------------------------------------------------------
 dnl Aliases
@@ -113,13 +102,20 @@ AC_PATH_PROG([WGET_PATH], [wget])
 AS_IF(test x"$WGET_PATH" = x, AC_MSG_ERROR([wget not found]))
 AC_PATH_PROG([UNZIP_PATH], [unzip])
 AS_IF(test x"$UNZIP_PATH" = x, AC_MSG_ERROR([unzip not found]))
-dnl AC_PATH_PROG([PERL_PATH], [perl])
+AC_PATH_PROG([PERL_PATH], [perl])
 dnl AS_IF(test x"$PERL_PATH" = x, AC_MSG_ERROR([perl not found]))
 dnl AC_PATH_PROG([EXEWRAP_PATH], [exewrap])
 AC_PATH_PROGS([L4J_PATH], [launch4jc launch4j])
 dnl AS_IF(test x"$L4J_PATH" = x, AC_MSG_ERROR([launch4j not found]))
 
 
+dnl ----------------------------------------------------------------
+dnl for project-common.clj.in
+dnl    /d/prog/Android/android-sdk/platform-tools/adb
+dnl => d:/prog/Android/android-sdk
+dnl TODO: canonical-path的な物を使って正規化したいところ
+ANDROID_SDK_PATH=`echo ${ADB_PATH} | ${PERL_PATH} -pe '$_ =~ s#^/([A-Za-z])/#$1:/#; $_ =~ s#/platform-tools/adb.*$##'`
+AC_SUBST(ANDROID_SDK_PATH)
 
 
 dnl ----------------------------------------------------------------

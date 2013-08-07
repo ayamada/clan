@@ -38,12 +38,7 @@ import java.util.concurrent.Callable;
 import java.lang.StringBuilder;
 
 import jp.ne.tir.clan.Config;
-
-// ApplicationListenerCache
-class ALC {
-	static ApplicationListener al = null;
-	static boolean reserveNextAlClear = false;
-}
+import jp.ne.tir.clan.ALC;
 
 public class BootLoader implements ApplicationListener {
 	public enum Phase {
@@ -194,9 +189,8 @@ public class BootLoader implements ApplicationListener {
 		try {
 			if (Gdx.app.getType().equals(Application.ApplicationType.Android)) {
 				// androidなら、prefから取る
-				String prefKey = "CBL";
-				Preferences prefs = Gdx.app.getPreferences(prefKey);
-				return ! prefs.getBoolean("PLAY_JINGLE", true);
+				Preferences pref = Gdx.app.getPreferences("CBL");
+				return pref.getBoolean("MUTE_JINGLE", false);
 			}
 			else {
 				/* desktopではjingle.muteファイルの有無から判別する。
@@ -233,7 +227,6 @@ public class BootLoader implements ApplicationListener {
 	private int phaseStep;
 	private float phaseSec;
 	private Console console;
-	//private Preferences prefs;
 	private Runnable cljInit;
 	private Runnable nekoInit;
 	private Callable<ApplicationListener> spawner;
@@ -343,10 +336,6 @@ public class BootLoader implements ApplicationListener {
 		camera = new OrthographicCamera();
 		jingle = solveJingle();
 		console = new Console(font, batch);
-		//prefs = Gdx.app.getPreferences(
-		//		"CBL-"+Info.projectGroupId
-		//		+"-"+Info.projectArtifactId
-		//		+"-"+Info.projectClassifier);
 	}
 
 	private void disposeTrue () {
