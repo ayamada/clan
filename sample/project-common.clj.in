@@ -63,7 +63,7 @@
              ;               [org.clojure/tools.nrepl "0.2.3"]]
              }
       :devpack {
-                :source-paths ["../clan/cbl/src" "src"] ; "../src" はコンパイルしたくないので、jar起動時に明示的に渡す
+                :source-paths ["../clan/cbl/src" "src"] ; "../src" is not compiled on devel, "../src" is included to classpath on `make run`.
                 :aot :all
                 :jar-name "@PROJECT_ARTIFACTID@-devpack-without-dep.jar"
                 :uberjar-name "@PROJECT_ARTIFACTID@-devpack.jar"
