@@ -1,7 +1,7 @@
 language: clojure
 #install: cd leiningen-core; lein install; lein classpath | tail -n 1 > .lein-bootstrap; cd ..
-install: mkdir -p tmp_travis \&\& cd tmp_travis \&\& ln -sf .. clan \&\& sh clan/script/spread_current_dir.sh \&\& autoconf \&\& ./configure \&\& make release-jar \&\& cd ..
-script: test -e tmp_travis/target/drop.jar \&\& echo OK
+install: mkdir -p tmp_travis && cd tmp_travis && ln -sf .. clan && sh clan/script/spread_current_dir.sh && autoconf && ./configure && make release-jar && cd ..
+script: test -e tmp_travis/target/drop.jar && echo OK
 lein: lein2
 jdk:
   - openjdk6
