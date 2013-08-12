@@ -144,8 +144,8 @@
      :dependencies ~dependencies-android
      ;:main @PROJECT_DESKTOP_GROUPID@.MainActivity ; android hasnt :main
      :profiles ~profiles-android
-     ;:plugins [[lein-droid/lein-droid "0.2.0-SNAPSHOT"]]
-     :plugins [[lein-droid/lein-droid "0.2.0-LOCALTEST"]]
+     :plugins [[lein-droid/lein-droid "0.2.0-SNAPSHOT"]]
+     ;:plugins [[lein-droid/lein-droid "0.2.0-LOCALTEST"]]
      ;:resource-paths ["target/gdx-res"]
      :android {
                :sdk-path "@ANDROID_SDK_PATH@"
@@ -208,4 +208,4 @@
         ]
     result))
 
-;; 譌･譛ｬ隱槭さ繝ｼ繝峨�ｯutf-8縺ｧ
+;; 日本語コードはutf-8で
