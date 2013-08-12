@@ -207,5 +207,3 @@
             (prn :resource-jars-paths result))
         ]
     result))
-
-;; 日本語コードはutf-8で
