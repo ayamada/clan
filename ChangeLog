@@ -1,16 +1,16 @@
 2013-XX-XX  ayamada
-	* release 0.1.0: まだリリース準備中
+	* release 0.1.0: まだリリース準備中 TODO: このリリース文の英語化
 	  - configure.ac定義項目の全体的な見直し
 	  - ディレクトリ構造を全体的に変更
-	  - 一部をlein化
-	  - Info.javaの廃止
-	  - clanutil.cljの提供
+	  - mavenを廃止し、leinを使用するようにした
+	  - BootLoader.javaからConfig.javaを分離、別に設定を可能にする
+	  - Info.javaの廃止、claninfo.cljおよびclanutil.cljの提供
 	  - gdx-tools.jarを利用可能に
 	  - make taによりtexture atlasを生成する
 	  - ビルド手順改善による開発サイクルの高速化
-	  - BootLoader.javaの簡略化および将来拡張の為の準備
-	  - サンプルアプリspace dropの改善、pref不使用化
-	    lein化に伴いreplが使えるようになった為、eval機能を除去
+	  - サンプルアプリspace dropの改善
+	    - desktop向けではprefは使わないようにする
+	    - lein化に伴いnREPLが使えるようになった為、eval機能を除去
 
 2013-04-14  ayamada
 	* release 0.0.6:
