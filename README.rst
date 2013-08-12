@@ -12,7 +12,7 @@ windows and other desktop OS at a time
 
 See document http://doc.tir.ne.jp/devel/clan .
 
-Version `0.1.0 <https://github.com/ayamada/clan/tree/0.1.0>`_ is latest.
+Version `0.1.0 <https://github.com/ayamada/clan/tree/0.1.0>`_ is latest, but not released yet.
 
 Version `0.0.6 <https://github.com/ayamada/clan/tree/0.0.6>`_ is old stable(use maven, without lein).
 
@@ -29,7 +29,7 @@ androidアプリだけではなく、windowsとその他のデスクトップos�
 
 詳細は http://doc.tir.ne.jp/devel/clan のドキュメントを見てください。
 
-現在の最新版は `0.1.0 <https://github.com/ayamada/clan/tree/0.1.0>`_ です。
+現在の最新版は `0.1.0 <https://github.com/ayamada/clan/tree/0.1.0>`_ ですが、まだ未リリース状態です。
 
 古い安定版(maven使用、leinなし)は `0.0.6 <https://github.com/ayamada/clan/tree/0.0.6>`_ です。
 
