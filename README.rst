@@ -4,7 +4,8 @@ CLAN : Clojure, LibGDX, Android, Neko application construct kit
 ===============================================================
 
 CLAN supply to an environment that construct android application using
-libgdx by only clojure code. You must understand to clojure and libgdx.
+`libgdx <http://libgdx.badlogicgames.com/>`_ by only clojure code.
+You must understand to `clojure <http://clojure.org/>`_ and `libgdx <http://libgdx.badlogicgames.com/>`_.
 
 It can construct application for not only android but also
 windows and other desktop OS at a time
@@ -22,7 +23,7 @@ Version `0.0.6 <https://github.com/ayamada/clan/tree/0.0.6>`_ is old stable(use 
 
 これは「clojureのコード書くだけでlibgdx使ったandroidアプリができた！」を
 実現する為のアプリ構築キットです。
-別途、clojureとlibgdxの知識が必要です。
+別途、 `clojure <http://clojure.org/>`_ と `libgdx <http://libgdx.badlogicgames.com/>`_ の知識が必要です。
 
 androidアプリだけではなく、windowsとその他のデスクトップos向けアプリも
 同時に構築できます(ただし実行にはjavaインストールが必要)。
@@ -57,7 +58,7 @@ Link
    -  `github repository <https://github.com/libgdx/libgdx>`_
    -  `libgdx API <http://libgdx.badlogicgames.com/nightlies/docs/api/overview-summary.html>`_
    -  `Wiki <http://code.google.com/p/libgdx/wiki/TableOfContents>`_
-   -  `Androidゲームプログラミング A to Z <http://www.impressjapan.jp/books/3113>`_\ (`amazon <http://www.amazon.co.jp/o/ASIN/4844331132/tirnejp-22>`_): `Beginning Android Games <http://www.apress.com/9781430230427>`_\ の日本語訳版。良書。ただし本家の方は\ `2nd Edition <http://www.apress.com/9781430246770>`_\ が出てるが日本語訳版は初版ベース。
+   -  `Androidゲームプログラミング A to Z <http://www.impressjapan.jp/books/3113>`_\ (`amazon <http://www.amazon.co.jp/o/ASIN/4844331132/tirnejp-22>`_): `Beginning Android Games <http://www.apress.com/9781430230427>`_\ (LibGDXのメンテナの人が著者)の日本語訳版。良書。ただし本家の方は\ `2nd Edition <http://www.apress.com/9781430246770>`_\ が出てるが日本語訳版は初版ベース。
    -  `libgdxメモ <http://doc.tir.ne.jp/devel/clan/libgdx>`_: ayamadaがメモしたlibgdxのノウハウ集。
 
 -  `Android <http://developer.android.com/>`_
@@ -69,7 +70,7 @@ Link
    -  `reference <http://alexander-yakushev.github.com/neko/>`_
    -  `Clojure Development on Android <http://clojure-android.blogspot.com/>`_: nekoのメンテナの人の解説ブログ。
 
--  `launch4j <http://launch4j.sourceforge.net/>`_
+-  `launch4j <http://launch4j.sourceforge.net/>`_: javaアプリをwindowsのexe形式にしてくれるアプリ。ただしexe形式にしても実行にはjavaインストールが必須。launch4jでのexe生成自体は非windows環境でも動く。
 
 -  `lein-droid <https://github.com/clojure-android/lein-droid>`_: leinでandroidアプリを生成する為のleinプラグイン。開発中はapkにnREPLサーバ機能を自動で組み込んで、android実機の外からプロセスにREPL接続できるようにする機能あり。
 
