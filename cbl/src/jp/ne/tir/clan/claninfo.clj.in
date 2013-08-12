@@ -5,10 +5,9 @@
   ;; @AC_MSG_4@
   ;; @AC_MSG_5@
   ;; @AC_MSG_6@
-  (:use
-    [clj-time.local :only [local-now]]
-    [clj-time.format :only [unparse formatter-local]]
-    ))
+  (:import [java.util Date]
+           [java.text SimpleDateFormat])
+  )
 
 ;; コンパイル時に値を固定する為のマクロ。必要なら適切にquoteした結果を返す事
 ;; (def a (eager (str "aa" "bb"))) => (def a "aabb")
@@ -20,9 +19,8 @@
   ;; TODO: must be include more information
   (eager (str (System/currentTimeMillis))))
 (def ^:const build-date
-  ;; http://docs.oracle.com/javase/6/docs/api/java/text/SimpleDateFormat.html
-  (eager
-    (unparse (formatter-local "yyyy/MM/dd HH:mm:ss z") (local-now))))
+  (eager (str (.format (SimpleDateFormat. "yyyy/MM/dd HH:mm:ss z")
+                       (Date. (System/currentTimeMillis))))))
 (def ^:const build-env "@BUILD_ENV@")
 (def ^:const build-javac "@BUILD_JAVAC@")
 (def ^:const build-target ; (or :desktop :android ...)

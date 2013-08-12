@@ -204,8 +204,6 @@ release-exe-if-exists:
 
 
 
-# TODO: $(ADB) の有効チェックを追加。できれば既存の release-apk-if-exists 等を汎用化し、makeターゲット化して再利用する？しかしそれだとignore動作にはできないような…もう少し考える
-
 .droid-build-done: .dep-libgdx-done .layout-done
 	$(MAKE) ta add-lib-to-resources
 	export CLAN_TARGET=android CLAN_DEBUG=1 && cd android && $(LEIN) with-profile devpack droid build

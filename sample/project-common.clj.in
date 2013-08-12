@@ -13,7 +13,8 @@
 (def dependencies-common
   `[
     [com.badlogic.gdx/gdx "@CLAN_LIBGDX_VERSION@"]
-    [clj-time/clj-time "0.5.1"]
+    ;[primitive-math "0.1.3"]
+    ;[clj-time/clj-time "0.5.1"]
     ])
 
 (def profiles-common
@@ -27,10 +28,7 @@
      ;:url "http://example.com/FIXME"
      ;:license {:name "Eclipse Public License"
      ;          :url "http://www.eclipse.org/legal/epl-v10.html"}
-     ;:min-lein-version "2.0.0"
-     ;:max-lein-version "2.0.0"
      :min-lein-version "2.1.0"
-     :max-lein-version "2.1.0"
      ;:jvm-opts ["-Duser.language=en"]
      ;:source-paths ["../clan/cbl/src" "src" "../src"]
      :java-source-paths ["../clan/cbl/src-java" "src-java" "../src-java" "gen"] ; "gen" for android
@@ -59,6 +57,10 @@
     `{
       :repl {
              :source-paths ["../clan/cbl/src" "src" "../src"]
+             ;; below is for lein-2.3.0
+             ;:repl-options {:init-ns @PROJECT_CAL_GENERATOR_CLASS@}
+             ;:dependencies [[clojure-complete/clojure-complete "0.2.3"]
+             ;               [org.clojure/tools.nrepl "0.2.3"]]
              }
       :devpack {
                 :source-paths ["../clan/cbl/src" "src"] ; "../src" はコンパイルしたくないので、jar起動時に明示的に渡す
@@ -73,8 +75,8 @@
                 :uberjar-name "@PROJECT_ARTIFACTID@.jar"
                 :global-vars {*warn-on-reflection* false
                               *assert* false}
-                ;; > Put a regex here to compile all namespaces whose names match.
                 :omit-source true
+                ;; Put a regex here to compile all namespaces whose names match.
                 ;:jar-exclusions [#"(?:^|/).svn/"]
                 ;:uberjar-exclusions [#"META-INF/DUMMY.SF"]
                 }
@@ -91,11 +93,11 @@
 ;;; ----------------------------------------------------------------
 ;;; for android
 
+(declare get-resource-jars-paths)
+
 (def dependencies-android
   `[~@dependencies-common
-    ;[org.clojure-android/clojure "@CLAN_CLOJURE_VERSION@"]
-    [org.clojure-android/clojure "1.5.1-jb"]
-    ;[org.clojure-android/clojure "1.5.1-SNAPSHOT"]
+    [org.clojure-android/clojure "@CLAN_CLOJURE_VERSION@@CLAN_CLOJURE_VERSION_ANDROID_SUFFIX@"]
     [com.badlogic.gdx/gdx-backend-android "@CLAN_LIBGDX_VERSION@"]
     ;[com.google.android/android "@CLAN_ANDROID_VERSION@" :scope "system"]
     ;[org.codehaus.jsr166-mirror/jsr166y "1.7.0"] ; see http://tnoda-clojure.tumblr.com/post/48710608069/classnotfoundexception-jsr166y-forkjoinpool
@@ -136,40 +138,6 @@
                 }
       }))
 
-(use '[leiningen.core [classpath :only [resolve-dependencies]]])
-(defn get-resource-jars-paths [dependencies]
-  (let [filtered-deps (filter
-                        (fn [entry]
-                          ;; entry = ;[com.google.android/android "@CLAN_ANDROID_VERSION@" :scope "system"]
-                          (let [package (nth entry 0)
-                                version (nth entry 1)
-                                scope (:scope (apply array-map
-                                                     (rest (rest entry))))]
-                            ;; remove by scope
-                            (or
-                              (nil? scope)
-                              (= scope "compile"))))
-                        dependencies)
-        _ (when (System/getenv "DEBUG")
-            (prn :included-deps filtered-deps))
-        all-paths (map str
-                       (resolve-dependencies
-                         :dependencies {:dependencies filtered-deps}))
-        ;; all-paths may include dup entries
-        uniq-paths (seq (set all-paths))
-        result (remove
-                 ;; remove by package (these are include by lein-droid)
-                 #(or 
-                    (re-find #"[/\\]neko[/\\]neko[/\\]" %)
-                    (re-find #"[/\\]org[/\\]clojure[/\\]clojure[/\\]" %)
-                    (re-find #"[/\\]org[/\\]clojure-android[/\\]clojure[/\\]" %)
-                    (re-find #"[/\\]android[/\\]clojure[/\\]" %))
-                 uniq-paths)
-        _ (when (System/getenv "DEBUG")
-            (prn :resource-jars-paths result))
-        ]
-    result))
-
 ;; this macro is expanded in android/project.clj
 (defmacro defproject-android []
   `(defproject-common
@@ -205,5 +173,39 @@
      :install-releases? false
      ))
 
+
+(use '[leiningen.core [classpath :only [resolve-dependencies]]])
+(defn get-resource-jars-paths [dependencies]
+  (let [filtered-deps (filter
+                        (fn [entry]
+                          ;; entry = ;[com.google.android/android "@CLAN_ANDROID_VERSION@" :scope "system"]
+                          (let [package (nth entry 0)
+                                version (nth entry 1)
+                                scope (:scope (apply array-map
+                                                     (rest (rest entry))))]
+                            ;; remove by scope
+                            (or
+                              (nil? scope)
+                              (= scope "compile"))))
+                        dependencies)
+        _ (when (System/getenv "DEBUG")
+            (prn :included-deps filtered-deps))
+        all-paths (map str
+                       (resolve-dependencies
+                         :dependencies {:dependencies filtered-deps}))
+        ;; all-paths may include dup entries
+        uniq-paths (seq (set all-paths))
+        result (remove
+                 ;; remove by package (these are include by lein-droid)
+                 #(or 
+                    (re-find #"[/\\]neko[/\\]neko[/\\]" %)
+                    (re-find #"[/\\]org[/\\]clojure[/\\]clojure[/\\]" %)
+                    (re-find #"[/\\]org[/\\]clojure-android[/\\]clojure[/\\]" %)
+                    (re-find #"[/\\]android[/\\]clojure[/\\]" %))
+                 uniq-paths)
+        _ (when (System/getenv "DEBUG")
+            (prn :resource-jars-paths result))
+        ]
+    result))
 
 ;; 日本語コードはutf-8で

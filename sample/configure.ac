@@ -58,6 +58,7 @@ AC_SUBST(CLAN_ARTIFACTID)
 AC_SUBST(CLAN_VERSION)
 AC_SUBST(CLAN_NAME)
 AC_SUBST(CLAN_CLOJURE_VERSION)
+AC_SUBST(CLAN_CLOJURE_VERSION_ANDROID_SUFFIX)
 AC_SUBST(CLAN_LIBGDX_VERSION)
 AC_SUBST(CLAN_ANDROID_VERSION)
 AC_SUBST(CLAN_NEKO_VERSION)
@@ -113,6 +114,7 @@ dnl ----------------------------------------------------------------
 dnl for project-common.clj.in
 dnl    /d/prog/Android/android-sdk/platform-tools/adb
 dnl => d:/prog/Android/android-sdk
+dnl TODO: ドライブ名置換はwindowsの時のみ行うようにしたい
 dnl TODO: canonical-path的な物を使って正規化したいところ
 ANDROID_SDK_PATH=`echo ${ADB_PATH} | ${PERL_PATH} -pe '$_ =~ s#^/([A-Za-z])/#$1:/#; $_ =~ s#/platform-tools/adb.*$##'`
 AC_SUBST(ANDROID_SDK_PATH)

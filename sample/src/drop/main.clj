@@ -11,7 +11,7 @@
                                    TextureAtlas TextureAtlas$AtlasRegion
                                    TextureRegion
                                    Sprite NinePatch)
-    (com.badlogic.gdx.math Vector2 Vector3 Rectangle Matrix4)
+    (com.badlogic.gdx.math Vector2 Vector3 Rectangle Matrix4 MathUtils)
     (com.badlogic.gdx.utils TimeUtils Disposable)
     (java.lang.reflect Method)
     (java.util.concurrent RejectedExecutionException)
@@ -50,7 +50,7 @@
    }) ; :star has (.findRegion ta "star"), /assets/drop/star.wav
 (def item-spawn-interval 100000000000)
 (def star-spawn-interval 10000000000)
-(def console-update-interval-nsec 500000000)
+(def console-update-interval-nsec 2000000000)
 
 
 ;;; ----------------------------------------------------------------
@@ -113,6 +113,26 @@
 
 (defmacro with-spritebatch [batch & bodies]
   `(let [^SpriteBatch batch# ~batch] (.begin batch#) ~@bodies (.end batch#)))
+
+;; asn = auto-sequence-number
+(defmacro defasn [mname origin]
+  (let [a-counter-var (gensym mname)]
+    `(do
+       (def ~a-counter-var (atom ~origin))
+       (defmacro ~mname []
+         (let [orig# @~a-counter-var]
+           (swap! ~a-counter-var inc)
+           orig#)))))
+;; asdefs = auto-sequence def(s)
+(defmacro defasdefs [& defs]
+  (let [gen-asn (gensym 'defasdefs)
+        expanded-defs (map
+                        (fn [sym]
+                          `(def ^:const ~sym (~gen-asn)))
+                        defs)]
+    `(do
+       (defasn ~gen-asn 0)
+       ~@expanded-defs)))
 
 ;;; ----------------------------------------------------------------
 ;;; *** AOLA2: Auto Object in LibGDX's Application #2 ***
@@ -271,7 +291,9 @@
     (assert (number? e-threshold))
     `(defaola2 ~name-with-meta
        :create #(doto (long-array 3) (aset-long 2 ~e-threshold))
-       :sense-body (let [now# (TimeUtils/nanoTime)
+       :sense-body (let [
+                         now# (TimeUtils/nanoTime)
+                         ;now# (* (TimeUtils/millis) 1000000)
                          old-nanotime# (get-nanotime ~name-with-meta)
                          new-delta# (min (- now# old-nanotime#)
                                          (aget ~name-with-meta 2))]
@@ -401,61 +423,111 @@
   :resize #(reset! a-star-initial-dist (/ (+ %1 %2) 2))
   )
 
-(definline distance->transparency [dist] `(Math/atan (/ ~dist 100)))
-(definline star-spawn []
-  `(let [tp# (+ 0.3 (rand))]
-     {:angle (rand 360)
-      :distance @a-star-initial-dist
-      :tp-orig tp#
-      :tp-cur (if (< 1 tp#) 1 tp#)
-      :speed-level (+ 0.98 (rand 0.01))}))
+(defaola2 ^Vector2 tmp-v2
+  :create #(Vector2.))
+
+(def ^:const star-array-max 128)
+(def ^:const bs-idx-x 0)
+(def ^:const bs-idx-y 1)
+(def ^:const bs-idx-tp-cur 2)
+(def ^:const bs-idx-angle 3)
+(def ^:const bs-idx-dist 4)
+(def ^:const bs-idx-speed 5)
+(def ^:const bs-idx-tp 6)
+(def ^:const bs-idx-max 7)
+
+;(definline distance->transparency [dist] `(Math/atan (/ ~dist 100)))
+(definline distance->transparency [dist] `(MathUtils/atan2 ~dist 100))
+(definline star-spawn [^floats star]
+  `(let [result# ~star
+         tp# (+ 0.3 (rand))
+         tp-cur# (if (< 1 tp#) 1 tp#)
+         angle# (rand 360)
+         dist# @a-star-initial-dist
+         speed# (+ 0.98 (rand 0.01))
+         v# (doto tmp-v2
+              (.set 1 0)
+              (.setAngle angle#)
+              (.mul (float dist#)))
+         x# (+ (.x screen-center) (.x v#))
+         y# (+ (.y screen-center) (.y v#))
+         ]
+     (aset-float result# bs-idx-x x#)
+     (aset-float result# bs-idx-y y#)
+     (aset-float result# bs-idx-tp-cur tp-cur#)
+     (aset-float result# bs-idx-angle angle#)
+     (aset-float result# bs-idx-dist dist#)
+     (aset-float result# bs-idx-speed speed#)
+     (aset-float result# bs-idx-tp tp#)
+     result#))
 
 (defaola2 a-background-star-next-spawn-nsec
   :create #(atom 0))
 
-;; TODO: ここのreduceが重いようだ、a-background-starsはjava arrayにして、副作用更新する事を検討する(消滅はnil代入、生成はnilのところに適当に追加)
-(defaola2 a-background-stars
-  :create #(atom nil)
+(def ^"[I" a-last-empty-idx (int-array 1))
+
+(defaola2 ^"[Ljava.lang.Object;" a-background-stars
+  :create #(object-array (take star-array-max
+                               (repeatedly (fn [] (float-array bs-idx-max)))))
   :draw-body (do
-               (do-each
-                 @a-background-stars
-                 [{angle :angle, dist :distance, tp :tp-cur}]
-                 (let [v (doto (Vector2. 1 0)
-                           (.setAngle angle)
-                           (.mul (float dist)))
-                       x (+ (.x screen-center) (.x v))
-                       y (+ (.y screen-center) (.y v))
-                       ]
-                   (.setColor the-batch 1 1 1 tp)
-                   (.draw the-batch star-tr x y)))
+               (dotimes [i star-array-max]
+                 (let [^floats star (aget a-background-stars i)
+                       x (aget star bs-idx-x)
+                       y (aget star bs-idx-y)
+                       tp-cur (aget star bs-idx-tp-cur)]
+                   (when-not (zero? tp-cur)
+                     (.setColor the-batch 1 1 1 tp-cur)
+                     (.draw the-batch star-tr x y))))
                (.setColor the-batch 1 1 1 1))
   :update-body (let [interval (/ (get-nanodelta the-nc) 10000000)
-                     now (get-nanotime the-nc)
-                     updated-stars (reduce
-                                     (fn [coll star]
-                                       (let [{angle :angle
-                                              dist :distance
-                                              tp :tp-orig
-                                              s-l :speed-level} star
-                                             new-dist (* dist (Math/pow s-l interval))
-                                             d-tp (distance->transparency dist)
-                                             tp-merge (* tp d-tp)
-                                             tp-lpf (min 1 tp-merge)
-                                             ]
-                                         (if (< tp-lpf 0.1)
-                                           coll
-                                           (conj coll
-                                                 (merge star
-                                                        {:distance new-dist
-                                                         :tp-cur tp-lpf})))))
-                                     nil
-                                     @a-background-stars)
-                     ]
-                 (reset! a-background-stars updated-stars)
-                 (when (< @a-background-star-next-spawn-nsec now)
-                   (reset! a-background-star-next-spawn-nsec
-                           (+ now (rand (/ star-spawn-interval speed-level))))
-                   (swap! a-background-stars conj (star-spawn))))
+                     now (get-nanotime the-nc)]
+                 (aset-int a-last-empty-idx 0 -1)
+                 (dotimes [i star-array-max]
+                   (let [^floats star (aget a-background-stars i)
+                         tp-cur (aget star bs-idx-tp-cur)]
+                     (if (zero? tp-cur)
+                       (aset-int a-last-empty-idx 0 i)
+                       (let [angle (aget star bs-idx-angle)
+                             dist (aget star bs-idx-dist)
+                             speed (aget star bs-idx-speed)
+                             tp (aget star bs-idx-tp)
+
+                             ;new-dist (* dist (Math/pow speed interval)) ; It cause GC
+                             speed-factor (float (/ speed-level (float 100)))
+                             dist-factor (- 1 (* (- 1 speed) speed-factor))
+                             new-dist (* dist dist-factor)
+                             d-tp (distance->transparency dist)
+                             tp-merge (* tp d-tp)
+                             tp-lpf (min 1 tp-merge)
+
+                             v (doto tmp-v2
+                                 (.set 1 0)
+                                 (.setAngle angle)
+                                 (.mul (float new-dist)))
+                             new-x (+ (.x screen-center) (.x v))
+                             new-y (+ (.y screen-center) (.y v))
+                             ]
+                         (if (< tp-lpf 0.1)
+                           (do
+                             (aset-float star bs-idx-tp-cur 0)
+                             (aset-int a-last-empty-idx 0 i))
+                           (do
+                             (aset-float star bs-idx-x new-x)
+                             (aset-float star bs-idx-y new-y)
+                             (aset-float star bs-idx-tp-cur tp-lpf)
+                             ;(aset-float star bs-idx-angle angle)
+                             (aset-float star bs-idx-dist new-dist)
+                             ;(aset-float star bs-idx-speed speed)
+                             ;(aset-float star bs-idx-tp tp)
+                             ))))))
+                 (let [last-empty-idx (aget a-last-empty-idx 0)]
+                   (when (and
+                           (< @a-background-star-next-spawn-nsec now)
+                           (not (= -1 last-empty-idx)))
+                     (reset! a-background-star-next-spawn-nsec
+                             (+ now (rand (/ star-spawn-interval speed-level))))
+                     (star-spawn (aget a-background-stars last-empty-idx))))
+                 )
   )
 
 
@@ -533,6 +605,11 @@
                           (fn [[k desc]]
                             {k (.findRegion the-ta (name k))})
                           item-table)))
+(defaola2 items-sprite-table
+  :create #(apply merge (map
+                          (fn [[k ^TextureRegion tr]]
+                            {k (Sprite. tr)})
+                          items-tr-table)))
 (defaola2 items-se-table
   :create #(apply merge (map
                           (fn [[k desc]]
@@ -561,17 +638,24 @@
     (.set items-delete-screen-l-b-r x y z)
     (reset! a-items-delete-screen-width (+ z x)))))
 
+(def ^:const item-array-max 128)
+(defasdefs i-idx-id i-idx-sprite i-idx-speed i-idx-cd i-idx-max)
 
 (declare item-spawn)
-(defaola2 a-items
-  :create #(atom nil)
+(defaola2 ^"[Ljava.lang.Object;" a-items
+  :create #(object-array
+             (take item-array-max
+                   (repeatedly
+                     (fn [] (object-array
+                              [nil (Sprite.) (Vector3.) (Rectangle.)])))))
   :draw-body (when @a-game-mode?
-               (do-each
-                 @a-items
-                 [{^Sprite sprite :sprite}]
-                 (.draw sprite the-batch)))
+               (dotimes [i item-array-max]
+                 (let [^"[Ljava.lang.Object;" item (aget a-items i)]
+                   (when (aget item i-idx-id)
+                     (.draw ^Sprite (aget item i-idx-sprite) the-batch)))))
   :update-body (when (and @a-dialog-nothing? @a-game-mode?)
-                 (let [delta (/ (get-nanodelta the-nc) 10000000)
+                 (aset-int a-last-empty-idx 0 -1)
+                 (let [delta (float (/ (get-nanodelta the-nc) 10000000))
                        now (get-nanotime the-nc)
                        next-timer @a-items-next-spawn-nsec
                        must-be-spawn? (< next-timer now)
@@ -579,85 +663,90 @@
                        item-delete-left (.x items-delete-screen-l-b-r)
                        item-delete-bottom (.y items-delete-screen-l-b-r)
                        item-delete-right (.z items-delete-screen-l-b-r)
-                       r1 (filter
-                            identity
-                            (map
-                              (fn [item]
-                                (let [{id :id
-                                       ^Sprite sprite :sprite
-                                       ^Vector3 speed :speed
-                                       ^Rectangle cd :cd} item
-                                      x-locate (.getX sprite)
-                                      y-locate (.getY sprite)
-                                      x-speed (.x speed)
-                                      y-speed (.y speed)
-                                      r-speed (.z speed)
-                                      ]
-                                  (cond
-                                    ;; item-collision
-                                    (.overlaps
-                                      player-hit-rect
-                                      cd) (do
-                                            ;; get-item
-                                            (inc-score! id)
-                                            (when-not volume-off?
-                                              (.play
-                                                ^Sound (id items-se-table)))
-                                            false)
-                                    ;; check item to leave
-                                    (< y-locate item-delete-bottom) false
-                                    (and
-                                      (< x-speed 0)
-                                      (< x-locate item-delete-left)) false
-                                    (and
-                                      (< 0 x-speed)
-                                      (< item-delete-right x-locate)) false
-                                    :else (let [delta-x (* delta x-speed)
-                                                delta-y (* delta y-speed)
-                                                delta-r (* delta r-speed)]
-                                            ;; update sprite and cd
-                                            (.setX sprite (+ x-locate delta-x))
-                                            (.setY sprite (+ y-locate delta-y))
-                                            (.rotate sprite delta-r)
-                                            (.setX cd (+ (.x cd) delta-x))
-                                            (.setY cd (+ (.y cd) delta-y))
-                                            item))))
-                              @a-items))
-                       r2 (if must-be-spawn? (cons (item-spawn) r1) r1)
                        ]
-                   (when must-be-spawn?
-                     (reset! a-items-next-spawn-nsec
-                             (+ now
-                                (rand (/ item-spawn-interval speed-level)))))
-                   (reset! a-items r2))))
+                   (dotimes [i item-array-max]
+                     (let [^"[Ljava.lang.Object;" item (aget a-items i)
+                           id (aget item i-idx-id)]
+                       (if-not id
+                         (aset-int a-last-empty-idx 0 i)
+                         (let [^Sprite sprite (aget item i-idx-sprite)
+                               ^Vector3 speed (aget item i-idx-speed)
+                               ^Rectangle cd (aget item i-idx-cd)
+                               x-locate (.getX sprite)
+                               y-locate (.getY sprite)
+                               x-speed (.x speed)
+                               y-speed (.y speed)
+                               r-speed (.z speed)
+                               ]
+                           (cond
+                             ;; item-collision
+                             (.overlaps
+                               player-hit-rect
+                               cd) (do
+                                     ;; get-item
+                                     (inc-score! id)
+                                     (when-not volume-off?
+                                       (.play
+                                         ^Sound (id items-se-table)))
+                                     (aset item i-idx-id nil))
+                             ;; check item to leave
+                             (< y-locate item-delete-bottom
+                                ) (aset item i-idx-id nil)
+                             (and
+                               (< x-speed 0)
+                               (< x-locate item-delete-left)
+                               ) (aset item i-idx-id nil)
+                             (and
+                               (< 0 x-speed)
+                               (< item-delete-right x-locate)
+                               ) (aset item i-idx-id nil)
+                             :else (let [delta-x (* delta x-speed speed-level)
+                                         delta-y (* delta y-speed speed-level)
+                                         delta-r (* delta r-speed speed-level)]
+                                     ;; update sprite and cd
+                                     (.setX sprite (+ x-locate delta-x))
+                                     (.setY sprite (+ y-locate delta-y))
+                                     (.rotate sprite delta-r)
+                                     (.setX cd (+ (.x cd) delta-x))
+                                     (.setY cd (+ (.y cd) delta-y))
+                                     ))))))
+                   (let [last-empty-idx (aget a-last-empty-idx 0)]
+                     (when (and must-be-spawn? (not (= -1 last-empty-idx)))
+                       (item-spawn (aget a-items last-empty-idx))
+                       (reset! a-items-next-spawn-nsec
+                               (+ (rand (/ item-spawn-interval speed-level))
+                                  now))))))
+  )
 
 
-(defn item-spawn []
+(defn item-spawn [^"[Ljava.lang.Object;" item]
   (let [[k desc] (rand-nth (seq item-table))
         screen-width (.x screen-size)
         screen-height (.y screen-size)
         x (- (* @a-items-delete-screen-width (rand)) (.x max-item-size))
         y screen-height
         a (rand 360)
-        s-x (+ 1 (rand -2))
-        s-y (+ -1 (rand -3))
-        s-a (+ 2 (rand -4))
-        speed (Vector3. s-x s-y s-a)
+        s-x (* 0.01 (+ 1 (rand -2)))
+        s-y (* 0.01 (+ -1 (rand -3)))
+        s-a (* 0.01 (+ 2 (rand -4)))
         ^TextureRegion tr (k items-tr-table)
-        ^Sprite sprite (Sprite. tr)
+        ^Sprite sprite (aget item i-idx-sprite)
         cd-w (float (* 0.75 (.getRegionWidth tr)))
         cd-h (float (* 0.5 (.getRegionHeight tr)))
         cd-x (float (+ x (/ (- (.getRegionWidth tr) cd-w) 2)))
         cd-y (float (+ y (/ (- (.getRegionHeight tr) cd-h) 2)))
-        cd (Rectangle. cd-x cd-y cd-w cd-h)]
+        ]
+    ;; update id
+    (aset item i-idx-id k)
     ;; update sprite
+    (.set sprite ^Sprite (k items-sprite-table))
     (.setPosition sprite x y)
     (.setRotation sprite a)
-    {:id k
-     :sprite sprite
-     :speed speed
-     :cd cd
-     }))
+    ;; update speed
+    (.set ^Vector3 (aget item i-idx-speed) s-x s-y s-a)
+    ;; update cd
+    (.set ^Rectangle (aget item i-idx-cd) cd-x cd-y cd-w cd-h)
+    item))
 
 
 ;;; ----------------------------------------------------------------
@@ -940,6 +1029,7 @@
                    (update-cache!)))
   )
 
+;;; TODO: reduce GC
 (defn construct-simple-console-str []
   (str
     (if-release "RELEASE: " "DEBUG: ") claninfo/project-version "\n"
@@ -952,10 +1042,10 @@
       (str "SDK: " (.. Gdx app (getVersion)) "\n"))
     "FPS: " (.. Gdx graphics (getFramesPerSecond)) "\n"
     "MEM: " (format "%09d" (.. Gdx app (getNativeHeap))) "\n"
-    (purge-code-when-release
-      (str "ITEMS: " (count @a-items) "\n"))
-    (purge-code-when-release
-      (str "BG_STARS: " (count @a-background-stars) "\n"))
+    ;(purge-code-when-release
+    ;  (str "ITEMS: " (count @a-items) "\n"))
+    ;(purge-code-when-release
+    ;  (str "BG_STARS: " (count @a-background-stars) "\n"))
     ))
 
 (defn update-cache! []
@@ -999,6 +1089,8 @@
 
 
 (defn main-pause []
+  ;(purge-code-when-release
+  ;  (prn (str "FPS: " (.. Gdx graphics (getFramesPerSecond)))))
   (save-data!)
   (aola2-handler-pause!))
 
@@ -1049,4 +1141,3 @@
 ;;; ----------------------------------------------------------------
 
 
-;; 日本語コードはutf-8
