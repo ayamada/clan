@@ -11,6 +11,6 @@
   :java-source-paths []
   :test-paths []
   :resource-paths []
-  :plugins [[lein-localrepo "0.4.1"]]
+  :plugins [[lein-localrepo "0.5.2"]]
   )
 
