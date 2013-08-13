@@ -2,7 +2,7 @@
 	* release 0.1.0: まだリリース準備中 TODO: このリリース文の英語化
 	  - configure.ac定義項目の全体的な見直し
 	  - ディレクトリ構造を全体的に変更
-	  - mavenを廃止し、leinを使用するようにした
+	  - mavenを廃止し、leinを使用するようにした。lein-2.3.1以上が必要
 	  - BootLoader.javaからConfig.javaを分離、別に設定を可能にする
 	  - Info.javaの廃止、claninfo.cljおよびclanutil.cljの提供
 	  - gdx-tools.jarを利用可能に
