@@ -1,8 +1,6 @@
-|Logo image|
+|Build Status| |Logo image|
 
 .. |Logo image| image:: https://github.com/ayamada/clan/raw/master/doc/img/logo_b.png
-
-|Build Status|
 
 .. |Build Status| image:: https://travis-ci.org/ayamada/clan.png?branch=master
    :target: https://travis-ci.org/ayamada/clan
