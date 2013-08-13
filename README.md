@@ -27,7 +27,7 @@ androidアプリだけではなく、windowsとその他のデスクトップos�
 ChangeLog
 ---------
 
-- <ChangeLog>
+- [ChangeLog](ChangeLog)
 
 Link
 ----
@@ -69,7 +69,7 @@ License
 
 CLAN have [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0).
 
-Which can be found in the file <LICENSE>.
+Which can be found in the file [LICENSE](LICENSE).
 
 Apps were built on CLAN
 -----------------------
