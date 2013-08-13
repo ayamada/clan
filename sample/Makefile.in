@@ -210,7 +210,7 @@ release-exe-if-exists:
 	touch .droid-build-done
 
 .droid-apk-done: .droid-build-done
-	export CLAN_TARGET=android CLAN_DEBUG=1 CLAN_BUILD_APK=1 && cd android && $(LEIN) with-profile devpack,clan-sign droid apk
+	export CLAN_TARGET=android CLAN_DEBUG=1 CLAN_BUILD_APK=1 && cd android && $(LEIN) with-profile devpack droid apk
 	touch .droid-apk-done
 
 .droid-install-done: .droid-apk-done
