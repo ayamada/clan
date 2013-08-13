@@ -1,9 +1,12 @@
-|Build Status| |Logo image|
-
-.. |Logo image| image:: https://github.com/ayamada/clan/raw/master/doc/img/logo_b.png
+|Build Status|
 
 .. |Build Status| image:: https://travis-ci.org/ayamada/clan.png?branch=master
    :target: https://travis-ci.org/ayamada/clan
+
+|Logo image|
+
+.. |Logo image| image:: https://github.com/ayamada/clan/raw/master/doc/img/logo_b.png
+   :align: center
 
 
 CLAN : Clojure, LibGDX, Android, Neko application construct kit
