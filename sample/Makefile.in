@@ -85,7 +85,7 @@ tmp/libgdx/gdx.jar: $(LIBGDX_ZIP)
 
 .dep-libgdx-done: tmp/libgdx/gdx.jar
 	cd tmp/libgdx && for f in *.jar; do \
-		cd ../../clan/depinst && $(LEIN) localrepo install ../../tmp/libgdx/$$f com.badlogic.gdx/$${f%%.jar} $(CLAN_LIBGDX_VERSION) || break 0; \
+		cd ../../clan/depinst && ls -al ../../tmp/libgdx/$$f && $(LEIN) localrepo install ../../tmp/libgdx/$$f com.badlogic.gdx/$${f%%.jar} $(CLAN_LIBGDX_VERSION) || break 0; \
 	done
 	cd clan/depinst && $(LEIN) localrepo install ../../tmp/libgdx/extensions/gdx-tools/gdx-tools.jar com.badlogic.gdx/gdx-tools $(CLAN_LIBGDX_VERSION)
 	touch .dep-libgdx-done
