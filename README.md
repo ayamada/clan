@@ -1,12 +1,12 @@
-<div align="center"><img src="https://github.com/ayamada/clan/raw/master/doc/img/logo_b.png" /><br /><a href="https://travis-ci.org/ayamada/clan"><img src="https://travis-ci.org/ayamada/clan.png?branch=master" alt="Build Status" /></a></div>
+<div align="center"><img src="https://github.com/ayamada/clan/raw/master/doc/img/logo_b.png" /><br /><a href="https://travis-ci.org/ayamada/clan"><img src="https://travis-ci.org/ayamada/clan.png?branch=master" alt="Build Status" /></a><br /><strong>CLAN : Clojure, LibGDX, Android, Neko application construct kit</strong><br /><strong>CLAN : Clojure, LibGDX, Android, Neko アプリケーション構築キット</strong></div>
 
-# CLAN : Clojure, LibGDX, Android, Neko application construct kit <br /> CLAN : Clojure, LibGDX, Android, Neko アプリケーション構築キット
+# CLAN
 
 CLAN supply to an environment that construct application for Android using [libgdx](http://libgdx.badlogicgames.com/) by only clojure code. You must understand to [clojure](http://clojure.org/) and [libgdx](http://libgdx.badlogicgames.com/).
 
 It can construct application for not only Android but also Windows and other desktop OS at a time (but it need install java runtime to work).
 
-See document on <http://doc.tir.ne.jp/devel/clan> .
+See document on http://doc.tir.ne.jp/devel/clan .
 
 Version [0.1.0](https://github.com/ayamada/clan/tree/0.1.0) is latest, but not released yet.
 
@@ -18,7 +18,7 @@ Version [0.0.6](https://github.com/ayamada/clan/tree/0.0.6) is old stable(use ma
 
 androidアプリだけではなく、windowsとその他のデスクトップos向けアプリも 同時に構築できます(ただし実行にはjavaインストールが必要)。
 
-詳細は <http://doc.tir.ne.jp/devel/clan> のドキュメントを見てください。
+詳細は http://doc.tir.ne.jp/devel/clan のドキュメントを見てください。
 
 現在の最新版は [0.1.0](https://github.com/ayamada/clan/tree/0.1.0) ですが、まだ未リリース状態です。
 
@@ -80,13 +80,13 @@ I'm glad, if you made apps by CLAN, and inform that to [@rnkv(=ayamada)](https:/
 
 * * * * *
 
--   <http://vnctst.tir.jp/ja/games/driftcat_underworld.html>
+-   http://vnctst.tir.jp/ja/games/driftcat_underworld.html
 
     -   A short game that the cat want to return to home from empire of underworld. That were made by ayamada. (sorry, this app is required to read japanese.)
 
     -   猫を操作して地底帝国からの脱出を目指す、ぬるいRPGです。 ayamada作。
 
--   <http://vnctst.tir.jp/ja/games/space_drop.html>
+-   http://vnctst.tir.jp/ja/games/space_drop.html
 
     -   Packaged version of bundled sample app 'space drop'. That were made by ayamada. (sorry, this page written in japanese.)
 
