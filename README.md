@@ -1,10 +1,6 @@
-<div style="text-align:center !important"><img src="https://github.com/ayamada/clan/raw/master/doc/img/logo_b.png" /><br /><a href="https://travis-ci.org/ayamada/clan"><img src="https://travis-ci.org/ayamada/clan.png?branch=master" alt="Build Status" /></a>
+<div align="center"><img src="https://github.com/ayamada/clan/raw/master/doc/img/logo_b.png" /><br /><a href="https://travis-ci.org/ayamada/clan"><img src="https://travis-ci.org/ayamada/clan.png?branch=master" alt="Build Status" /></a></div>
 
-**CLAN : Clojure, LibGDX, Android, Neko application construct kit**
-
-**CLAN : Clojure, LibGDX, Android, Neko アプリケーション構築キット**
-
-</div>
+# CLAN : Clojure, LibGDX, Android, Neko application construct kit <br /> CLAN : Clojure, LibGDX, Android, Neko アプリケーション構築キット
 
 CLAN supply to an environment that construct application for Android using [libgdx](http://libgdx.badlogicgames.com/) by only clojure code. You must understand to [clojure](http://clojure.org/) and [libgdx](http://libgdx.badlogicgames.com/).
 
@@ -29,12 +25,12 @@ androidアプリだけではなく、windowsとその他のデスクトップos�
 古い安定版(maven使用、leinなし)は [0.0.6](https://github.com/ayamada/clan/tree/0.0.6) です。
 
 ChangeLog
-=========
+---------
 
 - <ChangeLog>
 
 Link
-====
+----
 
 -   [Clojure](http://clojure.org/)
 
@@ -69,14 +65,14 @@ Link
 -   [clojurelibgdx](https://github.com/thomas-villagers/clojurelibgdx): 類似プロジェクト。
 
 License
-=======
+-------
 
 CLAN have [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0).
 
 Which can be found in the file <LICENSE>.
 
 Apps were built on CLAN
-=======================
+-----------------------
 
 I'm glad, if you made apps by CLAN, and inform that to [@rnkv(=ayamada)](https://twitter.com/rnkv). I will append to this list.
 
