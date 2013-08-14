@@ -162,7 +162,7 @@
                ;; :force-dex-optimize true
                ;; Options to pass to dx executable, former is for general
                ;; java-related options and later is for 'dex task'-specific options.
-               ;; :dex-opts ["-JXmx2048M"]
+               :dex-opts ["-JXmx2048M"]
                ;; Proguard config for "droid create-obfuscated-dex" task.
                ;; :proguard-conf-path "proguard.cfg"
                ;; :proguard-opts ["-printseeds"]
