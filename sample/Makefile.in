@@ -25,6 +25,7 @@ UNZIP   := @UNZIP_PATH@
 L4J     := @L4J_PATH@
 L4J_DIR = $(dir $(L4J))
 L4J_JAR = $(L4J_DIR)launch4j.jar
+HAS_ANDROID_SDK := @HAS_ANDROID_SDK@
 
 
 
@@ -249,7 +250,7 @@ release-apk: .dep-libgdx-done .layout-done
 	$(MAKE) android-clean
 
 release-apk-if-exists:
-	if [ x != x$(ADB) ]; then \
+	if [ x != x$(HAS_ANDROID_SDK) ]; then \
 		$(MAKE) release-apk; \
 	fi
 	true
