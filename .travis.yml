@@ -5,8 +5,8 @@ script: test -e ../target/drop.jar && test -e ../android/target/drop-debug.apk &
 lein: lein2
 jdk:
   - openjdk6
-  - openjdk7
-  - oraclejdk7
+  # - openjdk7
+  # - oraclejdk7
 before_install:
   # came from http://shunirr.hatenablog.jp/entry/2013/04/02/141846
   - sudo apt-get update -qq
@@ -18,4 +18,4 @@ before_install:
   - export ANDROID_HOME=`pwd`/android-sdk-linux
   - export PATH=${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:${PATH}
   - android list sdk --extended -a
-  - android update sdk --no-ui --force --filter tools,platform-tools,build-tools-17.0.1,android-9
+  - android update sdk --no-ui --force --filter tools,platform-tools,build-tools-17.0.1,android-9,android-17,extra-android-m2repository
