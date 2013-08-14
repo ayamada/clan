@@ -220,6 +220,9 @@ release-exe-if-exists:
 # lein droid build
 android-build: .droid-build-done
 
+# lein droid apk
+android-apk: .droid-apk-done
+
 # lein droid install
 android-install: .droid-install-done
 
