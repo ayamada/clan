@@ -12,10 +12,10 @@ before_install:
   - sudo apt-get update -qq
   - if [ `uname -m` = x86_64 ]; then sudo apt-get install -qq --force-yes libgd2-xpm ia32-libs ia32-libs-multiarch; fi
   # http://developer.android.com/sdk/index.html
-  - wget http://dl.google.com/android/android-sdk_r22.0.5-linux.tgz
-  - tar xvzf android-sdk_r22.0.5-linux.tgz
+  - export ANDROID_SDK_VERSION=r21.1
+  - wget http://dl.google.com/android/android-sdk_${ANDROID_SDK_VERSION}-linux.tgz
+  - tar xvzf android-sdk_${ANDROID_SDK_VERSION}-linux.tgz
   - export ANDROID_HOME=`pwd`/android-sdk-linux
   - export PATH=${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:${PATH}
   - android list sdk --extended -a
-  - yes | android update sdk --no-ui --force --filter tools,platform-tools,build-tools-17.0.1,android-9
-  - ls ${ANDROID_HOME}/platforms
+  - android update sdk --no-ui --force --filter tools,platform-tools,build-tools-17.0.1,android-9
