@@ -19,4 +19,4 @@ before_install:
   - export ANDROID_HOME=`pwd`/android-sdk-linux
   - export PATH=${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:${PATH}
   - android list sdk --extended -a
-  - android update sdk --no-ui --force --filter tools,platform-tools,build-tools-17.0.0,android-18,android-10,extra-android-m2repository,extra-android-support
+  - android update sdk --no-ui --force --filter tools,platform-tools,build-tools-17.0.0,android-18,android-17,android-10,extra-android-m2repository,extra-android-support
