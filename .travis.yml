@@ -8,15 +8,14 @@ jdk:
   - openjdk7
   - oraclejdk7
 before_install:
-  # came from http://d.hatena.ne.jp/ksk_kbys/20130311/1363007825
-  - sudo apt-get update
-  - sudo apt-get install -qq --force-yes libgd2-xpm ia32-libs ia32-libs-multiarch
+  # came from http://shunirr.hatenablog.jp/entry/2013/04/02/141846
+  - sudo apt-get update -qq
+  - if [ `uname -m` = x86_64 ]; then sudo apt-get install -qq --force-yes libgd2-xpm ia32-libs ia32-libs-multiarch; fi
   # http://developer.android.com/sdk/index.html
   - wget http://dl.google.com/android/android-sdk_r22.0.5-linux.tgz
   - tar xvzf android-sdk_r22.0.5-linux.tgz
-  - ls
   - export ANDROID_HOME=`pwd`/android-sdk-linux
-  - export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools
-  - android list sdk
-  - android update sdk --no-ui --force
+  - export PATH=${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:${PATH}
+    #- android list sdk
+  - android update sdk --filter platform-tools,android-9 --no-ui --force
   - ls ${ANDROID_HOME}/platforms
