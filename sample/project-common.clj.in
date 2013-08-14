@@ -148,7 +148,7 @@
      ;:resource-paths ["target/gdx-res"]
      :android {
                :sdk-path "@ANDROID_SDK_PATH@"
-               :target-version "18"
+               :target-version "17"
                :min-version "10"
                :aot-exclude-ns ["clojure.parallel" "clojure.core.reducers"]
                :assets-path "target/resources/assets"
