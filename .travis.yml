@@ -7,6 +7,7 @@ jdk:
   - openjdk6
   # - openjdk7
   # - oraclejdk7
+  # TODO: enable Java 7 and only build apk with Java 6, without Java 7
 before_install:
   # came from http://shunirr.hatenablog.jp/entry/2013/04/02/141846
   - sudo apt-get update -qq
