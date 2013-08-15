@@ -10,7 +10,8 @@ install:
   - cd clan
 script:
   - test -e ../target/drop.jar
-  - test -e ../android/target/drop-debug.apk
+  - if (javac -version 2>&1 | grep '^javac 1\.6'); then test -e ../android/target/drop-debug.apk; fi
+  # TODO: must be write test
 jdk:
   - openjdk6
   - openjdk7
