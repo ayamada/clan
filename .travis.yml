@@ -17,6 +17,7 @@ jdk:
   - openjdk7
   - oraclejdk7
 before_install:
+  - lein2 run -m clojure.main/main -e '(System/getProperties)'
   - if (javac -version 2>&1 | grep '^javac 1\.6'); then
   # came from http://shunirr.hatenablog.jp/entry/2013/04/02/141846
   - sudo apt-get update -qq
