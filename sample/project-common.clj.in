@@ -211,7 +211,7 @@
 
 (defn estimate-JXmx [& [use-mem]]
   ;; It returns string like "-JXmx4096M"
-  ;; It demend on OS's bits and amount of physical memory
+  ;; It depend on OS's bits and amount of physical memory
   ;; - At least 1024 on 32bit OS
   ;; - At least 2048 on 64bit OS
   (let [minimum-mem (if (= "64" (System/getProperty "sun.arch.data.model"))
