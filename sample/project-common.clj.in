@@ -92,7 +92,7 @@
 ;;; ----------------------------------------------------------------
 ;;; for android
 
-(declare get-resource-jars-paths)
+(declare get-resource-jars-paths estimate-JXmx)
 
 (def dependencies-android
   `[~@dependencies-common
@@ -162,7 +162,9 @@
                ;; :force-dex-optimize true
                ;; Options to pass to dx executable, former is for general
                ;; java-related options and later is for 'dex task'-specific options.
-               :dex-opts ["-JXmx2048M"]
+               ;; :dex-opts ["-JXmx4096M"]
+               ;:dex-opts [~(estimate-JXmx 1280)]
+               :dex-opts [~(estimate-JXmx)]
                ;; Proguard config for "droid create-obfuscated-dex" task.
                ;; :proguard-conf-path "proguard.cfg"
                ;; :proguard-opts ["-printseeds"]
@@ -206,3 +208,19 @@
             (prn :resource-jars-paths result))
         ]
     result))
+
+(defn estimate-JXmx [& [use-mem]]
+  ;; It returns string like "-JXmx4096M"
+  ;; It demend on OS's bits and amount of physical memory
+  ;; - At least 1024 on 32bit OS
+  ;; - At least 2048 on 64bit OS
+  (let [minimum-mem (if (= "64" (System/getenv "sun.arch.data.model"))
+                      2048
+                      1024) 
+        maximum-mem 4096
+        physical-mem-half nil ; TODO: get from OS (must be portable, but it is very hard)
+        target-mem (or use-mem physical-mem-half 0)
+        result (int (min maximum-mem (max minimum-mem target-mem)))
+        ]
+    (str "-JXmx" result "M")))
+
