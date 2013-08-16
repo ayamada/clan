@@ -6,7 +6,7 @@ install:
   - autoconf
   - ./configure
   - make release-jar
-  - if (javac -version 2>&1 | grep '^javac 1\.6'); then make android-apk; fi
+  - if (javac -version 2>&1 | grep '^javac 1\.6'); then DEBUG=1 make android-apk; fi
   - cd clan
 script:
   - test -e ../target/drop.jar

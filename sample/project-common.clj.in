@@ -214,7 +214,7 @@
   ;; It demend on OS's bits and amount of physical memory
   ;; - At least 1024 on 32bit OS
   ;; - At least 2048 on 64bit OS
-  (let [minimum-mem (if (= "64" (System/getenv "sun.arch.data.model"))
+  (let [minimum-mem (if (= "64" (System/getProperty "sun.arch.data.model"))
                       2048
                       1024) 
         maximum-mem 4096
