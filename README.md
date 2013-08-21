@@ -8,7 +8,7 @@ It can construct application for not only Android but also Windows and other des
 
 See document on http://doc.tir.ne.jp/devel/clan .
 
-Version [0.1.0](https://github.com/ayamada/clan/tree/0.1.0) is latest, but not released yet.
+Version [0.1.0-PREVIEW3](https://github.com/ayamada/clan/tree/0.1.0-PREVIEW3) is latest, but not released yet.
 
 Version [0.0.6](https://github.com/ayamada/clan/tree/0.0.6) is old stable(use maven, without lein).
 
@@ -20,7 +20,7 @@ androidアプリだけではなく、windowsとその他のデスクトップos�
 
 詳細は http://doc.tir.ne.jp/devel/clan のドキュメントを見てください。
 
-現在の最新版は [0.1.0](https://github.com/ayamada/clan/tree/0.1.0) ですが、まだ未リリース状態です。
+現在の最新版は [0.1.0-PREVIEW3](https://github.com/ayamada/clan/tree/0.1.0-PREVIEW3) ですが、まだ未リリース状態です。
 
 古い安定版(maven使用、leinなし)は [0.0.6](https://github.com/ayamada/clan/tree/0.0.6) です。
 
