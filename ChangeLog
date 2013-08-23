@@ -1,10 +1,8 @@
 2013-XX-XX  ayamada
-	* release 0.1.0-PREVIEW3: お試し版
+	* release 0.1.0-PREVIEW4: お試し版
 	  - TODO: このリリース文の英語化
-	  - lein-droid-0.2.0の正式リリース待ち(現在はSNAPSHOT版を指定)
-	    - 現在のところ、make release-apk時にsign用の鍵の設定情報が
-	      渡らないという問題があります。
-	      clojars.orgのlein-droidの次の更新によって直る予定です。
+	  - bump version of lein-droid to 0.2.0-beta2
+	  - bump version of neko to 3.0.0-beta5
 	  - Travis CIに登録
 	  - configure.ac定義項目の全体的な見直し
 	  - ディレクトリ構造を全体的に変更
