@@ -105,7 +105,7 @@ AS_IF(test x"$WGET_PATH" = x, AC_MSG_ERROR([wget not found]))
 AC_PATH_PROG([UNZIP_PATH], [unzip])
 AS_IF(test x"$UNZIP_PATH" = x, AC_MSG_ERROR([unzip not found]))
 AC_PATH_PROG([PERL_PATH], [perl])
-dnl AS_IF(test x"$PERL_PATH" = x, AC_MSG_ERROR([perl not found]))
+AS_IF(test x"$PERL_PATH" = x, AC_MSG_ERROR([perl not found]))
 dnl AC_PATH_PROG([EXEWRAP_PATH], [exewrap])
 AC_PATH_PROGS([L4J_PATH], [launch4jc launch4j])
 dnl AS_IF(test x"$L4J_PATH" = x, AC_MSG_ERROR([launch4j not found]))
@@ -135,7 +135,7 @@ dnl Outputs
 dnl 自動生成ファイルの一覧を作成する
 IN_TARGET_DIRS="clan/cbl clan/depinst clan/tpack layout desktop android src src-java project-common.clj.in l4j"
 IN_TARGET_DIRS_EXCLUDE="desktop/assets"
-IN_FILES=`find ${IN_TARGET_DIRS} | grep '\.in$' | grep -v ${IN_TARGET_DIRS_EXCLUDE} | perl -ne 'chomp $_ && ($_ =~ s|^(.*)\.in$|$1|) && print "$_ "' && echo Makefile`
+IN_FILES=`find ${IN_TARGET_DIRS} | grep '\.in$' | grep -v ${IN_TARGET_DIRS_EXCLUDE} | ${PERL_PATH} -ne 'chomp $_ && ($_ =~ s|^(.*)\.in$|$1|) && print "$_ "' && echo Makefile`
 AC_GENERATED_FILES="autom4te.cache configure VERSION $IN_FILES"
 AC_SUBST(AC_GENERATED_FILES)
 
