@@ -1020,7 +1020,8 @@
 (declare update-cache!)
 
 (defaola2 ^BitmapFontCache simple-console-bfc
-  :create #(BitmapFontCache. the-font)
+  :create #(doto (BitmapFontCache. the-font)
+             (.setMultiLineText "" 0 0))
   :draw-body (when @a-game-mode? (.draw simple-console-bfc the-batch))
   :update-body (let [now (get-nanotime the-nc)]
                  (when (< @a-simple-console-timer now)

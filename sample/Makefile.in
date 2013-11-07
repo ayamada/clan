@@ -19,7 +19,7 @@ LEIN    := @LEIN_PATH@
 #MVN     := @MVN_PATH@
 ADB     := @ADB_PATH@
 WGET    := @WGET_PATH@
-UNZIP   := @UNZIP_PATH@
+#UNZIP   := @UNZIP_PATH@
 #PERL    := @PERL_PATH@
 #EXEWRAP := @EXEWRAP_PATH@
 L4J     := @L4J_PATH@
@@ -58,8 +58,6 @@ LAYOUT_DESKTOP_ROOT           := desktop/src-java
 LAYOUT_MAINACTIVITY_DIR       := $(LAYOUT_MAINACTIVITY_ROOT)/$(subst .,/,$(PROJECT_ANDROID_GROUPID))
 LAYOUT_DESKTOP_DIR            := $(LAYOUT_DESKTOP_ROOT)/$(subst .,/,$(PROJECT_DESKTOP_GROUPID))
 
-LIBGDX_ZIP := libgdx-$(CLAN_LIBGDX_VERSION).zip
-LIBGDX_URL := http://libgdx.googlecode.com/files/$(LIBGDX_ZIP)
 
 
 
@@ -76,30 +74,9 @@ help:
 
 
 
-$(LIBGDX_ZIP):
-	$(WGET) $(LIBGDX_URL)
-
-tmp/libgdx/gdx.jar: $(LIBGDX_ZIP)
-	mkdir -p tmp/libgdx
-	cd tmp/libgdx && $(UNZIP) ../../$(LIBGDX_ZIP)
-	touch tmp/libgdx/gdx.jar
-
-.dep-libgdx-done: tmp/libgdx/gdx.jar
-	cd tmp/libgdx && for f in *.jar; do \
-		cd ../../clan/depinst && $(LEIN) localrepo install ../../tmp/libgdx/$$f com.badlogic.gdx/$${f%%.jar} $(CLAN_LIBGDX_VERSION) || break 0; \
-	done
-	cd clan/depinst && $(LEIN) localrepo install ../../tmp/libgdx/extensions/gdx-tools/gdx-tools.jar com.badlogic.gdx/gdx-tools $(CLAN_LIBGDX_VERSION)
-	touch .dep-libgdx-done
-
-dep-libgdx: .dep-libgdx-done
-
-dep-libgdx-clean:
-	rm -rf tmp/libgdx
-	rm -f .dep-libgdx-done
 
 
-
-desktop/assets/pack.png: .dep-libgdx-done
+desktop/assets/pack.png:
 	cd clan/tpack && $(LEIN) run -m com.badlogic.gdx.tools.imagepacker.TexturePacker2 ../../textures ../../desktop/assets
 
 ta: ta-clean desktop/assets/pack.png
@@ -117,17 +94,19 @@ add-lib-to-resources:
 	rm -rf android/target/resources
 	mkdir -p android/target/resources/assets
 	cp -a desktop/assets android/target/resources/assets
-	mkdir -p android/target/resources/lib
-	cp -r tmp/libgdx/armeabi-v7a android/target/resources/lib
-	cp -r tmp/libgdx/armeabi android/target/resources/lib
+
+#	mkdir -p android/target/resources/lib
+#	cp -r tmp/libgdx/armeabi-v7a android/target/resources/lib
+#	cp -r tmp/libgdx/armeabi android/target/resources/lib
 
 
 
 
-dep: .dep-libgdx-done
+# 現在のところ、depで用意するものはなくなった
 
-depclean: dep-libgdx-clean
-	rm -rf tmp
+dep:
+
+depclean:
 
 
 
@@ -149,11 +128,11 @@ layout-clean:
 
 
 
-repl: .dep-libgdx-done .layout-done
+repl: .layout-done
 	$(MAKE) ta
 	export CLAN_TARGET=desktop CLAN_DEBUG=1 && cd desktop && $(LEIN) with-profile +repl repl
 
-desktop/target/$(PROJECT_ARTIFACTID)-devpack.jar: .dep-libgdx-done .layout-done
+desktop/target/$(PROJECT_ARTIFACTID)-devpack.jar: .layout-done
 	$(MAKE) ta
 	export CLAN_TARGET=desktop CLAN_DEBUG=1 && cd desktop && $(LEIN) with-profile devpack uberjar
 
@@ -170,7 +149,7 @@ desktop-clean:
 	cd desktop && $(LEIN) clean
 
 
-target/$(PROJECT_ARTIFACTID).jar: .dep-libgdx-done .layout-done
+target/$(PROJECT_ARTIFACTID).jar: .layout-done
 	$(MAKE) desktop-clean
 	$(MAKE) ta update-resources-for-release
 	export CLAN_TARGET=desktop CLAN_RELEASE=1 && cd desktop && $(LEIN) with-profile release uberjar
@@ -205,7 +184,7 @@ release-exe-if-exists:
 
 
 
-.droid-build-done: .dep-libgdx-done .layout-done
+.droid-build-done: .layout-done
 	$(MAKE) ta add-lib-to-resources
 	export CLAN_TARGET=android CLAN_DEBUG=1 && cd android && $(LEIN) with-profile devpack droid build
 	touch .droid-build-done
@@ -240,7 +219,7 @@ android-clean:
 	rm -rf android/gen
 	rm -f .droid-*-done
 
-release-apk: .dep-libgdx-done .layout-done
+release-apk: .layout-done
 	$(MAKE) android-clean
 	$(MAKE) ta add-lib-to-resources
 	export CLAN_TARGET=android CLAN_RELEASE=1 && cd android && $(LEIN) with-profile release droid release build
@@ -283,7 +262,6 @@ ac-clean:
 distclean: depclean clean ac-clean release-clean
 
 maintainer-clean: distclean
-	rm -f $(LIBGDX_ZIP)
 
 
 

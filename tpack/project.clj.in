@@ -14,8 +14,8 @@
   ;:license {:name "Eclipse Public License"
   ;          :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "@CLAN_CLOJURE_VERSION@"]
-                 [com.badlogic.gdx/gdx "@CLAN_LIBGDX_VERSION@"]
-                 [com.badlogic.gdx/gdx-tools "@CLAN_LIBGDX_VERSION@"]
+                 [com.badlogicgames.gdx/gdx "@CLAN_LIBGDX_VERSION@"]
+                 [com.badlogicgames.gdx/gdx-tools "@CLAN_LIBGDX_VERSION@"]
                  ]
   :source-paths []
   :java-source-paths []

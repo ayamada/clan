@@ -2,3 +2,5 @@
 */target/
 sample/android/libs/
 sample/desktop/.lein-repl-history
+sample/android/res/raw/
+sample/desktop/save.dat
