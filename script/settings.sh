@@ -2,13 +2,14 @@
 # clanバージョン情報設定
 CLAN_GROUPID="jp.ne.tir.clan"
 CLAN_ARTIFACTID="clan"
-CLAN_VERSION="0.1.1-SNAPSHOT"
+CLAN_VERSION="0.1.1"
 CLAN_NAME="CLAN"
 # NB: CLAN_CLOJURE_VERSION は
 #     https://clojars.org/org.clojure-android/clojure と、
 #     http://mvnrepository.com/artifact/org.clojure/clojure の、
 #     両方に存在するもののみを指定する事！
-#     CLAN_LIBGDX_VERSION は http://code.google.com/p/libgdx/downloads/list
+#     CLAN_LIBGDX_VERSION は
+#     http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.badlogicgames.gdx%22
 #     CLAN_ANDROID_VERSION は
 #     http://mvnrepository.com/artifact/com.google.android/android
 #     CLAN_NEKO_VERSION は https://clojars.org/neko

@@ -1,3 +1,7 @@
+2013-11-07  ayamada
+	* release 0.1.1:
+	  - Bump version of libgdx to 0.9.9
+
 2013-08-28  ayamada
 	* release 0.1.0:
 	  - Bump version of lein-droid to 0.2.0-beta2
