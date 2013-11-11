@@ -67,7 +67,7 @@ LAYOUT_DESKTOP_DIR            := $(LAYOUT_DESKTOP_ROOT)/$(subst .,/,$(PROJECT_DE
 .PHONY: help clean dep jar apk force layout clan assets res release desktop android run
 
 help:
-	@echo "sorry, see clan/README.rst"
+	@echo "sorry, see clan/README.md"
 
 
 
