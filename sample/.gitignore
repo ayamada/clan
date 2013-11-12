@@ -1,3 +1,21 @@
 # parent project dont want to include clan.
 clan/
 jingle.mute
+.layout-done
+Makefile
+VERSION
+android/AndroidManifest.xml
+android/src-java/**/MainActivity.java
+autom4te.cache/
+config.log
+config.status
+configure
+desktop/assets/pack.atlas
+desktop/assets/pack.png
+desktop/src-java/**/Desktop.java
+desktop/target/
+l4j/l4j.xml
+layout/Desktop.java
+layout/MainActivity.java
+project-common.clj
+target/

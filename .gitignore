@@ -4,3 +4,5 @@ sample/android/libs/
 sample/desktop/.lein-repl-history
 sample/android/res/raw/
 sample/desktop/save.dat
+cbl/src/jp/ne/tir/clan/claninfo.clj
+tpack/project.clj
