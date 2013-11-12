@@ -20,7 +20,7 @@
   <icon>../l4j/windows.ico</icon>
   <singleInstance>
     <mutexName>@PROJECT_GROUPID@.@PROJECT_ARTIFACTID@</mutexName>
-    <windowTitle>@PROJECT_NAME@</windowTitle>
+    <windowTitle>@PROJECT_ARTIFACTID@</windowTitle>
   </singleInstance>
   <jre>
     <path></path>
