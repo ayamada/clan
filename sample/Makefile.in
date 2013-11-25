@@ -67,7 +67,7 @@ LAYOUT_DESKTOP_DIR            := $(LAYOUT_DESKTOP_ROOT)/$(subst .,/,$(PROJECT_DE
 .PHONY: help clean dep jar apk force layout clan assets res release desktop android run
 
 help:
-	@echo "sorry, see clan/README.md"
+	@echo "sorry, see clan/README.rst"
 
 
 
@@ -149,6 +149,13 @@ desktop-clean:
 	cd desktop && $(LEIN) clean
 
 
+target/$(PROJECT_ARTIFACTID)-debug.jar: .layout-done
+	$(MAKE) ta update-resources-for-release
+	export CLAN_TARGET=desktop && cd desktop && $(LEIN) with-profile release uberjar
+	mkdir -p target
+	cp desktop/target/$(PROJECT_ARTIFACTID).jar target
+	cp desktop/target/$(PROJECT_ARTIFACTID).jar target/$(PROJECT_ARTIFACTID)-debug.jar
+
 target/$(PROJECT_ARTIFACTID).jar: .layout-done
 	$(MAKE) desktop-clean
 	$(MAKE) ta update-resources-for-release
@@ -163,12 +170,6 @@ release-exe: target/$(PROJECT_ARTIFACTID).jar
 	-cd target && ln -sf $(L4J_DIR)bin $(L4J_DIR)head $(L4J_DIR)w32api .
 	cd target && $(JAVA) -jar $(L4J_JAR) ../l4j/l4j.xml
 
-release-exe-if-exists:
-	if [ x != x$(L4J) ]; then \
-		$(MAKE) release-exe; \
-	fi
-	true
-
 # TODO: ↑のlaunch4jは失敗しても終了コード0を返す。stdoutの出力を見て判定するように直す
 # 成功時
 # launch4j: Compiling resources
@@ -178,6 +179,15 @@ release-exe-if-exists:
 # 失敗時(これ以外にもある)
 # launch4j: java.io.FileNotFoundException: hoge (No such file or directory)
 
+release-exe-if-exists:
+	if [ x != x$(L4J) ]; then \
+		$(MAKE) release-exe; \
+	fi
+	true
+
+# WARNING: THIS IS EXPERIMENTAL AND DANGEROUS!
+debug-exe: target/$(PROJECT_ARTIFACTID)-debug.jar release-exe
+	cd target && mv $(PROJECT_ARTIFACTID).exe $(PROJECT_ARTIFACTID)-debug.exe
 
 
 
