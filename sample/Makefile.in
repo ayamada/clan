@@ -151,7 +151,7 @@ desktop-clean:
 	cd desktop && $(LEIN) clean
 
 
-target/$(PROJECT_ARTIFACTID)-debug.jar:
+target/$(PROJECT_ARTIFACTID)-debug.jar: force
 	$(MAKE) layout ta update-resources-for-release
 	export CLAN_TARGET=desktop CLAN_DEBUG=1 && cd desktop && $(LEIN) with-profile release uberjar
 	mkdir -p target
