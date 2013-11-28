@@ -1,3 +1,13 @@
+2013-11-28  ayamada
+	* release 0.1.2:
+	  - Fix a problem to create windows' exe at second time
+	  - Enhance ".gitignore" and "sample/.gitignore"
+	  - Fix to display broken logo-image when unfocus process on PC
+	  - "make ta" will run automatically when update files
+	    in "textures/"
+	  - "make layout" will run automatically when update files
+	    in "layout/"
+
 2013-11-07  ayamada
 	* release 0.1.1:
 	  - Bump version of libgdx to 0.9.9
