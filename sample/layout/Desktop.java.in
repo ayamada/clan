@@ -30,6 +30,10 @@ public class Desktop {
 		clanConf.logoPath = "assets/cbl_logo.png";
 		//clanConf.fontPath = "assets/cbl_font.fnt";
 		clanConf.jinglePath = "assets/cbl_jingle.ogg";
+		//float[] bgColorRGB = {0f, 0f, 0f};
+		//clanConf.bgColorRGB = bgColorRGB;
+		//float[] fgColorRGB = {0.5f, 0.5f, 0.5f};
+		//clanConf.fgColorRGB = fgColorRGB;
 		clanConf.isDisplayLog = false;
 		clanConf.cljInit = null;
 		clanConf.nekoInit = null;

@@ -16,6 +16,7 @@ import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.BitmapFontCache;
@@ -275,9 +276,11 @@ public class BootLoader implements ApplicationListener {
 		}
 		return result;
 	}
+	/* libgdxの仕様変更に対応する為、pauseフラグも兼ねる事に。
+	 * なのでロゴ画像がない場合でも空のTextureを生成する事！ */
 	private Texture solveLogoTexture () {
 		Pixmap logoPixmap = solveLogoPixmap();
-		if (logoPixmap == null) { return null; }
+		if (logoPixmap == null) { return new Texture(2, 2, Format.RGBA8888); }
 		Texture t = new Texture(logoPixmap);
 		logoPixmap.dispose();
 		return t;
@@ -334,6 +337,7 @@ public class BootLoader implements ApplicationListener {
 		// camera には dispose() はない
 		batch.dispose();
 		font.dispose();
+		if (null != logo) { logo.dispose(); logo = null; }
 	}
 
 	@Override
@@ -353,6 +357,7 @@ public class BootLoader implements ApplicationListener {
 	public void render () {
 		if (null != ALC.al) { ALC.al.render(); return; }
 		if (isClojureStarted()) { cal.render(); return; }
+		if (logo == null) { logo = solveLogoTexture(); }
 		try {
 			float delta = Gdx.graphics.getDeltaTime();
 			phaseSec += delta;
@@ -404,23 +409,23 @@ public class BootLoader implements ApplicationListener {
 	public void pause () {
 		if (null != ALC.al) { ALC.al.pause(); return; }
 		if (isClojureStarted()) { cal.pause(); return; }
-		if (null != logo) { logo.dispose(); }
+		if (null != logo) { logo.dispose(); logo = null; }
 	}
 
 	@Override
 	public void resume () {
 		if (null != ALC.al) { ALC.al.resume(); return; }
 		if (isClojureStarted()) { cal.resume(); return; }
-		logo = solveLogoTexture();
+		if (logo == null) { logo = solveLogoTexture(); }
 	}
 
 	@Override
 	public void dispose () {
 		if (null != ALC.al) { ALC.al.dispose(); return; }
 		// clojure起動後は、clojure側をdispose()する
-		if (isClojureStarted()) cal.dispose();
-		// そうでない場合は、まだCBLのdisposeTrue()が実行されてないので、実行する
-		else disposeTrue();
+		// そうでない場合は、まだCBLのdisposeTrue()が実行されてないので明示実行する
+		if (isClojureStarted()) { cal.dispose(); }
+		else { disposeTrue(); }
 	}
 
 	// TODO: リストとか使って、コードに継続を埋め込まなくてすむようにする(現状だと順序変更すると書き換えする量が多くて面倒)
