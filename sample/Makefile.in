@@ -152,11 +152,15 @@ desktop-clean:
 
 
 target/$(PROJECT_ARTIFACTID)-debug.jar: force
+	$(MAKE) desktop-clean layout-clean
 	$(MAKE) layout ta update-resources-for-release
 	export CLAN_TARGET=desktop CLAN_DEBUG=1 && cd desktop && $(LEIN) with-profile release uberjar
 	mkdir -p target
 	cp desktop/target/$(PROJECT_ARTIFACTID).jar target
 	cp desktop/target/$(PROJECT_ARTIFACTID).jar target/$(PROJECT_ARTIFACTID)-debug.jar
+	$(MAKE) desktop-clean layout-clean
+
+debug-jar: target/$(PROJECT_ARTIFACTID)-debug.jar
 
 target/$(PROJECT_ARTIFACTID).jar:
 	$(MAKE) desktop-clean layout-clean
@@ -164,7 +168,7 @@ target/$(PROJECT_ARTIFACTID).jar:
 	export CLAN_TARGET=desktop CLAN_RELEASE=1 && cd desktop && $(LEIN) with-profile release uberjar
 	mkdir -p target
 	cp desktop/target/$(PROJECT_ARTIFACTID).jar target
-	$(MAKE) desktop-clean
+	$(MAKE) desktop-clean layout-clean
 
 release-jar: target/$(PROJECT_ARTIFACTID).jar
 
@@ -188,7 +192,7 @@ release-exe-if-exists:
 	true
 
 # WARNING: THIS IS EXPERIMENTAL AND DANGEROUS!
-debug-exe: target/$(PROJECT_ARTIFACTID)-debug.jar release-exe
+debug-exe: debug-jar release-exe
 	cd target && mv $(PROJECT_ARTIFACTID).exe $(PROJECT_ARTIFACTID)-debug.exe
 
 
