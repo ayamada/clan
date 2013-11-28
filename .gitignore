@@ -1,8 +1,7 @@
-*/pom.xml
-*/target/
-sample/android/libs/
-sample/desktop/.lein-repl-history
-sample/android/res/raw/
-sample/desktop/save.dat
-cbl/src/jp/ne/tir/clan/claninfo.clj
-tpack/project.clj
+target/
+/sample/android/libs/
+/sample/android/res/raw/
+/sample/desktop/.lein-repl-history
+/sample/desktop/save.dat
+/cbl/src/jp/ne/tir/clan/claninfo.clj
+/tpack/project.clj
