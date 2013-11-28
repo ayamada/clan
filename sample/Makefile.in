@@ -111,6 +111,10 @@ depclean:
 
 
 
+# TODO: desktop-layout desktop-layout-clean のように更に分けるべきかも
+# - make desktop時に、desktop-layoutだけ実行したりした方がよい。
+#   make desktop-clean時も同様。
+
 $(LAYOUT_MAINACTIVITY_DIR)/MainActivity.java: layout/MainActivity.java
 	mkdir -p $(LAYOUT_MAINACTIVITY_DIR)
 	cp layout/MainActivity.java $(LAYOUT_MAINACTIVITY_DIR)
@@ -128,10 +132,10 @@ layout-clean:
 
 
 
-repl: layout ta
+repl: $(LAYOUT_DESKTOP_DIR)/Desktop.java desktop/assets/pack.png
 	export CLAN_TARGET=desktop CLAN_DEBUG=1 && cd desktop && $(LEIN) with-profile +repl repl
 
-desktop/target/$(PROJECT_ARTIFACTID)-devpack.jar: layout ta
+desktop/target/$(PROJECT_ARTIFACTID)-devpack.jar: $(LAYOUT_DESKTOP_DIR)/Desktop.java
 	export CLAN_TARGET=desktop CLAN_DEBUG=1 && cd desktop && $(LEIN) with-profile devpack uberjar
 
 devpack: desktop/target/$(PROJECT_ARTIFACTID)-devpack.jar
@@ -139,7 +143,7 @@ devpack: desktop/target/$(PROJECT_ARTIFACTID)-devpack.jar
 # NB: 素早い動作確認の為に、再コンパイル無しに実行できるバイナリを生成している
 #     (src部をコンパイル対象に含めずにコンパイルし、あとで-cpで読み込む)
 # NB: javaのclasspath区切り文字の為にインチキをしている
-run: desktop/target/$(PROJECT_ARTIFACTID)-devpack.jar ta
+run: desktop/target/$(PROJECT_ARTIFACTID)-devpack.jar desktop/assets/pack.png
 	export CLAN_TARGET=desktop CLAN_DEBUG=1 && cd desktop && $(JAVA) -cp '../src:target/$(PROJECT_ARTIFACTID)-devpack.jar:;../src;target/$(PROJECT_ARTIFACTID)-devpack.jar' $(PROJECT_DESKTOP_GROUPID).Desktop
 
 
@@ -192,7 +196,7 @@ debug-exe: target/$(PROJECT_ARTIFACTID)-debug.jar release-exe
 
 
 
-.droid-build-done: layout ta add-lib-to-resources
+.droid-build-done: $(LAYOUT_MAINACTIVITY_DIR)/MainActivity.java desktop/assets/pack.png add-lib-to-resources
 	export CLAN_TARGET=android CLAN_DEBUG=1 && cd android && $(LEIN) with-profile devpack droid build
 	touch .droid-build-done
 
