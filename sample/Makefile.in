@@ -64,7 +64,7 @@ LAYOUT_DESKTOP_DIR            := $(LAYOUT_DESKTOP_ROOT)/$(subst .,/,$(PROJECT_DE
 
 
 
-.PHONY: help clean dep jar apk force layout clan assets res release desktop android run
+.PHONY: help clean dep jar apk force layout clan assets res release desktop android run ta
 
 help:
 	@echo "sorry, see clan/README.rst"
@@ -76,10 +76,10 @@ help:
 
 
 
-desktop/assets/pack.png:
+desktop/assets/pack.png: textures $(wildcard textures/*)
 	cd clan/tpack && $(LEIN) run -m com.badlogic.gdx.tools.imagepacker.TexturePacker2 ../../textures ../../desktop/assets
 
-ta: ta-clean desktop/assets/pack.png
+ta: desktop/assets/pack.png
 
 ta-clean:
 	rm -f desktop/assets/pack.{atlas,png}
@@ -111,29 +111,27 @@ depclean:
 
 
 
-.layout-done:
+$(LAYOUT_MAINACTIVITY_DIR)/MainActivity.java: layout/MainActivity.java
 	mkdir -p $(LAYOUT_MAINACTIVITY_DIR)
 	cp layout/MainActivity.java $(LAYOUT_MAINACTIVITY_DIR)
+
+$(LAYOUT_DESKTOP_DIR)/Desktop.java: layout/Desktop.java
 	mkdir -p $(LAYOUT_DESKTOP_DIR)
 	cp layout/Desktop.java $(LAYOUT_DESKTOP_DIR)
-	touch .layout-done
 
-layout: .layout-done
+layout: $(LAYOUT_MAINACTIVITY_DIR)/MainActivity.java $(LAYOUT_DESKTOP_DIR)/Desktop.java
 
 layout-clean:
 	rm -rf $(LAYOUT_MAINACTIVITY_ROOT)
 	rm -rf $(LAYOUT_DESKTOP_ROOT)
-	rm -f .layout-done
 
 
 
 
-repl: .layout-done
-	$(MAKE) ta
+repl: layout ta
 	export CLAN_TARGET=desktop CLAN_DEBUG=1 && cd desktop && $(LEIN) with-profile +repl repl
 
-desktop/target/$(PROJECT_ARTIFACTID)-devpack.jar: .layout-done
-	$(MAKE) ta
+desktop/target/$(PROJECT_ARTIFACTID)-devpack.jar: layout ta
 	export CLAN_TARGET=desktop CLAN_DEBUG=1 && cd desktop && $(LEIN) with-profile devpack uberjar
 
 devpack: desktop/target/$(PROJECT_ARTIFACTID)-devpack.jar
@@ -141,7 +139,7 @@ devpack: desktop/target/$(PROJECT_ARTIFACTID)-devpack.jar
 # NB: 素早い動作確認の為に、再コンパイル無しに実行できるバイナリを生成している
 #     (src部をコンパイル対象に含めずにコンパイルし、あとで-cpで読み込む)
 # NB: javaのclasspath区切り文字の為にインチキをしている
-run: desktop/target/$(PROJECT_ARTIFACTID)-devpack.jar
+run: desktop/target/$(PROJECT_ARTIFACTID)-devpack.jar ta
 	export CLAN_TARGET=desktop CLAN_DEBUG=1 && cd desktop && $(JAVA) -cp '../src:target/$(PROJECT_ARTIFACTID)-devpack.jar:;../src;target/$(PROJECT_ARTIFACTID)-devpack.jar' $(PROJECT_DESKTOP_GROUPID).Desktop
 
 
@@ -149,16 +147,16 @@ desktop-clean:
 	cd desktop && $(LEIN) clean
 
 
-target/$(PROJECT_ARTIFACTID)-debug.jar: .layout-done
-	$(MAKE) ta update-resources-for-release
+target/$(PROJECT_ARTIFACTID)-debug.jar:
+	$(MAKE) layout ta update-resources-for-release
 	export CLAN_TARGET=desktop CLAN_DEBUG=1 && cd desktop && $(LEIN) with-profile release uberjar
 	mkdir -p target
 	cp desktop/target/$(PROJECT_ARTIFACTID).jar target
 	cp desktop/target/$(PROJECT_ARTIFACTID).jar target/$(PROJECT_ARTIFACTID)-debug.jar
 
-target/$(PROJECT_ARTIFACTID).jar: .layout-done
-	$(MAKE) desktop-clean
-	$(MAKE) ta update-resources-for-release
+target/$(PROJECT_ARTIFACTID).jar:
+	$(MAKE) desktop-clean layout-clean
+	$(MAKE) layout ta update-resources-for-release
 	export CLAN_TARGET=desktop CLAN_RELEASE=1 && cd desktop && $(LEIN) with-profile release uberjar
 	mkdir -p target
 	cp desktop/target/$(PROJECT_ARTIFACTID).jar target
@@ -194,8 +192,7 @@ debug-exe: target/$(PROJECT_ARTIFACTID)-debug.jar release-exe
 
 
 
-.droid-build-done: .layout-done
-	$(MAKE) ta add-lib-to-resources
+.droid-build-done: layout ta add-lib-to-resources
 	export CLAN_TARGET=android CLAN_DEBUG=1 && cd android && $(LEIN) with-profile devpack droid build
 	touch .droid-build-done
 
@@ -229,9 +226,9 @@ android-clean:
 	rm -rf android/gen
 	rm -f .droid-*-done
 
-release-apk: .layout-done
-	$(MAKE) android-clean
-	$(MAKE) ta add-lib-to-resources
+release-apk:
+	$(MAKE) android-clean layout-clean
+	$(MAKE) layout ta add-lib-to-resources
 	export CLAN_TARGET=android CLAN_RELEASE=1 && cd android && $(LEIN) with-profile release droid release build
 	export CLAN_TARGET=android CLAN_RELEASE=1 CLAN_BUILD_APK=1 && cd android && $(LEIN) with-profile clan-sign,release droid release apk
 	mkdir -p target
