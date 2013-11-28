@@ -1,7 +1,6 @@
 # parent project dont want to include clan.
 clan/
 jingle.mute
-.layout-done
 Makefile
 VERSION
 android/AndroidManifest.xml
