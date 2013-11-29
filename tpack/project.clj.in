@@ -16,6 +16,8 @@
   :dependencies [[org.clojure/clojure "@CLAN_CLOJURE_VERSION@"]
                  [com.badlogicgames.gdx/gdx "@CLAN_LIBGDX_VERSION@"]
                  [com.badlogicgames.gdx/gdx-tools "@CLAN_LIBGDX_VERSION@"]
+                 [com.badlogicgames.gdx/gdx-backend-lwjgl "@CLAN_LIBGDX_VERSION@"]
+                 [com.badlogicgames.gdx/gdx-platform "@CLAN_LIBGDX_VERSION@" :classifier "natives-desktop"]
                  ]
   :source-paths []
   :java-source-paths []

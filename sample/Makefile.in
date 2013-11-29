@@ -64,7 +64,7 @@ LAYOUT_DESKTOP_DIR            := $(LAYOUT_DESKTOP_ROOT)/$(subst .,/,$(PROJECT_DE
 
 
 
-.PHONY: help clean dep jar apk force layout clan assets res release desktop android run ta
+.PHONY: help clean dep jar apk force layout clan assets res release desktop android run ta hiero
 
 help:
 	@echo "sorry, see clan/README.rst"
@@ -72,6 +72,11 @@ help:
 
 
 
+
+#java -cp gdx.jar;gdx-natives.jar;gdx-backend-lwjgl.jar;gdx-backend-lwjgl-natives.jar;extensions\gdx-tools\gdx-tools.jar com.badlogic.gdx.tools.hiero.Hiero
+#java -cp gdx.jar:gdx-natives.jar:gdx-backend-lwjgl.jar:gdx-backend-lwjgl-natives.jar:extensions/gdx-tools/gdx-tools.jar com.badlogic.gdx.tools.hiero.Hiero
+hiero:
+	cd clan/tpack && $(LEIN) run -m com.badlogic.gdx.tools.hiero.Hiero
 
 
 
