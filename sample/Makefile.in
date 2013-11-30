@@ -76,7 +76,7 @@ help:
 #java -cp gdx.jar;gdx-natives.jar;gdx-backend-lwjgl.jar;gdx-backend-lwjgl-natives.jar;extensions\gdx-tools\gdx-tools.jar com.badlogic.gdx.tools.hiero.Hiero
 #java -cp gdx.jar:gdx-natives.jar:gdx-backend-lwjgl.jar:gdx-backend-lwjgl-natives.jar:extensions/gdx-tools/gdx-tools.jar com.badlogic.gdx.tools.hiero.Hiero
 hiero:
-	cd clan/tpack && $(LEIN) run -m com.badlogic.gdx.tools.hiero.Hiero
+	cd clan/tpack && $(LEIN) run -m com.badlogic.gdx.tools.hiero.Hiero < /dev/null &
 
 
 
