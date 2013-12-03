@@ -1,3 +1,15 @@
+2013-12-04  ayamada
+	* release 0.2.0:
+	  - *IMPORTANT*: *.apk cannot boot that made by 0.1.1-0.1.3 !
+	    It fixed now
+	  - *IMPORTANT*: If you use old version, you must update
+	    your project-common.clj.in, configure.ac and Makefile.in by hand
+	    from "clan/sample" directory
+	  - Fix "make ta" to treat multiple pack*.png decently
+	  - Add "make hiero" that run Hiero
+	    https://github.com/libgdx/libgdx/wiki/Hiero
+	  - Add "make debug-jar" and "make debug-exe"
+
 2013-11-28  ayamada
 	* release 0.1.3:
 	  - Remove redundant dependency works from "make run"

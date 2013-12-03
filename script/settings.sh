@@ -2,7 +2,7 @@
 # clanバージョン情報設定
 CLAN_GROUPID="jp.ne.tir.clan"
 CLAN_ARTIFACTID="clan"
-CLAN_VERSION="0.1.4-SNAPSHOT"
+CLAN_VERSION="0.2.0"
 CLAN_NAME="CLAN"
 # NB: CLAN_CLOJURE_VERSION は
 #     https://clojars.org/org.clojure-android/clojure と、
