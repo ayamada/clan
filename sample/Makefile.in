@@ -14,7 +14,7 @@ SPACE := $(EMPTY) $(EMPTY)
 
 JAVA    := @JAVA_PATH@
 JAVAC   := @JAVAC_PATH@
-#JAR     := @JAR_PATH@
+JAR     := @JAR_PATH@
 LEIN    := @LEIN_PATH@
 #MVN     := @MVN_PATH@
 ADB     := @ADB_PATH@
@@ -114,23 +114,23 @@ update-resources-for-release:
 	cp -a desktop/assets desktop/target/resources
 
 # NB: this makes assets/assets/*, it is correct.
-add-lib-to-resources:
+add-lib-to-resources: dep
 	rm -rf android/target/resources
 	mkdir -p android/target/resources/assets
 	cp -a desktop/assets android/target/resources/assets
-
-#	mkdir -p android/target/resources/lib
-#	cp -r tmp/libgdx/armeabi-v7a android/target/resources/lib
-#	cp -r tmp/libgdx/armeabi android/target/resources/lib
+	mkdir -p android/target/resources/lib/armeabi
+	cd android/target/resources/lib/armeabi && $(JAR) xf ../../../../../clan/depinst/repos/com/badlogicgames/gdx/gdx-platform/@CLAN_LIBGDX_VERSION@/gdx-platform-@CLAN_LIBGDX_VERSION@-natives-armeabi.jar
 
 
 
-
-# 現在のところ、depで用意するものはなくなった
 
 dep:
+	cd clan/depinst && $(LEIN) deps
 
 depclean:
+	rm -rf clan/depinst/repos
+	mkdir -p clan/depinst/repos
+	touch clan/depinst/repos/.gitkeep
 
 
 

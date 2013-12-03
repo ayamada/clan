@@ -5,3 +5,5 @@ target/
 /sample/desktop/save.dat
 /cbl/src/jp/ne/tir/clan/claninfo.clj
 /tpack/project.clj
+/depinst/repos/
+!/depinst/repos/.gitkeep

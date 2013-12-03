@@ -93,11 +93,15 @@
 
 (declare get-resource-jars-paths estimate-JXmx)
 
+(def dependencies-gdx-platform-natives-armeabi
+  `[com.badlogicgames.gdx/gdx-platform "@CLAN_LIBGDX_VERSION@" :classifier "natives-armeabi" :scope "provided"])
+
 (def dependencies-android
   `[~@dependencies-common
     [org.clojure-android/clojure "@CLAN_CLOJURE_VERSION@@CLAN_CLOJURE_VERSION_ANDROID_SUFFIX@"]
     [com.badlogicgames.gdx/gdx-backend-android "@CLAN_LIBGDX_VERSION@"]
-    [com.badlogicgames.gdx/gdx-platform "@CLAN_LIBGDX_VERSION@" :classifier "natives-armeabi"]
+    ~dependencies-gdx-platform-natives-armeabi
+    ;[com.badlogicgames.gdx/gdx-platform "@CLAN_LIBGDX_VERSION@" :classifier "natives-armeabi"]
     ;[com.badlogicgames.gdx/gdx-platform "@CLAN_LIBGDX_VERSION@" :classifier "natives-armeabi-v7a"]
     ;[com.google.android/android "@CLAN_ANDROID_VERSION@" :scope "system"]
     [neko/neko "@CLAN_NEKO_VERSION@"]
@@ -152,7 +156,7 @@
                :min-version "10"
                :aot-exclude-ns ["clojure.parallel" "clojure.core.reducers"]
                :assets-path "target/resources/assets"
-               ;:native-libraries-paths ["target/resources/lib"]
+               :native-libraries-paths ["target/resources/lib"]
                ;:library false
                ;:resource-jars-paths ["../tmp/libgdx/gdx.jar"]
                :resource-jars-paths ~(if (System/getenv "CLAN_BUILD_APK")
@@ -171,6 +175,15 @@
                ;; Uncomment this line to be able to use Google API.
                ;; :use-google-api true
                }
+     :install-releases? false
+     ))
+
+
+;; this macro is expanded in clan/depinst/project.clj
+(defmacro defproject-depinst []
+  `(defproject-common
+     :dependencies [~dependencies-gdx-platform-natives-armeabi]
+     :local-repo "repos"
      :install-releases? false
      ))
 
