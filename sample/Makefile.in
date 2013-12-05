@@ -113,8 +113,13 @@ update-resources-for-release:
 	mkdir -p desktop/target/resources
 	cp -a desktop/assets desktop/target/resources
 
+
+clan/depinst/repos/com/badlogicgames/gdx/gdx-platform/@CLAN_LIBGDX_VERSION@/gdx-platform-@CLAN_LIBGDX_VERSION@-natives-armeabi.jar:
+	cd clan/depinst && $(LEIN) deps
+
+
 # NB: this makes assets/assets/*, it is correct.
-add-lib-to-resources: dep
+add-lib-to-resources: clan/depinst/repos/com/badlogicgames/gdx/gdx-platform/@CLAN_LIBGDX_VERSION@/gdx-platform-@CLAN_LIBGDX_VERSION@-natives-armeabi.jar
 	rm -rf android/target/resources
 	mkdir -p android/target/resources/assets
 	cp -a desktop/assets android/target/resources/assets
@@ -123,9 +128,7 @@ add-lib-to-resources: dep
 
 
 
-
-dep:
-	cd clan/depinst && $(LEIN) deps
+dep: clan/depinst/repos/com/badlogicgames/gdx/gdx-platform/@CLAN_LIBGDX_VERSION@/gdx-platform-@CLAN_LIBGDX_VERSION@-natives-armeabi.jar
 
 depclean:
 	rm -rf clan/depinst/repos
@@ -134,10 +137,6 @@ depclean:
 
 
 
-
-# TODO: desktop-layout desktop-layout-clean のように更に分けるべきかも
-# - make desktop時に、desktop-layoutだけ実行したりした方がよい。
-#   make desktop-clean時も同様。
 
 $(LAYOUT_MAINACTIVITY_DIR)/MainActivity.java: layout/MainActivity.java
 	mkdir -p $(LAYOUT_MAINACTIVITY_DIR)
