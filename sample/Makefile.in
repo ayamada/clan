@@ -64,7 +64,7 @@ LAYOUT_DESKTOP_DIR            := $(LAYOUT_DESKTOP_ROOT)/$(subst .,/,$(PROJECT_DE
 
 
 
-.PHONY: help clean dep jar apk force layout clan assets res release desktop android run ta hiero
+.PHONY: help clean dep jar apk force layout clan assets res release desktop android run ta hiero particleeditor
 
 help:
 	@echo "sorry, see clan/README.rst"
@@ -78,6 +78,8 @@ help:
 hiero:
 	cd clan/tpack && $(LEIN) run -m com.badlogic.gdx.tools.hiero.Hiero < /dev/null &
 
+particleeditor:
+	cd clan/tpack && $(LEIN) run -m com.badlogic.gdx.tools.particleeditor.ParticleEditor < /dev/null &
 
 
 
