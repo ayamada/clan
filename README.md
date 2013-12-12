@@ -45,7 +45,7 @@ Link
 
     -   [github repository](https://github.com/libgdx/libgdx)
     -   [libgdx API](http://libgdx.badlogicgames.com/nightlies/docs/api/overview-summary.html)
-    -   [Wiki](http://code.google.com/p/libgdx/wiki/TableOfContents)
+    -   [Wiki](https://github.com/libgdx/libgdx/wiki)
     -   [Androidゲームプログラミング A to Z](http://www.impressjapan.jp/books/3113)([amazon](http://www.amazon.co.jp/o/ASIN/4844331132/tirnejp-22)): [Beginning Android Games](http://www.apress.com/9781430230427)(LibGDXのメンテナの人が著者)の日本語訳版。良書。ただし本家の方は[2nd Edition](http://www.apress.com/9781430246770)が出てるが日本語訳版は初版ベース。
     -   [libgdxメモ](http://doc.tir.ne.jp/devel/clan/libgdx): ayamadaがメモしたlibgdxのノウハウ集。
 
