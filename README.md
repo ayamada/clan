@@ -32,6 +32,11 @@ ChangeLog
 Link
 ----
 
+- similar projects
+
+    -   [play-clj](https://github.com/oakes/play-clj)
+    -   [clojurelibgdx](https://github.com/thomas-villagers/clojurelibgdx)
+
 -   [Clojure](http://clojure.org/)
 
     -   [CheatSheet](http://clojure.org/cheatsheet)
@@ -62,7 +67,6 @@ Link
 
 -   [lein-droid](https://github.com/clojure-android/lein-droid): leinでandroidアプリを生成する為のleinプラグイン。開発中はapkにnREPLサーバ機能を自動で組み込んで、android実機の外からプロセスにREPL接続できるようにする機能あり。
 
--   [clojurelibgdx](https://github.com/thomas-villagers/clojurelibgdx): 類似プロジェクト。
 
 License
 -------
