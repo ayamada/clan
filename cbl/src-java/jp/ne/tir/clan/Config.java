@@ -12,7 +12,7 @@ import java.util.concurrent.Callable;
  */
 
 public class Config {
-	public float fadeSec = 1.0f; // fadein/fadeoutにかける秒数
+	public float fadeSec = 0.5f; // fadein/fadeoutにかける秒数
 	public float[] bgColorRGB = {0f, 0f, 0f}; // 背景色
 	public float[] fgColorRGB = {0.5f, 0.5f, 0.5f}; // 文字色
 
