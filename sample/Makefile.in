@@ -60,15 +60,25 @@ LAYOUT_DESKTOP_DIR            := $(LAYOUT_DESKTOP_ROOT)/$(subst .,/,$(PROJECT_DE
 
 
 
+TA_DIR := desktop/assets/ta
+TAS_ROOT_DIR := tas
 
 
 
 
-.PHONY: help clean dep jar apk force layout clan assets res release desktop android run ta hiero particleeditor
+
+.PHONY: help clean dep jar apk force layout clan assets res release desktop android run hiero particleeditor texturepacker2 tas test check
 
 help:
-	@echo "sorry, see clan/README.rst"
+	@echo "sorry, see clan/README.md"
 
+
+test: dep
+	export CLAN_TARGET=desktop CLAN_DEBUG=1 && cd desktop && $(LEIN) with-profile +repl test
+
+
+
+check: test
 
 
 
@@ -81,33 +91,34 @@ hiero:
 particleeditor:
 	cd clan/tpack && $(LEIN) run -m com.badlogic.gdx.tools.particleeditor.ParticleEditor < /dev/null &
 
+# TODO: make texturepacker2 SRCDIR=dir DSTDIR=dir2 NAME=hoge という形で実行する。引数が足りない場合やディレクトリが存在しない場合はusageを表示するようにする事
+texturepacker2:
+	cd clan/tpack && $(LEIN) run -m com.badlogic.gdx.tools.imagepacker.TexturePacker2 ../../$(SRCDIR) ../../$(DSTDIR) $(NAME)
 
 
-desktop/assets/pack.atlas: textures $(wildcard textures/*)
-	cd clan/tpack && $(LEIN) run -m com.badlogic.gdx.tools.imagepacker.TexturePacker2 ../../textures ../../desktop/assets
 
-ta: desktop/assets/pack.atlas
+TAS_DIRS = ${wildcard $(TAS_ROOT_DIR)/*}
+TAS_TARGETS = $(TAS_DIRS:$(TAS_ROOT_DIR)/%=%)
+TAS_ATLASES = $(TAS_TARGETS:%=$(TA_DIR)/%.atlas)
+TAS_PNGS = $(TAS_TARGETS:%=$(TA_DIR)/%.png) $(TAS_TARGETS:%=$(TA_DIR)/%2.png) $(TAS_TARGETS:%=$(TA_DIR)/%3.png) $(TAS_TARGETS:%=$(TA_DIR)/%4.png) $(TAS_TARGETS:%=$(TA_DIR)/%5.png) $(TAS_TARGETS:%=$(TA_DIR)/%6.png) $(TAS_TARGETS:%=$(TA_DIR)/%7.png) $(TAS_TARGETS:%=$(TA_DIR)/%8.png) $(TAS_TARGETS:%=$(TA_DIR)/%9.png)
+TAS_CLEAN_TARGETS = $(TAS_ATLASES) $(TAS_PNGS)
 
-ta-clean:
-	rm -f desktop/assets/pack.atlas
-	rm -f desktop/assets/pack.png
-	rm -f desktop/assets/pack2.png
-	rm -f desktop/assets/pack3.png
-	rm -f desktop/assets/pack4.png
-	rm -f desktop/assets/pack5.png
-	rm -f desktop/assets/pack6.png
-	rm -f desktop/assets/pack7.png
-	rm -f desktop/assets/pack8.png
-	rm -f desktop/assets/pack9.png
-	rm -f desktop/assets/pack1*.png
-	rm -f desktop/assets/pack2*.png
-	rm -f desktop/assets/pack3*.png
-	rm -f desktop/assets/pack4*.png
-	rm -f desktop/assets/pack5*.png
-	rm -f desktop/assets/pack6*.png
-	rm -f desktop/assets/pack7*.png
-	rm -f desktop/assets/pack8*.png
-	rm -f desktop/assets/pack9*.png
+$(TA_DIR)/%.atlas: $(TAS_ROOT_DIR)/% $(wildcard $(TAS_ROOT_DIR)/%/*)
+	$(MAKE) texturepacker2 SRCDIR=$(TAS_ROOT_DIR)/$* DSTDIR=$(TA_DIR) NAME=$*
+
+tas: $(TAS_ATLASES)
+
+tas-clean:
+	rm -f $(TAS_CLEAN_TARGETS)
+
+tas-debug:
+	@echo $(TAS_DIRS)
+	@echo $(TAS_TARGETS)
+	@echo $(TAS_ATLASES)
+	@echo $(TAS_PNGS)
+	@echo $(TAS_CLEAN_TARGETS)
+
+
 
 
 update-resources-for-release:
@@ -157,18 +168,18 @@ layout-clean:
 
 
 
-repl: $(LAYOUT_DESKTOP_DIR)/Desktop.java desktop/assets/pack.atlas
-	export CLAN_TARGET=desktop CLAN_DEBUG=1 && cd desktop && $(LEIN) with-profile +repl repl
+repl: $(LAYOUT_DESKTOP_DIR)/Desktop.java tas
+	export CLAN_TARGET=desktop CLAN_DEBUG=1 LEIN_SNAPSHOTS_IN_RELEASE=1 && cd desktop && $(LEIN) with-profile +repl repl
 
 desktop/target/$(PROJECT_ARTIFACTID)-devpack.jar: $(LAYOUT_DESKTOP_DIR)/Desktop.java
-	export CLAN_TARGET=desktop CLAN_DEBUG=1 && cd desktop && $(LEIN) with-profile devpack uberjar
+	export CLAN_TARGET=desktop CLAN_DEBUG=1 LEIN_SNAPSHOTS_IN_RELEASE=1 && cd desktop && $(LEIN) with-profile devpack uberjar
 
 devpack: desktop/target/$(PROJECT_ARTIFACTID)-devpack.jar
 
 # NB: 素早い動作確認の為に、再コンパイル無しに実行できるバイナリを生成している
 #     (src部をコンパイル対象に含めずにコンパイルし、あとで-cpで読み込む)
 # NB: javaのclasspath区切り文字の為にインチキをしている
-run: desktop/target/$(PROJECT_ARTIFACTID)-devpack.jar desktop/assets/pack.atlas
+run: desktop/target/$(PROJECT_ARTIFACTID)-devpack.jar tas
 	export CLAN_TARGET=desktop CLAN_DEBUG=1 && cd desktop && $(JAVA) -cp '../src:target/$(PROJECT_ARTIFACTID)-devpack.jar:;../src;target/$(PROJECT_ARTIFACTID)-devpack.jar' $(PROJECT_DESKTOP_GROUPID).Desktop
 
 
@@ -178,8 +189,8 @@ desktop-clean:
 
 target/$(PROJECT_ARTIFACTID)-debug.jar: force
 	$(MAKE) desktop-clean layout-clean
-	$(MAKE) layout ta update-resources-for-release
-	export CLAN_TARGET=desktop CLAN_DEBUG=1 && cd desktop && $(LEIN) with-profile release uberjar
+	$(MAKE) layout tas update-resources-for-release
+	export CLAN_TARGET=desktop CLAN_DEBUG=1 LEIN_SNAPSHOTS_IN_RELEASE=1 && cd desktop && $(LEIN) with-profile release uberjar
 	mkdir -p target
 	cp desktop/target/$(PROJECT_ARTIFACTID).jar target
 	cp desktop/target/$(PROJECT_ARTIFACTID).jar target/$(PROJECT_ARTIFACTID)-debug.jar
@@ -189,7 +200,7 @@ debug-jar: target/$(PROJECT_ARTIFACTID)-debug.jar
 
 target/$(PROJECT_ARTIFACTID).jar:
 	$(MAKE) desktop-clean layout-clean
-	$(MAKE) layout ta update-resources-for-release
+	$(MAKE) layout tas update-resources-for-release
 	export CLAN_TARGET=desktop CLAN_RELEASE=1 && cd desktop && $(LEIN) with-profile release uberjar
 	mkdir -p target
 	cp desktop/target/$(PROJECT_ARTIFACTID).jar target
@@ -225,7 +236,7 @@ debug-exe: debug-jar release-exe
 
 
 
-.droid-build-done: $(LAYOUT_MAINACTIVITY_DIR)/MainActivity.java desktop/assets/pack.atlas add-lib-to-resources
+.droid-build-done: $(LAYOUT_MAINACTIVITY_DIR)/MainActivity.java tas add-lib-to-resources
 	export CLAN_TARGET=android CLAN_DEBUG=1 && cd android && $(LEIN) with-profile devpack droid build
 	touch .droid-build-done
 
@@ -261,7 +272,7 @@ android-clean:
 
 release-apk:
 	$(MAKE) android-clean layout-clean
-	$(MAKE) layout ta add-lib-to-resources
+	$(MAKE) layout tas add-lib-to-resources
 	export CLAN_TARGET=android CLAN_RELEASE=1 && cd android && $(LEIN) with-profile release droid release build
 	export CLAN_TARGET=android CLAN_RELEASE=1 CLAN_BUILD_APK=1 && cd android && $(LEIN) with-profile clan-sign,release droid release apk
 	mkdir -p target
@@ -293,7 +304,7 @@ release-clean:
 
 
 
-clean: desktop-clean android-clean layout-clean ta-clean
+clean: desktop-clean android-clean layout-clean tas-clean
 
 ac-clean:
 	rm -f config.log config.status
