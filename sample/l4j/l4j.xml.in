@@ -28,4 +28,9 @@
     <maxVersion></maxVersion>
     <jdkPreference>preferJre</jdkPreference>
   </jre>
+  <!--
+  <splash>
+    <file>../l4j/l4j.bmp</file>
+  </splash>
+  -->
 </launch4jConfig>
