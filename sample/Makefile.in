@@ -103,7 +103,7 @@ TAS_ATLASES = $(TAS_TARGETS:%=$(TA_DIR)/%.atlas)
 TAS_PNGS = $(TAS_TARGETS:%=$(TA_DIR)/%.png) $(TAS_TARGETS:%=$(TA_DIR)/%2.png) $(TAS_TARGETS:%=$(TA_DIR)/%3.png) $(TAS_TARGETS:%=$(TA_DIR)/%4.png) $(TAS_TARGETS:%=$(TA_DIR)/%5.png) $(TAS_TARGETS:%=$(TA_DIR)/%6.png) $(TAS_TARGETS:%=$(TA_DIR)/%7.png) $(TAS_TARGETS:%=$(TA_DIR)/%8.png) $(TAS_TARGETS:%=$(TA_DIR)/%9.png)
 TAS_CLEAN_TARGETS = $(TAS_ATLASES) $(TAS_PNGS)
 
-$(TA_DIR)/%.atlas: $(TAS_ROOT_DIR)/% $(wildcard $(TAS_ROOT_DIR)/%/*)
+$(TA_DIR)/%.atlas: $(TAS_ROOT_DIR)/% $(TAS_ROOT_DIR)/%/*
 	$(MAKE) texturepacker2 SRCDIR=$(TAS_ROOT_DIR)/$* DSTDIR=$(TA_DIR) NAME=$*
 
 tas: $(TAS_ATLASES)
