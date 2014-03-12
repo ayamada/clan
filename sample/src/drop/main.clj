@@ -314,7 +314,7 @@
 (defaola2 ^OrthographicCamera the-camera :create #(OrthographicCamera.))
 
 (defaola2 ^TextureAtlas the-ta
-  :create #(TextureAtlas. (assets-file "pack.atlas"))
+  :create #(TextureAtlas. (assets-file "ta/common.atlas"))
   :dispose #(.dispose the-ta))
 
 (defaola2 ^BitmapFont the-font
