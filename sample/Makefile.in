@@ -92,6 +92,7 @@ particleeditor:
 	cd clan/tpack && $(LEIN) run -m com.badlogic.gdx.tools.particleeditor.ParticleEditor < /dev/null &
 
 # TODO: make texturepacker2 SRCDIR=dir DSTDIR=dir2 NAME=hoge という形で実行する。引数が足りない場合やディレクトリが存在しない場合はusageを表示するようにする事
+# TODO: SRCDIR/DSTDIRに絶対PATHが指定された場合の処理が必要
 texturepacker2:
 	cd clan/tpack && $(LEIN) run -m com.badlogic.gdx.tools.imagepacker.TexturePacker2 ../../$(SRCDIR) ../../$(DSTDIR) $(NAME)
 
