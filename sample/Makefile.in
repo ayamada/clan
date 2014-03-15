@@ -67,7 +67,7 @@ TAS_ROOT_DIR := tas
 
 
 
-.PHONY: help clean dep jar apk force layout clan assets res release desktop android run hiero particleeditor texturepacker2 tas test check
+.PHONY: help clean dep jar apk force layout clan assets res release desktop android run hiero particleeditor texturepacker2 tas test check package
 
 help:
 	@echo "sorry, see clan/README.md"
@@ -301,6 +301,28 @@ release-clean:
 	rm -rf target
 
 
+
+
+PACKAGE_WIN_DIR = $(PROJECT_ARTIFACTID)-$(PROJECT_VERSION)-win
+PACKAGE_JAR_DIR = $(PROJECT_ARTIFACTID)-$(PROJECT_VERSION)-jar
+
+package-win:
+	if [ ! -e target/$(PROJECT_ARTIFACTID).exe ]; then $(MAKE) release; fi
+	rm -rf target/$(PACKAGE_WIN_DIR) target/$(PACKAGE_WIN_DIR).zip
+	mkdir -p target/$(PACKAGE_WIN_DIR)
+	cd target && cp $(PROJECT_ARTIFACTID).exe $(PACKAGE_WIN_DIR)
+	-cp -a bundle/win/* target/$(PACKAGE_WIN_DIR)
+	cd target && zip -r $(PACKAGE_WIN_DIR).zip $(PACKAGE_WIN_DIR)
+
+package-jar:
+	if [ ! -e target/$(PROJECT_ARTIFACTID).jar ]; then $(MAKE) release; fi
+	rm -rf target/$(PACKAGE_JAR_DIR) target/$(PACKAGE_JAR_DIR).zip
+	mkdir -p target/$(PACKAGE_JAR_DIR)
+	cd target && cp $(PROJECT_ARTIFACTID).jar $(PACKAGE_JAR_DIR)
+	-cp -a bundle/jar/* target/$(PACKAGE_JAR_DIR)
+	cd target && zip -r $(PACKAGE_JAR_DIR).zip $(PACKAGE_JAR_DIR)
+
+package: package-win package-jar
 
 
 
