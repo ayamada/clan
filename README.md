@@ -84,6 +84,12 @@ I'm glad, if you made apps by CLAN, and inform that to [@rnkv(=ayamada)](https:/
 
 * * * * *
 
+-   http://vnctst.tir.jp/ja/games/jmzf.html
+
+    -   A short game that play to create animals. That were made by ayamada. (sorry, this app is required to read japanese.)
+
+    -   動物を作成して遊びます。 ayamada作。
+
 -   http://vnctst.tir.jp/ja/games/driftcat_underworld.html
 
     -   A short game that the cat want to return to home from empire of underworld. That were made by ayamada. (sorry, this app is required to read japanese.)
