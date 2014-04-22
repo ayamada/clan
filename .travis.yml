@@ -23,13 +23,13 @@ before_install:
   - sudo apt-get update -qq
   - if [ `uname -m` = x86_64 ]; then sudo apt-get install -qq --force-yes libgd2-xpm ia32-libs ia32-libs-multiarch; fi
   # http://developer.android.com/sdk/index.html
-  - export ANDROID_SDK_VERSION=r21.1
+  - export ANDROID_SDK_VERSION=r22.6.2
   - wget http://dl.google.com/android/android-sdk_${ANDROID_SDK_VERSION}-linux.tgz
   - tar xvzf android-sdk_${ANDROID_SDK_VERSION}-linux.tgz
   - export ANDROID_HOME=`pwd`/android-sdk-linux
-  - export PATH=${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:${PATH}
+  - export PATH=${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:${ANDROID_HOME}/build-tools/19.0.3:${PATH}
   - android list sdk --extended -a
-  - android update sdk --no-ui --force --filter tools,platform-tools,build-tools-17.0.0,android-18,android-17,android-10,extra-android-m2repository,extra-android-support
+  - android update sdk --no-ui --force --filter tools,platform-tools,build-tools-19.0.3,android-19,android-18,android-17,android-10,extra-android-m2repository,extra-android-support
   - fi
 
 # vim:set sw=2 ts=2 sts=2 et:
