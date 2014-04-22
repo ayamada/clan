@@ -13,12 +13,12 @@ script:
   - if (javac -version 2>&1 | grep '^javac 1\.6'); then test -e ../android/target/drop-debug.apk; fi
   # TODO: must be write test
 jdk:
-  - openjdk6
+  #- openjdk6
   - openjdk7
   - oraclejdk7
 before_install:
   - lein2 run -m clojure.main/main -e '(System/getProperties)'
-  - if (javac -version 2>&1 | grep '^javac 1\.6'); then
+  - if (javac -version 2>&1 | grep '^javac 1\.7'); then
   # came from http://shunirr.hatenablog.jp/entry/2013/04/02/141846
   - sudo apt-get update -qq
   - if [ `uname -m` = x86_64 ]; then sudo apt-get install -qq --force-yes libgd2-xpm ia32-libs ia32-libs-multiarch; fi
