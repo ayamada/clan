@@ -12,15 +12,15 @@
       android:versionCode="@PROJECT_ANDROID_VERSIONCODE@"
       android:versionName="@PROJECT_VERSION@"
       android:installLocation="auto">
-    <uses-sdk android:minSdkVersion="10" android:targetSdkVersion="17" />
+    <uses-sdk android:minSdkVersion="10" android:targetSdkVersion="19" />
     <!-- see http://developer.android.com/reference/android/Manifest.permission.html -->
     <!--
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     -->
-    <application android:icon="@drawable/icon" android:label="@PROJECT_SHORT_NAME@">
+    <application android:icon="@drawable/icon" android:label="@PROJECT__NAME@">
         <activity android:name="@PROJECT_ANDROID_GROUPID@.MainActivity"
-                  android:label="@PROJECT_NAME@"
+                  android:label="@PROJECT_SHORT_NAME@"
                   android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
                   android:screenOrientation="nosensor"
                   android:configChanges="keyboard|keyboardHidden|orientation|screenSize">
