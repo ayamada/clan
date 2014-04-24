@@ -1,3 +1,20 @@
+2014-??-??  ayamada
+	* release ?.?.?:
+	  - *IMPORTANT*: Support Java 1.7, but don't support Java 1.6 anymore
+	  - Add `LEIN_SNAPSHOTS_IN_RELEASE=1` for "make".
+	    It allow to use "SNAPSHOT" version's dependencies
+	  - Add many "make" targets
+	    - "make particleeditor", to run Particle Editor
+	    - "make texturepacker2", to run Texture Packer 2
+	    - "make test|check", to run `lein test`
+	    - "make package", to generate zip archives
+	    - Change from "make ta" to "make tas".
+	      `tas/` directory can include many directories for sources of
+	      TextureAtlas files
+	  - Bump version of lein-droid to 0.2.2
+	  - Bump version of neko to 3.0.1
+	  - Change default fadeSec from 1.0 to 0.5
+
 2013-12-04  ayamada
 	* release 0.2.0:
 	  - *IMPORTANT*: *.apk cannot boot that made by 0.1.1-0.1.3 !
